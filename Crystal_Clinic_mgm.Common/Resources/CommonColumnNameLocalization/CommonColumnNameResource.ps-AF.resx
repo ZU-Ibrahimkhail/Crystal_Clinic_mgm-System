@@ -1,0 +1,1012 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Abbrevation" xml:space="preserve">
+    <value>لنډیز</value>
+    <comment>180</comment>
+  </data>
+  <data name="ActionRequestId" xml:space="preserve">
+    <value>د عمل غوښتنې آی ډي</value>
+    <comment>110</comment>
+  </data>
+  <data name="ActivityImplementationSource" xml:space="preserve">
+    <value>د فعالیت تطبیق سرچینه</value>
+    <comment>118</comment>
+  </data>
+  <data name="ActivityType" xml:space="preserve">
+    <value>د فعالیت ډول</value>
+    <comment>120</comment>
+  </data>
+  <data name="ActivityTypeId" xml:space="preserve">
+    <value>د فعالیت د ډول آی ډي</value>
+    <comment>119</comment>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>آدرس</value>
+    <comment>8</comment>
+  </data>
+  <data name="AgriculturalProductionPerHectareInTons" xml:space="preserve">
+    <value>په هر هکتار کې کرنیز تولید په ټن کې</value>
+    <comment>23</comment>
+  </data>
+  <data name="AgriculturalProductionPricePerTonInUSD" xml:space="preserve">
+    <value>د کرنیز تولید قیمت په یو ټن کې په USD </value>
+    <comment>141</comment>
+  </data>
+  <data name="AgriculturalProductsCostPerHectareInUSD" xml:space="preserve">
+    <value>د هر هکتار کرنیز محصول لګښت په USD </value>
+    <comment>150</comment>
+  </data>
+  <data name="AgricultureLandsUnderThreatAreaInKm" xml:space="preserve">
+    <value>د ګواښ ترلاندې کرنې ځمکې په کیلو مترۍ کې</value>
+    <comment>122</comment>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>مبلغ</value>
+  </data>
+  <data name="ApplicantId" xml:space="preserve">
+    <value>د غوښتونکي آی ډي</value>
+    <comment>113</comment>
+  </data>
+  <data name="ApplicantRequestId" xml:space="preserve">
+    <value>د غوښتونکي د غوښتنې آی ډي</value>
+    <comment>114</comment>
+  </data>
+  <data name="ApplicationId" xml:space="preserve">
+    <value>د غوښتنلیک آی ډي</value>
+    <comment>111</comment>
+  </data>
+  <data name="ArchiveId" xml:space="preserve">
+    <value>د آرشیف آی ډي</value>
+    <comment>43</comment>
+  </data>
+  <data name="ArchiveNumber" xml:space="preserve">
+    <value> د آرشیف نمبر</value>
+    <comment>1</comment>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>ضمیمه</value>
+    <comment>169</comment>
+  </data>
+  <data name="AttachmentDetail" xml:space="preserve">
+    <value>د ضمیمې توضیحات</value>
+    <comment>108</comment>
+  </data>
+  <data name="AttendanceId" xml:space="preserve">
+    <value>حاضری</value>
+    <comment>203</comment>
+  </data>
+  <data name="AverageCurrentFlow" xml:space="preserve">
+    <value>د اوسني جریان ډول</value>
+    <comment>42</comment>
+  </data>
+  <data name="AverageCurrentWaterFlowInCubicMeters" xml:space="preserve">
+    <value>د اوبو اوسط جریان په متر مکعب کې</value>
+    <comment>38</comment>
+  </data>
+  <data name="BalanceAmount" xml:space="preserve">
+    <value>د حساب مبلغ</value>
+  </data>
+  <data name="Bast" xml:space="preserve">
+    <value>بست</value>
+    <comment>15</comment>
+  </data>
+  <data name="BlockId" xml:space="preserve">
+    <value>د بلاک آی ډي</value>
+    <comment>47</comment>
+  </data>
+  <data name="Box" xml:space="preserve">
+    <value>دوسیه</value>
+    <comment>157</comment>
+  </data>
+  <data name="CanalLengthInKm" xml:space="preserve">
+    <value>د کانال اوږدوالی په کیلو متر</value>
+    <comment>136</comment>
+  </data>
+  <data name="CanalSource" xml:space="preserve">
+    <value>د کانال سرچینه</value>
+    <comment>138</comment>
+  </data>
+  <data name="CardExchangeWith" xml:space="preserve">
+    <value>د کارټ تبادله له</value>
+    <comment>126</comment>
+  </data>
+  <data name="CardGenerationTypeId" xml:space="preserve">
+    <value>د کارت ډول</value>
+    <comment>193</comment>
+  </data>
+  <data name="CardId" xml:space="preserve">
+    <value>د کارټ آی ډي</value>
+    <comment>125</comment>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>د کارټ شمیره</value>
+    <comment>128</comment>
+  </data>
+  <data name="CardTypeId" xml:space="preserve">
+    <value>د کارټ د ډول آی ډيی</value>
+    <comment>127</comment>
+  </data>
+  <data name="CatchmentAreaInKm" xml:space="preserve">
+    <value>د اوبو د بهیدو ساحه په کیلو متر</value>
+    <comment>40</comment>
+  </data>
+  <data name="CNIC" xml:space="preserve">
+    <value>د تذکرې شیره</value>
+    <comment>205</comment>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>کوډ</value>
+    <comment>175</comment>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>کمنټونه</value>
+    <comment>174</comment>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>کمپنۍ</value>
+    <comment>173</comment>
+  </data>
+  <data name="ConstructionType" xml:space="preserve">
+    <value>د رغونې ډول </value>
+    <comment>98</comment>
+  </data>
+  <data name="ConstructionTypeId" xml:space="preserve">
+    <value>د رغونې ډول آی ډي</value>
+    <comment>99</comment>
+  </data>
+  <data name="ContactNumber1" xml:space="preserve">
+    <value>د اړیکې لمړۍ شمیره</value>
+    <comment>34</comment>
+  </data>
+  <data name="ContactNumber2" xml:space="preserve">
+    <value>د اړیکې دویمه شمیره</value>
+    <comment>33</comment>
+  </data>
+  <data name="ContractTypeId" xml:space="preserve">
+    <value>د قرارداد ډول</value>
+    <comment>194</comment>
+  </data>
+  <data name="ControllerName" xml:space="preserve">
+    <value>د کنټرولر نوم</value>
+    <comment>143</comment>
+  </data>
+  <data name="ConversionDate" xml:space="preserve">
+    <value>د تبادلې نیټه</value>
+    <comment>74</comment>
+  </data>
+  <data name="ConversionRate" xml:space="preserve">
+    <value>د تبادلې نرخ</value>
+    <comment>73</comment>
+  </data>
+  <data name="CopyToDepartment" xml:space="preserve">
+    <value>ریاستونو ته کاپي</value>
+    <comment>217</comment>
+  </data>
+  <data name="CostInAFN" xml:space="preserve">
+    <value>لګښت په افغانۍ</value>
+    <comment>178</comment>
+  </data>
+  <data name="CostInUSD" xml:space="preserve">
+    <value>لګښت په USD</value>
+    <comment>177</comment>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>شمېر</value>
+    <comment>167</comment>
+  </data>
+  <data name="CroppingSeasons" xml:space="preserve">
+    <value>د کرلو فصلونه</value>
+    <comment>140</comment>
+  </data>
+  <data name="CupBoardId" xml:space="preserve">
+    <value>د المارۍ آی ډي</value>
+    <comment>36</comment>
+  </data>
+  <data name="CupBoardNumber" xml:space="preserve">
+    <value>د المارۍ شمیره</value>
+    <comment>37</comment>
+  </data>
+  <data name="CurrencyTypeId" xml:space="preserve">
+    <value>د اسعارو نوعیت آی دی </value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>اوسنی پټ نوم</value>
+    <comment>6</comment>
+  </data>
+  <data name="DamEffectiveness" xml:space="preserve">
+    <value>د بند اغیزمنتوب</value>
+    <comment>48</comment>
+  </data>
+  <data name="DamHeightInMeter" xml:space="preserve">
+    <value>د بند لوړوالی په متر</value>
+    <comment>49</comment>
+  </data>
+  <data name="DariName" xml:space="preserve">
+    <value>دري نوم</value>
+    <comment>156</comment>
+  </data>
+  <data name="DariUniversityName" xml:space="preserve">
+    <value>د پوهنتون نوم په دری کی</value>
+    <comment>201</comment>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>ډیپارټمنټ</value>
+    <comment>159</comment>
+  </data>
+  <data name="DepartmentID" xml:space="preserve">
+    <value>د ډیپارټمنټ آی ډي</value>
+    <comment>88</comment>
+  </data>
+  <data name="DepartmentId1" xml:space="preserve">
+    <value>د ډیپارټمنټ آی ډي</value>
+    <comment>89</comment>
+  </data>
+  <data name="DepartmentId2" xml:space="preserve">
+    <value>د ډیپارټمنټ آی ډي</value>
+    <comment>90</comment>
+  </data>
+  <data name="DepartmentLevelId" xml:space="preserve">
+    <value>د ډیپارټمنټ درجې  آی ډي</value>
+    <comment>91</comment>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>ډیپارټمنټونه</value>
+    <comment>161</comment>
+  </data>
+  <data name="DepositAmmount" xml:space="preserve">
+    <value>د سپارلو مبلغ</value>
+  </data>
+  <data name="DepositDate" xml:space="preserve">
+    <value>دسپارلو تاریخ </value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
+    <comment>29</comment>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>ډیزاین</value>
+    <comment>162</comment>
+  </data>
+  <data name="DesignId" xml:space="preserve">
+    <value>د ډیزاین آی ډي</value>
+    <comment>92</comment>
+  </data>
+  <data name="DestroyedAreaLengthInMeter" xml:space="preserve">
+    <value>د ویجاړ شوي ساحې اوږدوالی په متر کې</value>
+    <comment>155</comment>
+  </data>
+  <data name="Detail" xml:space="preserve">
+    <value>تفصیل</value>
+    <comment>28</comment>
+  </data>
+  <data name="District" xml:space="preserve">
+    <value>ولسوالۍ</value>
+    <comment>189</comment>
+  </data>
+  <data name="DistrictId" xml:space="preserve">
+    <value>د ولسوالۍ آی ډي</value>
+    <comment>154</comment>
+  </data>
+  <data name="DocumentBookRecivedNumber" xml:space="preserve">
+    <value>د  رسیداتو شمیره</value>
+    <comment>30</comment>
+  </data>
+  <data name="DocumentDate" xml:space="preserve">
+    <value>د سند نیټه</value>
+    <comment>105</comment>
+  </data>
+  <data name="DocumentLevelId" xml:space="preserve">
+    <value>د سند د درجې آی ډي</value>
+    <comment>100</comment>
+  </data>
+  <data name="DocumentNumber" xml:space="preserve">
+    <value>د سند شمیره</value>
+    <comment>103</comment>
+  </data>
+  <data name="DocumentRecivedNumber" xml:space="preserve">
+    <value>د واردې شمیره</value>
+    <comment>153</comment>
+  </data>
+  <data name="DocumentResponseTitleForInquire" xml:space="preserve">
+    <value>ځواب</value>
+    <comment>213</comment>
+  </data>
+  <data name="DocumentResponseTitleForOffer" xml:space="preserve">
+    <value>احکام</value>
+    <comment>214</comment>
+  </data>
+  <data name="DocumentSubject" xml:space="preserve">
+    <value>د سند موضوع</value>
+    <comment>104</comment>
+  </data>
+  <data name="DocumentTypeId" xml:space="preserve">
+    <value>د سند د ډول آی ډي</value>
+    <comment>101</comment>
+  </data>
+  <data name="EducationLevelId" xml:space="preserve">
+    <value>د تحصیل کچه</value>
+    <comment>198</comment>
+  </data>
+  <data name="EducationTitleId" xml:space="preserve">
+    <value>د تحصیلی څانګی عنوان</value>
+    <comment>199</comment>
+  </data>
+  <data name="ElectricityProductionInMegawatts" xml:space="preserve">
+    <value>د بریښنا تولید په میګاواټ</value>
+    <comment>46</comment>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>بریښنالیک</value>
+    <comment>14</comment>
+  </data>
+  <data name="EmployeeId" xml:space="preserve">
+    <value>کارکوونکی</value>
+    <comment>190</comment>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>د پای نیټه</value>
+    <comment>53</comment>
+  </data>
+  <data name="EndDate1" xml:space="preserve">
+    <value>د پای نیټه</value>
+    <comment>191</comment>
+  </data>
+  <data name="EnglishName" xml:space="preserve">
+    <value>انګلیسي نوم</value>
+    <comment>5</comment>
+  </data>
+  <data name="EnglishUniversityName" xml:space="preserve">
+    <value>د پوهنتون نوم په انګلیسی کی</value>
+    <comment>200</comment>
+  </data>
+  <data name="EstimatedEndDate" xml:space="preserve">
+    <value>د پای اټکل شوی نیټه</value>
+    <comment>52</comment>
+  </data>
+  <data name="EstimatedStartDate" xml:space="preserve">
+    <value>د پیل اټکل شوی نیټه</value>
+    <comment>71</comment>
+  </data>
+  <data name="ExecutiveManagement" xml:space="preserve">
+    <value>اجرائیه مدیریت</value>
+  </data>
+  <data name="ExternalDocumentId" xml:space="preserve">
+    <value>د خارجي سند آی ډي</value>
+    <comment>83</comment>
+  </data>
+  <data name="FatherDariName" xml:space="preserve">
+    <value>د پلار  نوم په دري کې</value>
+    <comment>70</comment>
+  </data>
+  <data name="FatherEnglishName" xml:space="preserve">
+    <value>د پلار  نوم په انګلیسي کې</value>
+    <comment>69</comment>
+  </data>
+  <data name="FlowType" xml:space="preserve">
+    <value>د جریان ډول</value>
+    <comment>79</comment>
+  </data>
+  <data name="FortificationAboveSea" xml:space="preserve">
+    <value>د بحر څخه پورته قلعه</value>
+    <comment>44</comment>
+  </data>
+  <data name="FortificationLengthInMeter" xml:space="preserve">
+    <value>د قلعه بندۍ اوږدوالی په متر</value>
+    <comment>121</comment>
+  </data>
+  <data name="FromDepartmentId" xml:space="preserve">
+    <value>د رالیږونکي ډیپارټمنټ آی ډي</value>
+    <comment>97</comment>
+  </data>
+  <data name="FromDocumentId" xml:space="preserve">
+    <value>د رالیږل شوي سند آی ډي</value>
+    <comment>95</comment>
+  </data>
+  <data name="FromOrgnizationId" xml:space="preserve">
+    <value>د رالیږونکي ادارې آی ډي</value>
+    <comment>96</comment>
+  </data>
+  <data name="FromToDepartmentId" xml:space="preserve">
+    <value>ډیپارټمنټ څخه/ته آی ډي</value>
+    <comment>160</comment>
+  </data>
+  <data name="FromToOrgnizationId" xml:space="preserve">
+    <value>ادارې څخه/ته آی ډي</value>
+    <comment>4</comment>
+  </data>
+  <data name="GeologicalAreaSoilType" xml:space="preserve">
+    <value>د جیولوژیکي ساحې د خاورې ډول</value>
+    <comment>80</comment>
+  </data>
+  <data name="GradeId" xml:space="preserve">
+    <value>بست</value>
+    <comment>196</comment>
+  </data>
+  <data name="GradeStepId" xml:space="preserve">
+    <value>د بست قدم</value>
+    <comment>197</comment>
+  </data>
+  <data name="Hardwares" xml:space="preserve">
+    <value>هارډویرونه</value>
+    <comment>187</comment>
+  </data>
+  <data name="HeightAboveSeaLevelInMeter" xml:space="preserve">
+    <value>د بحر له سطحې څخه لوړوالی په متر</value>
+    <comment>45</comment>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>آی ډي</value>
+    <comment>9</comment>
+  </data>
+  <data name="ID1" xml:space="preserve">
+    <value>آی ډي</value>
+    <comment>10</comment>
+  </data>
+  <data name="InitialSurvey" xml:space="preserve">
+    <value>ابتدایی سروی</value>
+    <comment>2</comment>
+  </data>
+  <data name="InitialSurveyId" xml:space="preserve">
+    <value>د ابتدايي سروې آی ډي</value>
+    <comment>31</comment>
+  </data>
+  <data name="InOutDocumentType" xml:space="preserve">
+    <value>د سند د صادرې واردې ډول</value>
+    <comment>102</comment>
+  </data>
+  <data name="InternalDocumentId" xml:space="preserve">
+    <value>د داخلي سند آی ډي</value>
+    <comment>85</comment>
+  </data>
+  <data name="InvestmentCostPerHectareInAFN" xml:space="preserve">
+    <value>په هر هکتار کې د پانګې اچونې لګښت په افغانۍ</value>
+    <comment>22</comment>
+  </data>
+  <data name="IrrigationAreaAfterProjectInHec" xml:space="preserve">
+    <value>د پروژې نه وروسته د اوبو لګولو ساحه په هکتار کې</value>
+    <comment>64</comment>
+  </data>
+  <data name="IrrigationAreaBeforeProjectInHec" xml:space="preserve">
+    <value>د پروژې نه مخکې د اوبو لګولو ساحه په هکتار کې</value>
+    <comment>63</comment>
+  </data>
+  <data name="IsActionCategoryMissing" xml:space="preserve">
+    <value>ایا د عمل کټګوري ورکه ده</value>
+    <comment>7</comment>
+  </data>
+  <data name="IsCCDepartment" xml:space="preserve">
+    <value>آیا سی سی ډیپارټمنټ دی؟</value>
+    <comment>13</comment>
+  </data>
+  <data name="IsUniqueCardNumber" xml:space="preserve">
+    <value>آیا  د کارټ شمیره ځانګړې ده؟ </value>
+    <comment>11</comment>
+  </data>
+  <data name="IsvalidPhoneNumber" xml:space="preserve">
+    <value>آیا د ټلیفون شمیره سمه ده؟</value>
+    <comment>12</comment>
+  </data>
+  <data name="JoldNo" xml:space="preserve">
+    <value>د ټوک ګڼه</value>
+    <comment>206</comment>
+  </data>
+  <data name="KarezCanalLengthInKm" xml:space="preserve">
+    <value>د کارېز کانال اوږدوالی په کیلومتر</value>
+    <comment>132</comment>
+  </data>
+  <data name="KarezInnerLengthInKm" xml:space="preserve">
+    <value>د کاریز داخلي اوږدوالی په کیلومتر</value>
+    <comment>133</comment>
+  </data>
+  <data name="LandPricePerHectareInUSD" xml:space="preserve">
+    <value>د هر هکتار ځمکې بیه په USD </value>
+    <comment>149</comment>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>ژبه</value>
+    <comment>163</comment>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>عرض البلد</value>
+    <comment>171</comment>
+  </data>
+  <data name="Latitude1" xml:space="preserve">
+    <value>عرض البلد</value>
+    <comment>211</comment>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>طول البلد</value>
+    <comment>170</comment>
+  </data>
+  <data name="Longitude1" xml:space="preserve">
+    <value>طول البلد</value>
+    <comment>212</comment>
+  </data>
+  <data name="MainRegionId" xml:space="preserve">
+    <value>اصلي حوزه</value>
+    <comment>209</comment>
+  </data>
+  <data name="MaximumCanalFlow" xml:space="preserve">
+    <value>د کانال اعظمي جریان</value>
+    <comment>135</comment>
+  </data>
+  <data name="MaximumSeaFlow" xml:space="preserve">
+    <value>د سیند اعظمي جریان</value>
+    <comment>106</comment>
+  </data>
+  <data name="MinimumCanalFlow" xml:space="preserve">
+    <value>د کانال حد اقل جریان</value>
+    <comment>137</comment>
+  </data>
+  <data name="MinimumSeaFlow" xml:space="preserve">
+    <value>لږترلږه د سیند جریان</value>
+    <comment>176</comment>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>ماډل</value>
+    <comment>183</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>نوم</value>
+    <comment>185</comment>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>نوی پټ توری</value>
+    <comment>186</comment>
+  </data>
+  <data name="NotificationId" xml:space="preserve">
+    <value>د خبرتیا آی ډي</value>
+    <comment>84</comment>
+  </data>
+  <data name="NumberOfDisplacedPeople" xml:space="preserve">
+    <value>د بې ځایه شویو خلکو شمیر</value>
+    <comment>50</comment>
+  </data>
+  <data name="NumberOfGates" xml:space="preserve">
+    <value>د دروازو شمیر</value>
+    <comment>87</comment>
+  </data>
+  <data name="NumberOfObservedWell" xml:space="preserve">
+    <value>د څارل شوو څاه ګانو شمیر</value>
+    <comment>81</comment>
+  </data>
+  <data name="NumberOfPages" xml:space="preserve">
+    <value>د پاڼو شمیر</value>
+    <comment>51</comment>
+  </data>
+  <data name="NumberOfResidentialHouses" xml:space="preserve">
+    <value>د استوګنې کورونو شمیر</value>
+    <comment>35</comment>
+  </data>
+  <data name="OrganizationID" xml:space="preserve">
+    <value>د ادارې آی ډي</value>
+    <comment>32</comment>
+  </data>
+  <data name="Organizations" xml:space="preserve">
+    <value>ادارې</value>
+    <comment>3</comment>
+  </data>
+  <data name="OwnerUserId" xml:space="preserve">
+    <value>د مالک یوزر آی دی</value>
+  </data>
+  <data name="PageNo" xml:space="preserve">
+    <value>د پاڼې ګڼه</value>
+    <comment>207</comment>
+  </data>
+  <data name="PashtoName" xml:space="preserve">
+    <value>پښتو نوم</value>
+    <comment>19</comment>
+  </data>
+  <data name="PashtoUniversityName" xml:space="preserve">
+    <value>د پوهنتون نوم په پښتو کی</value>
+    <comment>202</comment>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>پټ توری</value>
+    <comment>17</comment>
+  </data>
+  <data name="PeopleProjectBenefitsNumber" xml:space="preserve">
+    <value>له پروژې څخه د ګټه اخیستونکي خلکو شمیر</value>
+    <comment>181</comment>
+  </data>
+  <data name="PerHectareCostInAFN" xml:space="preserve">
+    <value>د هر هکتار لګښت په افغانۍ</value>
+    <comment>151</comment>
+  </data>
+  <data name="PermanentJobCreation" xml:space="preserve">
+    <value>د دايمي دندې رامنځته کول</value>
+    <comment>86</comment>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>صلاحیتونه</value>
+    <comment>168</comment>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>د ټلیفون شمیره</value>
+    <comment>78</comment>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>وظیفه</value>
+    <comment>16</comment>
+  </data>
+  <data name="PositionTitleId" xml:space="preserve">
+    <value>د دندی عنوان</value>
+    <comment>195</comment>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>لومړیتوب</value>
+    <comment>182</comment>
+  </data>
+  <data name="PriorityId" xml:space="preserve">
+    <value>د لومړیتوب آی ډي</value>
+    <comment>144</comment>
+  </data>
+  <data name="ProcessStatus" xml:space="preserve">
+    <value>د پروسې حالت</value>
+    <comment>65</comment>
+  </data>
+  <data name="ProcessStatusId" xml:space="preserve">
+    <value>د پروسې د حالت آی ډي</value>
+    <comment>66</comment>
+  </data>
+  <data name="ProcessStatusId1" xml:space="preserve">
+    <value>د پروسې د حالت آی ډي</value>
+    <comment>67</comment>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>پروژه</value>
+    <comment>18</comment>
+  </data>
+  <data name="ProjectEstimatedDurationInDays" xml:space="preserve">
+    <value>د پروژې اټکل شوی موده په ورځو کې</value>
+    <comment>56</comment>
+  </data>
+  <data name="ProjectEstimatedTotalDurationInDays" xml:space="preserve">
+    <value>د پروژې اټکل شوی ټوله موده په ورځو کې</value>
+    <comment>55</comment>
+  </data>
+  <data name="ProjectId" xml:space="preserve">
+    <value>د پروژې آی ډي</value>
+    <comment>57</comment>
+  </data>
+  <data name="ProjectId1" xml:space="preserve">
+    <value>د پروژې آی ډي</value>
+    <comment>58</comment>
+  </data>
+  <data name="ProjectObjective" xml:space="preserve">
+    <value>د پروژې موخه</value>
+    <comment>62</comment>
+  </data>
+  <data name="ProjectType" xml:space="preserve">
+    <value>د پروژې ډول</value>
+    <comment>60</comment>
+  </data>
+  <data name="ProjectTypeId" xml:space="preserve">
+    <value>د پروژې د ډول آی ډي</value>
+    <comment>59</comment>
+  </data>
+  <data name="ProjectWinterBreakInDays" xml:space="preserve">
+    <value>د پروژې ژمنۍ رخصتیانې په ورځو کې</value>
+    <comment>61</comment>
+  </data>
+  <data name="ProtectedAreaInHectare" xml:space="preserve">
+    <value>په هکتار کې خوندي ساحه</value>
+    <comment>24</comment>
+  </data>
+  <data name="ReceptionTrackingId" xml:space="preserve">
+    <value>د پذیرش د څارنی آی ډی</value>
+    <comment>54</comment>
+  </data>
+  <data name="RegNo" xml:space="preserve">
+    <value>د راجسټر شمیره</value>
+    <comment>208</comment>
+  </data>
+  <data name="RelatedActionRequestId" xml:space="preserve">
+    <value>د مربوطه غوښتل شوي عمل آی ډي</value>
+    <comment>148</comment>
+  </data>
+  <data name="Remarks" xml:space="preserve">
+    <value>تبصرې</value>
+    <comment>26</comment>
+  </data>
+  <data name="RequestCategoryId" xml:space="preserve">
+    <value>د غوښتنې د کټګوري آی ډي</value>
+    <comment>112</comment>
+  </data>
+  <data name="ReturnDate" xml:space="preserve">
+    <value>د واپسۍ نیټه</value>
+    <comment>152</comment>
+  </data>
+  <data name="SeaFloodFlowAmount" xml:space="preserve">
+    <value>د سیندیز سیلاب جریان اندازه</value>
+    <comment>107</comment>
+  </data>
+  <data name="SeaWidthInDestroyedAreaInMeter" xml:space="preserve">
+    <value>په ویجاړ شوي ساحه کې د سیند عرض په متر کې</value>
+    <comment>25</comment>
+  </data>
+  <data name="SendMaktobToDepartment" xml:space="preserve">
+    <value>محترم</value>
+    <comment>215</comment>
+  </data>
+  <data name="ShelfId" xml:space="preserve">
+    <value>د طاقچې آی ډي</value>
+    <comment>109</comment>
+  </data>
+  <data name="Softwares" xml:space="preserve">
+    <value>سافټویرونه</value>
+    <comment>164</comment>
+  </data>
+  <data name="SpringCanalLengthInKm" xml:space="preserve">
+    <value>د پسرلي کانال اوږدوالی په کیلومترو کې</value>
+    <comment>68</comment>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>د پیل نیټه</value>
+    <comment>72</comment>
+  </data>
+  <data name="StartDate1" xml:space="preserve">
+    <value>د پیل نیټه</value>
+    <comment>192</comment>
+  </data>
+  <data name="StorageCapacity" xml:space="preserve">
+    <value>د ذخیره کولو ظرفیت</value>
+    <comment>93</comment>
+  </data>
+  <data name="StorageCapacityInMillionCuvicMeters" xml:space="preserve">
+    <value>د ذخیره کولو ظرفیت په ملیون متر مکعب کې</value>
+    <comment>94</comment>
+  </data>
+  <data name="SubActivityId" xml:space="preserve">
+    <value>د فرعي فعالیت آی ډي</value>
+    <comment>116</comment>
+  </data>
+  <data name="SubActivityRecievedDate" xml:space="preserve">
+    <value>د فرعي فعالیت د ترلاسه کولو نیټه</value>
+    <comment>117</comment>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>موضوع</value>
+    <comment>184</comment>
+  </data>
+  <data name="SubRegion" xml:space="preserve">
+    <value>فرعي حوزه</value>
+    <comment>172</comment>
+  </data>
+  <data name="SubRegionId" xml:space="preserve">
+    <value>د فرعي حوزې آی ډي</value>
+    <comment>115</comment>
+  </data>
+  <data name="SubRegionId1" xml:space="preserve">
+    <value>فرعي حوزه</value>
+    <comment>210</comment>
+  </data>
+  <data name="TazkiraTypeId" xml:space="preserve">
+    <value>د تذکرې ډول</value>
+    <comment>204</comment>
+  </data>
+  <data name="TechnicalSurveyId" xml:space="preserve">
+    <value>د تخنیکي سروی آی ډي</value>
+    <comment>75</comment>
+  </data>
+  <data name="TechnicalSurvry" xml:space="preserve">
+    <value>تخنیکي سروی</value>
+    <comment>27</comment>
+  </data>
+  <data name="TemporaryJobCreation" xml:space="preserve">
+    <value>لنډمهاله دندې رامنځته کول</value>
+    <comment>179</comment>
+  </data>
+  <data name="ToDepartmentId" xml:space="preserve">
+    <value>د ترلاسه کوونکي ډیپارټمنټ آی ډي</value>
+    <comment>76</comment>
+  </data>
+  <data name="ToDepartmentId1" xml:space="preserve">
+    <value>د ترلاسه کوونکي ډیپارټمنټ آی ډي</value>
+    <comment>77</comment>
+  </data>
+  <data name="ToDocumentLink" xml:space="preserve">
+    <value>سند سره نښلول</value>
+    <comment>165</comment>
+  </data>
+  <data name="TotalNumberOfFamiliesUnderThreat" xml:space="preserve">
+    <value>د ګواښ لاندې کورنیو ټولټال شمیر</value>
+    <comment>124</comment>
+  </data>
+  <data name="TotalValueOfConstructionsUnderThreatInAFN" xml:space="preserve">
+    <value>د ګواښ لاندې ساختمانونو ټول ارزښت په افغانۍ</value>
+    <comment>123</comment>
+  </data>
+  <data name="ToUserId" xml:space="preserve">
+    <value>یوزر آی دی ته </value>
+  </data>
+  <data name="TrackingId" xml:space="preserve">
+    <value>د څارنې آی ډي</value>
+    <comment>82</comment>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>ډول</value>
+    <comment>158</comment>
+  </data>
+  <data name="TypesOfCultivatedPlant" xml:space="preserve">
+    <value>د کرل شوي نباتاتو ډولونه</value>
+    <comment>139</comment>
+  </data>
+  <data name="UserId" xml:space="preserve">
+    <value>د کارن آی ډي</value>
+    <comment>129</comment>
+  </data>
+  <data name="UserId1" xml:space="preserve">
+    <value>د کاروونکي آی ډي</value>
+    <comment>131</comment>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>د کارن نوم</value>
+    <comment>130</comment>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>ورژن</value>
+    <comment>188</comment>
+  </data>
+  <data name="VillageName" xml:space="preserve">
+    <value>د کلي نوم</value>
+    <comment>142</comment>
+  </data>
+  <data name="VisitingDate" xml:space="preserve">
+    <value>د مراجعې نیټه</value>
+    <comment>147</comment>
+  </data>
+  <data name="VisitingTypeId" xml:space="preserve">
+    <value>د مراجعې د ډول آی ډي</value>
+    <comment>146</comment>
+  </data>
+  <data name="VisitorId" xml:space="preserve">
+    <value>د مراجعه کوونکي آی ډي</value>
+    <comment>145</comment>
+  </data>
+  <data name="WaterCatchMentArea" xml:space="preserve">
+    <value>د اوبو د بهیدو ساحه</value>
+    <comment>39</comment>
+  </data>
+  <data name="WaterFlowAmountInKarez" xml:space="preserve">
+    <value>په کاریز کې د اوبو جریان</value>
+    <comment>21</comment>
+  </data>
+  <data name="WaterFlowAmountInSpring" xml:space="preserve">
+    <value>په پسرلي کې د اوبو د جریان اندازه</value>
+    <comment>20</comment>
+  </data>
+  <data name="WaterFlowType" xml:space="preserve">
+    <value>د اوبو د جریان ډول</value>
+    <comment>41</comment>
+  </data>
+  <data name="WithRespect" xml:space="preserve">
+    <value>په احترام</value>
+    <comment>216</comment>
+  </data>
+  <data name="YearId" xml:space="preserve">
+    <value>د کال آی ډي</value>
+    <comment>134</comment>
+  </data>
+  <data name="YearShamsi" xml:space="preserve">
+    <value>شمسي کال</value>
+    <comment>166</comment>
+  </data>
+</root>

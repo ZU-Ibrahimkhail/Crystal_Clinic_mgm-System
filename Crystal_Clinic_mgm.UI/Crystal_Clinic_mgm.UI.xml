@@ -1,0 +1,1038 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Crystal_Clinic_Mgm.UI</name>
+    </assembly>
+    <members>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.BarChartofAssetByAssetTypesAndUser">
+            <summary>
+            Get MainAccount Barchart
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.RealTimeDashboard">
+            <summary>
+            Get Real Time Statistic Dashboard
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.TradeTrackingChart">
+            <summary>
+            Get Trade Tracking line Chart
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.ExpenseChart">
+            <summary>
+            Get Expense Chart
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.DashboardOfBranchsMainAccount">
+            <summary>
+            Get MainAccount of current and child branchs
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.GetExpenseReport(Crystal_Clinic_Mgm.Application.AssetMS.Reports.ExpenseReportQuery)">
+            <summary>
+            Get Expense Report
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.GetTransactionReport(Crystal_Clinic_Mgm.Application.AssetMS.Reports.TransactionReportQuery)">
+            <summary>
+            Get Transaction Report
+            </summary>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.ExpenseTrackingController.Create(Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Create.CreateExpenseTrackingCommand)">
+            <summary>
+            Create ExpenseTracking
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.ExpenseTrackingController.Update(Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Update.UpdateExpenseTrackingCommand,System.Int32)">
+            <summary>
+            Update ExpenseTracking By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.ExpenseTrackingController.Delete(Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Delete.DeleteExpenseTrackingCommand,System.Int32)">
+            <summary>
+            Delete ExpenseTracking by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.ExpenseTrackingController.GetList(Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Queries.GetList.GetExpenseTrackingListQuery)">
+            <summary>
+             Get ExpenseTracking by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.ExpenseTrackingController.GetDetail(System.Int32)">
+            <summary>
+            Get ExpenseTracking Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.Create(Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Commands.Create.CreateMainAccountCommand)">
+            <summary>
+            Create MainAccount
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.Update(Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Commands.Update.UpdateMainAccountCommand,System.Guid)">
+            <summary>
+            Update MainAccount By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.Delete(Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Commands.Delete.DeleteMainAccountCommand,System.Guid)">
+            <summary>
+            Delete MainAccount by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.GetList(Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Queries.GetList.GetMainAccountListQuery)">
+            <summary>
+             Get MainAccount by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.GetDetail(System.Guid)">
+            <summary>
+            Get MainAccount Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.DepositToUser(Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Commands.DepositToUser.DepositMainAccountToUserCommand)">
+            <summary>
+            Deposit Main Asset To a User
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.GetAccountTrackingList(Crystal_Clinic_Mgm.Application.AssetMS.AccountTrackings.Queries.GetList.GetAccountTrackingListQuery,System.Guid)">
+            <summary>
+            Get the list of Asset Tracking By User Id, description, debit,credit ,balance 
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.GetDropDownList(System.Nullable{System.Guid})">
+            <summary>
+            Get MainAccount Detail by ID
+            </summary>
+            <param name="UserId">a query string user id to filter main assets </param>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.MainAccountController.GetChildAssetsDDL(System.Guid)">
+            <summary>
+            Get Child Assets Dropdown List
+            </summary>
+            <param name="MainAccountId">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.Create(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.Create.CreateWithdrawalTrackingCommand)">
+            <summary>
+            Create WithdrawalTracking
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.Deposit(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.Deposit.CreateDepositCommand)">
+            <summary>
+            Create Deposit WithdrawalTracking
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.Update(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.Update.UpdateWithdrawalTrackingCommand,System.Int32)">
+            <summary>
+            Update WithdrawalTracking By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.UpdateDeposit(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.UpdateDeposit.UpdateDepositCommand,System.Int32)">
+            <summary>
+            Update WithdrawalTracking By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.Delete(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.Delete.DeleteWithdrawalTrackingCommand,System.Int32)">
+            <summary>
+            Delete WithdrawalTracking by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.GetList(Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Queries.GetList.GetWithdrawalTrackingListQuery)">
+            <summary>
+             Get WithdrawalTracking by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.WithdrawalTrackingController.GetDetail(System.Int32)">
+            <summary>
+            Get WithdrawalTracking Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.ChangeLanguageController.SetCulture(System.String)">
+            <summary>
+            fa-IR|en|ps-AF
+            </summary>
+            <param name="SetCulture"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.NewsController.Update(Crystal_Clinic_Mgm.Application.General.News.Commands.Update.UpdateNewsCommand,System.Int32)">
+            <summary>
+            Update News By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.NewsController.Delete(Crystal_Clinic_Mgm.Application.General.News.Commands.Delete.DeleteNewsCommand,System.Int32)">
+            <summary>
+            Delete News by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.NewsController.GetList(Crystal_Clinic_Mgm.Application.General.News.Queries.GetList.GetNewsListQuery)">
+            <summary>
+            Search by Title,Description and Speaker
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.AdvancePaymentController.GetList(Crystal_Clinic_Mgm.Application.HR.HR.AdvancePayments.Queries.GetList.GetAdvancePaymentListQuery)">
+            <summary>
+            Search Advance Payment List filter by employee and pay type
+            Branch
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.ContractDetailsController.GetList(Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Queries.GetList.GetContractDetailsListQuery,System.Int32)">
+            <summary>
+            Search is done by
+            ContractType
+            PositionTitle
+            JobPosition
+            Branch
+            </summary>
+            <param name="query"></param>
+            <param name="EmployeeId">The ID of Employee</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.EmployeeProfileController.UpdateProfileImage(Crystal_Clinic_Mgm.Application.HR.HR.EmployeeProfiles.Commands.UpdateProfileImage.UpdateEmployeeProfileImageCommand,System.Int32)">
+            <summary>
+            UpdateProfileImage for Employees
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+            <remarks>ID and Prpfile image is required</remarks>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.EmployeeProfileController.GetAll(Crystal_Clinic_Mgm.Application.HR.HR.EmployeeProfiles.Queries.GetEmployeeProfileList.GetEmployeeProfileListQuery)">
+            <summary>
+            Search is done by 
+             Name
+             SurName
+             PhoneNumber
+             BranchName
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.HRLooks.ContractTypeController.Update(Crystal_Clinic_Mgm.Application.HR.HRLooks.ContractTypes.Command.Update.UpdateContractTypeCommand,System.Int32)">
+            <summary>
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.HRLooks.PartnersController.Update(Crystal_Clinic_Mgm.Application.HR.HRLooks.Partner.Command.Update.UpdatePartnersCommand,System.Int32)">
+            <summary>
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.HRLooks.PositionTitleController.Update(Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Command.Update.UpdatePositionTitleCommand,System.Int32)">
+            <summary>
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.HR.PayrollTrackingController.GetList(Crystal_Clinic_Mgm.Application.HR.HR.PayrollTrackings.Queries.GetList.GetPayrollTrackingListQuery)">
+            <summary>
+            Search is done by employee and posation title
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.Create(Crystal_Clinic_Mgm.Application.Look.AssetTypes.Commands.Create.CreateAssetTypeCommand)">
+            <summary>
+            Create AssetType
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.Update(Crystal_Clinic_Mgm.Application.Look.AssetTypes.Commands.Update.UpdateAssetTypeCommand,System.Int32)">
+            <summary>
+            Update AssetType By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.Delete(Crystal_Clinic_Mgm.Application.Look.AssetTypes.Commands.Delete.DeleteAssetTypeCommand,System.Int32)">
+            <summary>
+            Delete AssetType by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.AssetTypes.Queries.GetList.GetAssetTypeListQuery)">
+            <summary>
+             Get AssetType by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.GetDetail(System.Int32)">
+            <summary>
+            Get AssetType Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.GetAssetTypeDDL">
+            <summary>
+            Get AssetType Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.Create(Crystal_Clinic_Mgm.Application.Look.Branchs.Commands.Create.CreateBranchCommand)">
+            <summary>
+            Create Branch
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.Update(Crystal_Clinic_Mgm.Application.Look.Branchs.Commands.Update.UpdateBranchCommand,System.Int32)">
+            <summary>
+            Update Branch By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.Delete(Crystal_Clinic_Mgm.Application.Look.Branchs.Commands.Delete.DeleteBranchCommand,System.Int32)">
+            <summary>
+            Delete Branch by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.GetList(Crystal_Clinic_Mgm.Application.Look.Branchs.Queries.GetDepartmentList.GetBranchListQuery)">
+            <summary>
+             Get Branch by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.GetDetail(System.Int32)">
+            <summary>
+            Get Branch Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.GetBranchDDL">
+            <summary>
+            Get Branch Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.GetChildBranchDDL">
+            <summary>
+            Get Sub/Child Branch List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Queries.GetList.GetCurrencyTypeListQuery)">
+            <summary>
+             Get CurrencyType by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetDetail(System.Int32)">
+            <summary>
+            Get CurrencyType Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetCurrencyTypeDDL">
+            <summary>
+            Get CurrencyType Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.Create(Crystal_Clinic_Mgm.Application.Look.ExpenseTypes.Commands.Create.CreateExpenseTypeCommand)">
+            <summary>
+            Create ExpenseType
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.Update(Crystal_Clinic_Mgm.Application.Look.ExpenseTypes.Commands.Update.UpdateExpenseTypeCommand,System.Int32)">
+            <summary>
+            Update ExpenseType By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.Delete(Crystal_Clinic_Mgm.Application.Look.ExpenseTypes.Commands.Delete.DeleteExpenseTypeCommand,System.Int32)">
+            <summary>
+            Delete ExpenseType by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.ExpenseTypes.Queries.GetList.GetExpenseTypeListQuery)">
+            <summary>
+             Get ExpenseType by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.GetDetail(System.Int32)">
+            <summary>
+            Get ExpenseType Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ExpenseTypeController.GetExpenseTypeDDL">
+            <summary>
+            Get ExpenseType Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Create(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Create.CreateLoanTypeCommand)">
+            <summary>
+            Create LoanType
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Update(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Update.UpdateLoanTypeCommand,System.Int32)">
+            <summary>
+            Update LoanType By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Delete(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Delete.DeleteLoanTypeCommand,System.Int32)">
+            <summary>
+            Delete LoanType by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Queries.GetList.GetLoanTypeListQuery)">
+            <summary>
+             Get LoanType by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetDetail(System.Int32)">
+            <summary>
+            Get LoanType Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetLoanTypeDDL">
+            <summary>
+            Get LoanType Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.Create(Crystal_Clinic_Mgm.Application.Look.PayTypes.Commands.Create.CreatePayTypeCommand)">
+            <summary>
+            Create PayType
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.Update(Crystal_Clinic_Mgm.Application.Look.PayTypes.Commands.Update.UpdatePayTypeCommand,System.Int32)">
+            <summary>
+            Update PayType By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.Delete(Crystal_Clinic_Mgm.Application.Look.PayTypes.Commands.Delete.DeletePayTypeCommand,System.Int32)">
+            <summary>
+            Delete PayType by ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id"> ID is require</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.PayTypes.Queries.GetList.GetPayTypeListQuery)">
+            <summary>
+             Get PayType by filtration List/Record
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.GetDetail(System.Int32)">
+            <summary>
+            Get PayType Detail by ID
+            </summary>
+            <param name="Id">ID is require </param>
+            <returns></returns>      
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.GetPayTypeDDL">
+            <summary>
+            Get PayType Dropdown List
+            </summary>
+            <returns></returns> 
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Create(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.CreateOrderCommand)">
+            <summary>
+            Create a new order.
+            </summary>
+            <param name="command">Order creation data</param>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Update(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.UpdateOrderCommand)">
+            <summary>
+            Update an existing order by ID.
+            </summary>
+            <param name="command">Order update data</param>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Delete(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.DeleteOrderCommand)">
+            <summary>
+            Delete an order by ID if not completed or in progress.
+            </summary>
+            <param name="command">Delete command with OrderId</param>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.StartDelivery(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.StartDeliveryCommand)">
+            <summary>
+            Start delivery process for a rental order.
+            </summary>
+            <param name="command">Start delivery command</param>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.ProcessReturn(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.ProcessReturnCommand)">
+            <summary>
+            Process return for a rental order.
+            </summary>
+            <param name="command">Return processing data</param>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.GetOrderDetails(System.Int32)">
+            <summary>
+             The details of an Order
+            </summary>
+            <param name="orderId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.GetOrderRecipt(System.Int32)">
+            <summary>
+             The details of an Order
+            </summary>
+            <param name="orderId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.ListOrders(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Query.ListOrdersQuery)">
+            <summary>
+            List of orders
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.Create(Crystal_Clinic_Mgm.Application.OrderMgm.OrderPayments.CreateOrderPaymentCommand)">
+            <summary>
+            Create a new payment for an order.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.Delete(System.Int32)">
+            <summary>
+            Delete an existing payment.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.GetByOrder(System.Int32)">
+            <summary>
+            Get all payments for a specific order.
+            </summary>
+            <param name="orderId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.ListAll(Crystal_Clinic_Mgm.Application.OrderMgm.OrderPayments.ListAllOrderPaymentsQuery)">
+            <summary>
+            List all payments (admin view with cursor pagination).
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Create(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.CreateServiceCommand)">
+            <summary>
+            Create a new service.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Update(System.Int32,Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.UpdateServiceCommand)">
+            <summary>
+            Update an existing service.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Delete(System.Int32)">
+            <summary>
+            Delete a service.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.GetById(System.Int32)">
+            <summary>
+            Get a service by ID.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.ListAll(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ListAllServicesQuery)">
+            <summary>
+            List all services with optional search and pagination.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ApplicationController.GetAll">
+            <summary>
+            Get All Applications
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ApplicationController.GetApplicationDDL">
+            <summary>
+            Get Card Dropdown List
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ApplicationController.GetList(Crystal_Clinic_Mgm.Application.UMS.Application.Queries.GetApplicationList.GetApplicatonListQuery)">
+            <summary>
+            Get Application List
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.SignIn(Crystal_Clinic_Mgm.Application.UMS.User.Commands.Signin.SignInCommand)">
+            <summary>
+            sign in
+            </summary>
+            <param name="signInCommand"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.SignInWith2Fa(Crystal_Clinic_Mgm.Application.UMS.User.Commands._2FA.LoginWith2FaRequest)">
+            <summary>
+            sign in
+            </summary>
+            <param name="loginWith2FaRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.SignInWithRecoveryCode(Crystal_Clinic_Mgm.Application.UMS.User.Commands._2FA.LoginWithRecoveryCodeRequest)">
+            <summary>
+            sign in
+            </summary>
+            <param name="loginWith2FaRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.SignOut">
+            <summary>
+            Sign Out
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.InvalidAccess(System.String)">
+            <summary>
+            Invalid Access
+            </summary>
+            <param name="reason"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.NotAuthenticated">
+            <summary>
+            Not Authenticated
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.RefreshToken">
+            <summary>
+            Refresh token
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.RevokeToken(Crystal_Clinic_Mgm.Domain.Entities.UMS.AuthanticationModels.RevokeTokenRequest)">
+            <summary>
+            Revoke Token
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.GenerateQrCodeData">
+            <summary>
+            Generate Qr Code Data
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.EnableTwoFactorAuthentication(System.String)">
+            <summary>
+            Enable Two Factor Authentication
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.GenerateRecoveryCodes">
+            <summary>
+            Generate Recovery Codes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.DisableTwoFactorAuthentication">
+            <summary>
+            Disable Two Factor Authentication
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.GetAll">
+            <summary>
+            Get All Active User 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.GetById(System.Guid)">
+            <summary>
+            Get User By id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.AuthController.GetToken(System.String)">
+            <summary>
+            Get Token
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.LanguageController.GetList(Crystal_Clinic_Mgm.Application.UMS.Languages.Queries.GetLanguageList.GetLanguageListQuery)">
+            <summary>
+            Get Langage List
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.LanguageController.GetLanguageDDL">
+            <summary>
+            Get Language Dropdown
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.NotificationController.ShortUpdate(Crystal_Clinic_Mgm.Application.UMS.Notification.Commands.ShortUpdate.ShortUpdateNotificationCommnad,System.Int32)">
+            <summary>
+            Short Update
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.NotificationController.GetList(Crystal_Clinic_Mgm.Application.UMS.Notification.Queries.GetNotificationList.GetNotificationListQuery)">
+            <summary>
+            Get List of Notifications
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.NotificationController.GetUnreadNotificationCount(Crystal_Clinic_Mgm.Application.UMS.Notification.Queries.GetUnreadNotifactionCount.GetUnreadNotifactionCountQuery)">
+            <summary>
+            Get Unread Notofications
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.ControllerByApplicationDropDown(System.Int32)">
+            <summary>
+            Get Permissions
+            </summary>
+            <param name="ApplicationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.FilterPermissionsDropDown(System.String,System.Int32)">
+            <summary>
+            filter Permissions
+            </summary>
+            <param name="ControllerName"></param>
+            <param name="ApplicationId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetAll(Crystal_Clinic_Mgm.Application.UMS.Permissions.Queries.GetAllPermissions.GetPermissionsListQuery)">
+            <summary>
+            get List of Permissions
+            </summary>
+            <param name="PermissionsListQuery"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetDetails(System.Int32)">
+            <summary>
+            Get Details Of a Permission
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetPermissionForEdit(System.Int32)">
+            <summary>
+            Permission for edit
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetPermationDDL(System.Int32)">
+            <summary>
+            Permission Dropdown List
+            </summary>
+            <param name="ApplicationId"></param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetApplicationDropDown">
+            <summary>
+            Get Application Dropdown List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetControllersDropDown(System.String)">
+            <summary>
+            Get Controllers dropdown
+            </summary>
+            <param name="ApplicationName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.PermissionController.GetActionOfControllerDropDown(System.String)">
+            <summary>
+            Get Application Of controller
+            </summary>
+            <param name="ControllerName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ProfileController.ChangePassword(Crystal_Clinic_Mgm.Application.UMS.User.Commands.ChangePassword.UserChangePasswordCommand)">
+            <summary>
+            Change Password
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ProfileController.Profile">
+             <summary>
+            User Profile: This is API will return all user Related Information, User Info and related Roles 
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.Create(Crystal_Clinic_Mgm.Application.UMS.Roles.Commands.Create.CreateRoleCommand)">
+            <summary>
+            Create role
+            </summary>
+            <param name="createRoleCommand"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.GetRoleForEdit(System.Int32)">
+            <summary>
+            role for Edit
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.Update(System.Int32,Crystal_Clinic_Mgm.Application.UMS.Roles.Commands.Update.UpdateRoleCommand)">
+            <summary>
+            Update role
+            </summary>
+            <param name="id"></param>
+            <param name="updateRoleCommand"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.GetDetails(System.Int32)">
+            <summary>
+            Get Details Of a role
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.GetAll(Crystal_Clinic_Mgm.Application.UMS.Roles.Queries.GetRoleList.GetRoleListQuery)">
+            <summary>
+            Get All roles
+            </summary>
+            <param name="roleListQuery"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.Delete(Crystal_Clinic_Mgm.Application.UMS.Roles.Commands.Delete.DeleteRoleCommand,System.Int32)">
+            <summary>
+            Delete a role
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.RoleController.RolesDropdown">
+            <summary>
+            Get roles Dropdown List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.Create(Crystal_Clinic_Mgm.Application.UMS.User.Commands.CreateUser.CreateUserCommand)">
+            <summary>
+            Create a User
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.Update(Crystal_Clinic_Mgm.Application.UMS.User.Commands.UpdateUser.UpdateUserCommand)">
+            <summary>
+            Update a User Details
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.GetAll(Crystal_Clinic_Mgm.Application.UMS.User.Queries.GetUserList.GetUserListQuery)">
+            <summary>
+            Get List of Users
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.GetDetails(System.Guid)">
+            <summary>
+            Get Details of User
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.GetUserBy(Crystal_Clinic_Mgm.Application.UMS.User.Queries.GetUserDetail.GetUserDetailQuery)">
+            <summary>
+            Get User by id name Email
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.UsersDropdown(System.Int32,System.Nullable{System.Boolean})">
+            <summary>
+            Users Dropdown List filtered by branch Id
+            </summary>
+            <param name="BranchId"></param>
+            <param name="ShowLoginUser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.Delete(Crystal_Clinic_Mgm.Application.UMS.User.Commands.DeleteUser.DeleteUserCommand,System.Guid)">
+            <summary>
+            Delete a user
+            </summary>
+            <param name="command"></param>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.Activation(Crystal_Clinic_Mgm.Application.UMS.User.Commands.ActiveUser.ActiveUserCommand)">
+            <summary>
+            For Active a user 
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.PasswordReset(Crystal_Clinic_Mgm.Application.UMS.User.Commands.PasswordReset.UserPasswordResetCommand)">
+            <summary>
+            User Password Reset
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserController.ChangePassword(Crystal_Clinic_Mgm.Application.UMS.User.Commands.ChangePassword.UserChangePasswordCommand)">
+            <summary>
+            User Change Password
+            </summary>
+            <param name="data"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportController.GetReports(Crystal_Clinic_Mgm.Application.UMS.UserReport.UserAccountList.Queries.UserReportQuery)">
+            <summary>
+            Get User Accounts Short Information 
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportController.GetUserRolePermissionReports(Crystal_Clinic_Mgm.Application.UMS.UserReport.UserRolePermission.Queries.UserRolePermissionQuery)">
+            <summary>
+            Get User with Role Information Reports(Search by UserID,Branch,Active User and Manager)
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportController.GetRoleInfoReports(Crystal_Clinic_Mgm.Application.UMS.UserReport.RolesInfo.Queries.GetRoleInfoListQuery)">
+            <summary>
+            GetRole Information Reports-Search by Role Name and Application Type(ID)
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportController.GetUserProfileReports(Crystal_Clinic_Mgm.Application.UMS.User.Queries.GetUserDetail.GetUserDetailQuery)">
+            <summary>
+            Get User Profile with Allow Roles  Report
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportsAndDashboardController.EachAndTotalUserInBranchDashBoard">
+            <summary>
+            Show Dashboard by total or any user in Branch
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportsAndDashboardController.ByUserInRoleDashBoardDashboard">
+            <summary>
+            Show Dashboard by Users Roles   
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.UserReportsAndDashboardController.UserLogInByBranchPieChart(Crystal_Clinic_Mgm.Application.UMS.DashBoards.UserLogInByDepartmentPieChart.UserLogInByBranchPieChartQuery)">
+            <summary>
+            Shows logged in users count by branchs   
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

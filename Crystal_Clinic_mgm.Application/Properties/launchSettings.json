@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "MEW_ERP.Application": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:9430;http://localhost:9431"
+    }
+  }
+}

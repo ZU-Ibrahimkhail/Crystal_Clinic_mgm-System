@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BlockName" xml:space="preserve">
+    <value> Block Name  Should not be Empty !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CanNotForwardToSameUser" xml:space="preserve">
+    <value>  Can't Forward Document to The Same User !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCDuplicateDepartment" xml:space="preserve">
+    <value>  Department is Selected as Duplicated !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCDuplicateOrganization" xml:space="preserve">
+    <value>  Organization is Selected as Duplicated !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCExistDepartment" xml:space="preserve">
+    <value>  Department Already Exists in CC Record !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCExistOrganization" xml:space="preserve">
+    <value>  Organization Already Exists in CC Record !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCFromDepartment" xml:space="preserve">
+    <value>  is Already Selected as From Department !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCFromToDepartment" xml:space="preserve">
+    <value>  is Already Selected as From or To Department !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCFromToOrganization" xml:space="preserve">
+    <value>  is Already Selected as From or To Organization !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCToDepartment" xml:space="preserve">
+    <value>  is Already Selected as To Department !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CCTracking" xml:space="preserve">
+    <value>  This document Already Sent To The  !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CodeRequiredField" xml:space="preserve">
+    <value> Colde Should not be Empty !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="CodeUniqueField" xml:space="preserve">
+    <value>  Code Should be Unique  !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="DariNameRequiredField" xml:space="preserve">
+    <value>Dari Name is require!</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="DariNameUniqueField" xml:space="preserve">
+    <value>Dari name should be Unique!</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="DocumentUniqueNumberMessage" xml:space="preserve">
+    <value>  The Document Number is Same for Current Year Please Enter Different Number !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="DownloadReportPath" xml:space="preserve">
+    <value>  The Report is Downloaded to the Following Path !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="Due" xml:space="preserve">
+    <value>Due</value>
+    <comment>Due</comment>
+  </data>
+  <data name="DuePaid" xml:space="preserve">
+    <value>Due Paid</value>
+    <comment>DuePaid</comment>
+  </data>
+  <data name="DuplicateCard" xml:space="preserve">
+    <value>  Can't Assign the Selected Card for Another Visitor !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="DuplicateVisitorTracking" xml:space="preserve">
+    <value>  The Selected  Visitor Already Exists in the Ministry !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="EnglishNameRequiredField" xml:space="preserve">
+    <value>English Name is require </value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="EnglishNameUniqueField" xml:space="preserve">
+    <value>English Name should be Unique!</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="GreaterCount" xml:space="preserve">
+    <value>  Count is Greater Than Stock Count !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="IsDuplicate" xml:space="preserve">
+    <value>Is Duplicate</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="IsGreaterThen" xml:space="preserve">
+    <value>Is Greater Then</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="MustBeGreaterThen" xml:space="preserve">
+    <value>Must Be Greater Then or Equal To</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="NoAttachment" xml:space="preserve">
+    <value>  Attachment is Not Inserted !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="NotCCDepartment" xml:space="preserve">
+    <value>  Can't Be CC !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="NotValidId" xml:space="preserve">
+    <value>  is Not a Valid Id !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="NotValidNumber" xml:space="preserve">
+    <value>  is not a Valid Number !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="NotValidPhoneNumber" xml:space="preserve">
+    <value>  is not a Valid Phone Number the Correct Format is +93 7****** !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="PashtoNameRequiredField" xml:space="preserve">
+    <value>Pashto Name is require!</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="PashtoNameUniqueField" xml:space="preserve">
+    <value>Pashto Name Should be Unique!</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="RequiredField" xml:space="preserve">
+    <value>  Should not be Empty !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="RequiredNumberField" xml:space="preserve">
+    <value>  Should be Number  !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="ReturnDateCondition" xml:space="preserve">
+    <value>  Return Date must be Greater than Currant Date !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="ServiceDeadLineByHour" xml:space="preserve">
+    <value>Service DeadLine ByHour Should Not Be Empty !</value>
+    <comment>ITSMSValidation Message</comment>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TrackingUserNotUpdate" xml:space="preserve">
+    <value>  You can Not Update User Because this Document Forward More Than 2 Steps !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="UniqueField" xml:space="preserve">
+    <value>  Should be Unique  !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="ValidParentRecord" xml:space="preserve">
+    <value>  Not Valid Parent Record !</value>
+    <comment>Validation Message</comment>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Year</value>
+  </data>
+</root>

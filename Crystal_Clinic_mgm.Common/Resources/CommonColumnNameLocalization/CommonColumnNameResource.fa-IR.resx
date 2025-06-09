@@ -1,0 +1,1012 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Abbrevation" xml:space="preserve">
+    <value>مخفف</value>
+    <comment>180</comment>
+  </data>
+  <data name="ActionRequestId" xml:space="preserve">
+    <value>آی دی عمل درخواستی</value>
+    <comment>110</comment>
+  </data>
+  <data name="ActivityImplementationSource" xml:space="preserve">
+    <value>منبع تطبیق فعالیت</value>
+    <comment>118</comment>
+  </data>
+  <data name="ActivityType" xml:space="preserve">
+    <value>نوعیت فعالیت</value>
+    <comment>120</comment>
+  </data>
+  <data name="ActivityTypeId" xml:space="preserve">
+    <value>آی دی نوعیت فعالیت</value>
+    <comment>119</comment>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>آدرس</value>
+    <comment>8</comment>
+  </data>
+  <data name="AgriculturalProductionPerHectareInTons" xml:space="preserve">
+    <value>تولیدات کشاورزی در هکتار به تن</value>
+    <comment>23</comment>
+  </data>
+  <data name="AgriculturalProductionPricePerTonInUSD" xml:space="preserve">
+    <value>قیمت هر تن محصولات کشاورزی به دلار</value>
+    <comment>141</comment>
+  </data>
+  <data name="AgriculturalProductsCostPerHectareInUSD" xml:space="preserve">
+    <value>قیمت محصولات زراعتی در هر هکتار به دالر</value>
+    <comment>150</comment>
+  </data>
+  <data name="AgricultureLandsUnderThreatAreaInKm" xml:space="preserve">
+    <value>زمین زراعتی در معرض خطر به کیلومتر</value>
+    <comment>122</comment>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>مبلغ</value>
+  </data>
+  <data name="ApplicantId" xml:space="preserve">
+    <value>آی دی درخواست کننده</value>
+    <comment>113</comment>
+  </data>
+  <data name="ApplicantRequestId" xml:space="preserve">
+    <value>آی دی درخواست درخواست کننده</value>
+    <comment>114</comment>
+  </data>
+  <data name="ApplicationId" xml:space="preserve">
+    <value>آی دی فورم درخواستی</value>
+    <comment>111</comment>
+  </data>
+  <data name="ArchiveId" xml:space="preserve">
+    <value>آی دی آرشیف</value>
+    <comment>43</comment>
+  </data>
+  <data name="ArchiveNumber" xml:space="preserve">
+    <value>نمبر آرشیف</value>
+    <comment>1</comment>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>ضمیمه</value>
+    <comment>169</comment>
+  </data>
+  <data name="AttachmentDetail" xml:space="preserve">
+    <value>توضیحات ضمیمه</value>
+    <comment>108</comment>
+  </data>
+  <data name="AttendanceId" xml:space="preserve">
+    <value>حاضری</value>
+    <comment>203</comment>
+  </data>
+  <data name="AverageCurrentFlow" xml:space="preserve">
+    <value>اوسط جریان فعلی</value>
+    <comment>42</comment>
+  </data>
+  <data name="AverageCurrentWaterFlowInCubicMeters" xml:space="preserve">
+    <value />
+    <comment>38</comment>
+  </data>
+  <data name="BalanceAmount" xml:space="preserve">
+    <value>مبلغ حساب</value>
+  </data>
+  <data name="Bast" xml:space="preserve">
+    <value>بست</value>
+    <comment>15</comment>
+  </data>
+  <data name="BlockId" xml:space="preserve">
+    <value>آی دی بلاک </value>
+    <comment>47</comment>
+  </data>
+  <data name="Box" xml:space="preserve">
+    <value>دوسیه</value>
+    <comment>157</comment>
+  </data>
+  <data name="CanalLengthInKm" xml:space="preserve">
+    <value>طول کانال به کیلومتر</value>
+    <comment>136</comment>
+  </data>
+  <data name="CanalSource" xml:space="preserve">
+    <value>منبع کانال</value>
+    <comment>138</comment>
+  </data>
+  <data name="CardExchangeWith" xml:space="preserve">
+    <value>تعویض کارت با </value>
+    <comment>126</comment>
+  </data>
+  <data name="CardGenerationTypeId" xml:space="preserve">
+    <value>نوعیت کارت</value>
+    <comment>193</comment>
+  </data>
+  <data name="CardId" xml:space="preserve">
+    <value>آی دی نمبر کارت</value>
+    <comment>125</comment>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>نمبر کارت</value>
+    <comment>128</comment>
+  </data>
+  <data name="CardTypeId" xml:space="preserve">
+    <value>آی دی نمبر نوعیت کارت</value>
+    <comment>127</comment>
+  </data>
+  <data name="CatchmentAreaInKm" xml:space="preserve">
+    <value>حوضه آبریز در کیلومتر</value>
+    <comment>40</comment>
+  </data>
+  <data name="CNIC" xml:space="preserve">
+    <value>نمبر تذکره</value>
+    <comment>205</comment>
+  </data>
+  <data name="Code" xml:space="preserve">
+    <value>کود</value>
+    <comment>175</comment>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>نظریات</value>
+    <comment>174</comment>
+  </data>
+  <data name="Company" xml:space="preserve">
+    <value>کمپنی</value>
+    <comment>173</comment>
+  </data>
+  <data name="ConstructionType" xml:space="preserve">
+    <value>نوعیت ساخت</value>
+    <comment>98</comment>
+  </data>
+  <data name="ConstructionTypeId" xml:space="preserve">
+    <value>آی دی نوعیت ساخت</value>
+    <comment>99</comment>
+  </data>
+  <data name="ContactNumber1" xml:space="preserve">
+    <value>نمبر تماس اول</value>
+    <comment>34</comment>
+  </data>
+  <data name="ContactNumber2" xml:space="preserve">
+    <value>نمبر تماس دوم</value>
+    <comment>33</comment>
+  </data>
+  <data name="ContractTypeId" xml:space="preserve">
+    <value>نوعیت قرارداد</value>
+    <comment>194</comment>
+  </data>
+  <data name="ControllerName" xml:space="preserve">
+    <value>نام کنترولر</value>
+    <comment>143</comment>
+  </data>
+  <data name="ConversionDate" xml:space="preserve">
+    <value>تاریخ تبدیل</value>
+    <comment>74</comment>
+  </data>
+  <data name="ConversionRate" xml:space="preserve">
+    <value>نرخ تبدیل</value>
+    <comment>73</comment>
+  </data>
+  <data name="CopyToDepartment" xml:space="preserve">
+    <value>کاپی به ریاست ها</value>
+    <comment>217</comment>
+  </data>
+  <data name="CostInAFN" xml:space="preserve">
+    <value>هزینه به افغانی</value>
+    <comment>178</comment>
+  </data>
+  <data name="CostInUSD" xml:space="preserve">
+    <value>هزینه به دالر</value>
+    <comment>177</comment>
+  </data>
+  <data name="Count" xml:space="preserve">
+    <value>تعداد</value>
+    <comment>167</comment>
+  </data>
+  <data name="CroppingSeasons" xml:space="preserve">
+    <value>فصل های زراعتی</value>
+    <comment>140</comment>
+  </data>
+  <data name="CupBoardId" xml:space="preserve">
+    <value>آی دی نمبر الماری</value>
+    <comment>36</comment>
+  </data>
+  <data name="CupBoardNumber" xml:space="preserve">
+    <value>نمبر الماری</value>
+    <comment>37</comment>
+  </data>
+  <data name="CurrencyTypeId" xml:space="preserve">
+    <value>آی دی نوعیت اسعار</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>رمز عبور فعلی</value>
+    <comment>6</comment>
+  </data>
+  <data name="DamEffectiveness" xml:space="preserve">
+    <value>موثریت بند</value>
+    <comment>48</comment>
+  </data>
+  <data name="DamHeightInMeter" xml:space="preserve">
+    <value>ارتفاع بند به متر</value>
+    <comment>49</comment>
+  </data>
+  <data name="DariName" xml:space="preserve">
+    <value>نام دری</value>
+    <comment>156</comment>
+  </data>
+  <data name="DariUniversityName" xml:space="preserve">
+    <value>نام پوهنتون به دری</value>
+    <comment>201</comment>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>دیپارتمنت</value>
+    <comment>159</comment>
+  </data>
+  <data name="DepartmentID" xml:space="preserve">
+    <value>آی دی نمبر دیپارتمنت</value>
+    <comment>88</comment>
+  </data>
+  <data name="DepartmentId1" xml:space="preserve">
+    <value>آی دی نمبر دیپارتمنت</value>
+    <comment>89</comment>
+  </data>
+  <data name="DepartmentId2" xml:space="preserve">
+    <value>دیپارتمنت آی دی</value>
+    <comment>90</comment>
+  </data>
+  <data name="DepartmentLevelId" xml:space="preserve">
+    <value>آی دی نمبر سطع دریپارتمنت</value>
+    <comment>91</comment>
+  </data>
+  <data name="Departments" xml:space="preserve">
+    <value>دیپارتمنت ها</value>
+    <comment>161</comment>
+  </data>
+  <data name="DepositAmmount" xml:space="preserve">
+    <value>مبلغ سپردن</value>
+  </data>
+  <data name="DepositDate" xml:space="preserve">
+    <value>تاریخ سپردن</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>توضیحات</value>
+    <comment>29</comment>
+  </data>
+  <data name="Design" xml:space="preserve">
+    <value>دیزاین</value>
+    <comment>162</comment>
+  </data>
+  <data name="DesignId" xml:space="preserve">
+    <value>آی دی دیزاین</value>
+    <comment>92</comment>
+  </data>
+  <data name="DestroyedAreaLengthInMeter" xml:space="preserve">
+    <value>طول منطقه تخریب شده بر حسب متر</value>
+    <comment>155</comment>
+  </data>
+  <data name="Detail" xml:space="preserve">
+    <value>جزئیات</value>
+    <comment>28</comment>
+  </data>
+  <data name="District" xml:space="preserve">
+    <value>ولسوالی</value>
+    <comment>189</comment>
+  </data>
+  <data name="DistrictId" xml:space="preserve">
+    <value>آی دی ولسوالی</value>
+    <comment>154</comment>
+  </data>
+  <data name="DocumentBookRecivedNumber" xml:space="preserve">
+    <value>نمبر رسیدات</value>
+    <comment>30</comment>
+  </data>
+  <data name="DocumentDate" xml:space="preserve">
+    <value>تاریخ سند</value>
+    <comment>105</comment>
+  </data>
+  <data name="DocumentLevelId" xml:space="preserve">
+    <value>آی دی سطح سند</value>
+    <comment>100</comment>
+  </data>
+  <data name="DocumentNumber" xml:space="preserve">
+    <value>آی دی نمبر سند</value>
+    <comment>103</comment>
+  </data>
+  <data name="DocumentRecivedNumber" xml:space="preserve">
+    <value>نمبر وارده</value>
+    <comment>153</comment>
+  </data>
+  <data name="DocumentResponseTitleForInquire" xml:space="preserve">
+    <value>جواب</value>
+    <comment>213</comment>
+  </data>
+  <data name="DocumentResponseTitleForOffer" xml:space="preserve">
+    <value>احکام</value>
+    <comment>214</comment>
+  </data>
+  <data name="DocumentSubject" xml:space="preserve">
+    <value>موضوع سند</value>
+    <comment>104</comment>
+  </data>
+  <data name="DocumentTypeId" xml:space="preserve">
+    <value>آی دی نمبر نوعیت سند</value>
+    <comment>101</comment>
+  </data>
+  <data name="EducationLevelId" xml:space="preserve">
+    <value>درجه تحصیل</value>
+    <comment>198</comment>
+  </data>
+  <data name="EducationTitleId" xml:space="preserve">
+    <value>رشته تحصیلی</value>
+    <comment>199</comment>
+  </data>
+  <data name="ElectricityProductionInMegawatts" xml:space="preserve">
+    <value>تولید برق به مگاوات</value>
+    <comment>46</comment>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>ایمیل آدرس</value>
+    <comment>14</comment>
+  </data>
+  <data name="EmployeeId" xml:space="preserve">
+    <value>کارمند</value>
+    <comment>190</comment>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>تاریخ خاتمه</value>
+    <comment>53</comment>
+  </data>
+  <data name="EndDate1" xml:space="preserve">
+    <value>تاریخ پایانی</value>
+    <comment>191</comment>
+  </data>
+  <data name="EnglishName" xml:space="preserve">
+    <value>نام انگلیسی</value>
+    <comment>5</comment>
+  </data>
+  <data name="EnglishUniversityName" xml:space="preserve">
+    <value>نام پوهنتون به انګلیسی</value>
+    <comment>200</comment>
+  </data>
+  <data name="EstimatedEndDate" xml:space="preserve">
+    <value>تاریخ ختم تخمینی</value>
+    <comment>52</comment>
+  </data>
+  <data name="EstimatedStartDate" xml:space="preserve">
+    <value>تاریخ آغاز تخمینی</value>
+    <comment>71</comment>
+  </data>
+  <data name="ExecutiveManagement" xml:space="preserve">
+    <value>مدیریت اجرائيه</value>
+  </data>
+  <data name="ExternalDocumentId" xml:space="preserve">
+    <value>آی دی نمبر سند خارجی</value>
+    <comment>83</comment>
+  </data>
+  <data name="FatherDariName" xml:space="preserve">
+    <value>نام پدر به دری</value>
+    <comment>70</comment>
+  </data>
+  <data name="FatherEnglishName" xml:space="preserve">
+    <value>نام پدر به انگلیسی</value>
+    <comment>69</comment>
+  </data>
+  <data name="FlowType" xml:space="preserve">
+    <value>نوع جریان</value>
+    <comment>79</comment>
+  </data>
+  <data name="FortificationAboveSea" xml:space="preserve">
+    <value>استحکامات بالای دریا</value>
+    <comment>44</comment>
+  </data>
+  <data name="FortificationLengthInMeter" xml:space="preserve">
+    <value>طول استحکامات بر حسب متر</value>
+    <comment>121</comment>
+  </data>
+  <data name="FromDepartmentId" xml:space="preserve">
+    <value>آی دی نمبر دیپارتمنت ارسالی</value>
+    <comment>97</comment>
+  </data>
+  <data name="FromDocumentId" xml:space="preserve">
+    <value>آی دی نمبر سند ارسالی</value>
+    <comment>95</comment>
+  </data>
+  <data name="FromOrgnizationId" xml:space="preserve">
+    <value>آی دی نمبر سازمان ارسالی</value>
+    <comment>96</comment>
+  </data>
+  <data name="FromToDepartmentId" xml:space="preserve">
+    <value>آی دی نمبر دیپارتمنت ارسالی و دریافتی</value>
+    <comment>160</comment>
+  </data>
+  <data name="FromToOrgnizationId" xml:space="preserve">
+    <value>آی دی نمبر سازمان ارسالی و دریافتی</value>
+    <comment>4</comment>
+  </data>
+  <data name="GeologicalAreaSoilType" xml:space="preserve">
+    <value>نوع خاک منطقه جیولوژیکی</value>
+    <comment>80</comment>
+  </data>
+  <data name="GradeId" xml:space="preserve">
+    <value>بست</value>
+    <comment>196</comment>
+  </data>
+  <data name="GradeStepId" xml:space="preserve">
+    <value>قدم بست</value>
+    <comment>197</comment>
+  </data>
+  <data name="Hardwares" xml:space="preserve">
+    <value>سخت افزار</value>
+    <comment>187</comment>
+  </data>
+  <data name="HeightAboveSeaLevelInMeter" xml:space="preserve">
+    <value>ارتفاع بالاتر از سطح دریا بر حسب متر</value>
+    <comment>45</comment>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>آی دی</value>
+    <comment>9</comment>
+  </data>
+  <data name="ID1" xml:space="preserve">
+    <value>آی دی</value>
+    <comment>10</comment>
+  </data>
+  <data name="InitialSurvey" xml:space="preserve">
+    <value>سروی اولیه</value>
+    <comment>2</comment>
+  </data>
+  <data name="InitialSurveyId" xml:space="preserve">
+    <value>آی دی سروی اولیه</value>
+    <comment>31</comment>
+  </data>
+  <data name="InOutDocumentType" xml:space="preserve">
+    <value>نوعیت صادره وارده سند</value>
+    <comment>102</comment>
+  </data>
+  <data name="InternalDocumentId" xml:space="preserve">
+    <value>آی دی نمبر سند داخلی</value>
+    <comment>85</comment>
+  </data>
+  <data name="InvestmentCostPerHectareInAFN" xml:space="preserve">
+    <value>هزینه سرمایه گذاری در هر هکتار به افغانی</value>
+    <comment>22</comment>
+  </data>
+  <data name="IrrigationAreaAfterProjectInHec" xml:space="preserve">
+    <value>سطح آبیاری بعد از پروژه در هر هکتار</value>
+    <comment>64</comment>
+  </data>
+  <data name="IrrigationAreaBeforeProjectInHec" xml:space="preserve">
+    <value>سطح آبیاری قبل از پروژه در هر هکتار</value>
+    <comment>63</comment>
+  </data>
+  <data name="IsActionCategoryMissing" xml:space="preserve">
+    <value>آیا کتگوری عمل موجودیت ندارد</value>
+    <comment>7</comment>
+  </data>
+  <data name="IsCCDepartment" xml:space="preserve">
+    <value>آیا دیپارتمنت سی سی میباشد</value>
+    <comment>13</comment>
+  </data>
+  <data name="IsUniqueCardNumber" xml:space="preserve">
+    <value>آیا کارت نمبر منحصر به فرد میباشد</value>
+    <comment>11</comment>
+  </data>
+  <data name="IsvalidPhoneNumber" xml:space="preserve">
+    <value>آیا نمبر موبایل درست وارد شده است</value>
+    <comment>12</comment>
+  </data>
+  <data name="JoldNo" xml:space="preserve">
+    <value>جلد</value>
+    <comment>206</comment>
+  </data>
+  <data name="KarezCanalLengthInKm" xml:space="preserve">
+    <value>طول کانال کاریز به کیلومتر</value>
+    <comment>132</comment>
+  </data>
+  <data name="KarezInnerLengthInKm" xml:space="preserve">
+    <value>طول داخلی کاریز به کلومتر</value>
+    <comment>133</comment>
+  </data>
+  <data name="LandPricePerHectareInUSD" xml:space="preserve">
+    <value>قیمت زمین  هر هکتار به دالر</value>
+    <comment>149</comment>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>لسان</value>
+    <comment>163</comment>
+  </data>
+  <data name="Latitude" xml:space="preserve">
+    <value>عرض جغرافیایی</value>
+    <comment>171</comment>
+  </data>
+  <data name="Latitude1" xml:space="preserve">
+    <value>عرض البلد</value>
+    <comment>211</comment>
+  </data>
+  <data name="Longitude" xml:space="preserve">
+    <value>طول </value>
+    <comment>170</comment>
+  </data>
+  <data name="Longitude1" xml:space="preserve">
+    <value>طول البلد</value>
+    <comment>212</comment>
+  </data>
+  <data name="MainRegionId" xml:space="preserve">
+    <value>حوزه اصلی</value>
+    <comment>209</comment>
+  </data>
+  <data name="MaximumCanalFlow" xml:space="preserve">
+    <value>حد اعظمی جریان کانال</value>
+    <comment>135</comment>
+  </data>
+  <data name="MaximumSeaFlow" xml:space="preserve">
+    <value>حداعظمی جریان دریا</value>
+    <comment>106</comment>
+  </data>
+  <data name="MinimumCanalFlow" xml:space="preserve">
+    <value>حد اقل جریان کانال</value>
+    <comment>137</comment>
+  </data>
+  <data name="MinimumSeaFlow" xml:space="preserve">
+    <value>حداقل جریان دریا</value>
+    <comment>176</comment>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>مودل</value>
+    <comment>183</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>نام</value>
+    <comment>185</comment>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>رمز عبور جدید</value>
+    <comment>186</comment>
+  </data>
+  <data name="NotificationId" xml:space="preserve">
+    <value>آی دی اطلاعیه</value>
+    <comment>84</comment>
+  </data>
+  <data name="NumberOfDisplacedPeople" xml:space="preserve">
+    <value>تعداد افراد آواره</value>
+    <comment>50</comment>
+  </data>
+  <data name="NumberOfGates" xml:space="preserve">
+    <value>تعداد دروازه ها</value>
+    <comment>87</comment>
+  </data>
+  <data name="NumberOfObservedWell" xml:space="preserve">
+    <value>تعداد چاه های بررسی شده</value>
+    <comment>81</comment>
+  </data>
+  <data name="NumberOfPages" xml:space="preserve">
+    <value>تعداد صفحه</value>
+    <comment>51</comment>
+  </data>
+  <data name="NumberOfResidentialHouses" xml:space="preserve">
+    <value>تعداد خانه های مسکونی</value>
+    <comment>35</comment>
+  </data>
+  <data name="OrganizationID" xml:space="preserve">
+    <value>آی دی نمبر سازمان</value>
+    <comment>32</comment>
+  </data>
+  <data name="Organizations" xml:space="preserve">
+    <value>سازمان ها</value>
+    <comment>3</comment>
+  </data>
+  <data name="OwnerUserId" xml:space="preserve">
+    <value>آی دی کابر مالک</value>
+  </data>
+  <data name="PageNo" xml:space="preserve">
+    <value>صفحه</value>
+    <comment>207</comment>
+  </data>
+  <data name="PashtoName" xml:space="preserve">
+    <value>نام به پشتو</value>
+    <comment>19</comment>
+  </data>
+  <data name="PashtoUniversityName" xml:space="preserve">
+    <value>نام پوهنتون به پشتو</value>
+    <comment>202</comment>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>رمز عبور</value>
+    <comment>17</comment>
+  </data>
+  <data name="PeopleProjectBenefitsNumber" xml:space="preserve">
+    <value>تعداد افرادیکه از پروژه بهرمند میشوند</value>
+    <comment>181</comment>
+  </data>
+  <data name="PerHectareCostInAFN" xml:space="preserve">
+    <value>هزینه هر هکتار به افغانی</value>
+    <comment>151</comment>
+  </data>
+  <data name="PermanentJobCreation" xml:space="preserve">
+    <value>ایجاد شغل دائمی</value>
+    <comment>86</comment>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>صلاحیت ها </value>
+    <comment>168</comment>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>نمبر تماس</value>
+    <comment>78</comment>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>بست</value>
+    <comment>16</comment>
+  </data>
+  <data name="PositionTitleId" xml:space="preserve">
+    <value>عنوان بست</value>
+    <comment>195</comment>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>اولویت</value>
+    <comment>182</comment>
+  </data>
+  <data name="PriorityId" xml:space="preserve">
+    <value>آی دی اولویت </value>
+    <comment>144</comment>
+  </data>
+  <data name="ProcessStatus" xml:space="preserve">
+    <value>حالت پروسه</value>
+    <comment>65</comment>
+  </data>
+  <data name="ProcessStatusId" xml:space="preserve">
+    <value>آی دی نمبر حالت پروسه</value>
+    <comment>66</comment>
+  </data>
+  <data name="ProcessStatusId1" xml:space="preserve">
+    <value>ای دی حالت پروسه</value>
+    <comment>67</comment>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>پروژه</value>
+    <comment>18</comment>
+  </data>
+  <data name="ProjectEstimatedDurationInDays" xml:space="preserve">
+    <value>مدت زمان تخمینی پروژه در چند روز</value>
+    <comment>56</comment>
+  </data>
+  <data name="ProjectEstimatedTotalDurationInDays" xml:space="preserve">
+    <value>مدت زمان کلی پروژه به اساس روز</value>
+    <comment>55</comment>
+  </data>
+  <data name="ProjectId" xml:space="preserve">
+    <value>آی دی پروژه</value>
+    <comment>57</comment>
+  </data>
+  <data name="ProjectId1" xml:space="preserve">
+    <value />
+    <comment>58</comment>
+  </data>
+  <data name="ProjectObjective" xml:space="preserve">
+    <value>اهداف پروژه</value>
+    <comment>62</comment>
+  </data>
+  <data name="ProjectType" xml:space="preserve">
+    <value>نوعیت پروژه</value>
+    <comment>60</comment>
+  </data>
+  <data name="ProjectTypeId" xml:space="preserve">
+    <value>آی دی نوعیت پروژه</value>
+    <comment>59</comment>
+  </data>
+  <data name="ProjectWinterBreakInDays" xml:space="preserve">
+    <value>تعطیلات زمستانی پروژه به روز</value>
+    <comment>61</comment>
+  </data>
+  <data name="ProtectedAreaInHectare" xml:space="preserve">
+    <value>منطقه حفاظت شده به هکتار</value>
+    <comment>24</comment>
+  </data>
+  <data name="ReceptionTrackingId" xml:space="preserve">
+    <value>آی دی نمبر ردیابی پذیرش</value>
+    <comment>54</comment>
+  </data>
+  <data name="RegNo" xml:space="preserve">
+    <value>نمبر راجستر</value>
+    <comment>208</comment>
+  </data>
+  <data name="RelatedActionRequestId" xml:space="preserve">
+    <value>آی دی نمبر عمل درخواستی مربوطه</value>
+    <comment>148</comment>
+  </data>
+  <data name="Remarks" xml:space="preserve">
+    <value>ملاحظات</value>
+    <comment>26</comment>
+  </data>
+  <data name="RequestCategoryId" xml:space="preserve">
+    <value>آی دی نمبر کتگوری درخواستی</value>
+    <comment>112</comment>
+  </data>
+  <data name="ReturnDate" xml:space="preserve">
+    <value>تاریخ بازگشت</value>
+    <comment>152</comment>
+  </data>
+  <data name="SeaFloodFlowAmount" xml:space="preserve">
+    <value>مقدار جریان سیلاب دریا</value>
+    <comment>107</comment>
+  </data>
+  <data name="SeaWidthInDestroyedAreaInMeter" xml:space="preserve">
+    <value>عرض دریا در منطقه تخریب شده به متر</value>
+    <comment>25</comment>
+  </data>
+  <data name="SendMaktobToDepartment" xml:space="preserve">
+    <value>به  ریاست محترم</value>
+    <comment>215</comment>
+  </data>
+  <data name="ShelfId" xml:space="preserve">
+    <value>آی دی نمبر تاقچه</value>
+    <comment>109</comment>
+  </data>
+  <data name="Softwares" xml:space="preserve">
+    <value>سافت ویر</value>
+    <comment>164</comment>
+  </data>
+  <data name="SpringCanalLengthInKm" xml:space="preserve">
+    <value>طول کانال بهاری به کیلومتر</value>
+    <comment>68</comment>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>تاریخ آغاز</value>
+    <comment>72</comment>
+  </data>
+  <data name="StartDate1" xml:space="preserve">
+    <value>تاریخ آغاز</value>
+    <comment>192</comment>
+  </data>
+  <data name="StorageCapacity" xml:space="preserve">
+    <value>ظرفیت ذخیروی</value>
+    <comment>93</comment>
+  </data>
+  <data name="StorageCapacityInMillionCuvicMeters" xml:space="preserve">
+    <value>ظرفیت ذخیره سازی در میلیون متر مکعب</value>
+    <comment>94</comment>
+  </data>
+  <data name="SubActivityId" xml:space="preserve">
+    <value>آی دی فعالیت فرعی</value>
+    <comment>116</comment>
+  </data>
+  <data name="SubActivityRecievedDate" xml:space="preserve">
+    <value>تاریخ دریافت فعالیت فرعی</value>
+    <comment>117</comment>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>موضوع</value>
+    <comment>184</comment>
+  </data>
+  <data name="SubRegion" xml:space="preserve">
+    <value>منطقه فرعی</value>
+    <comment>172</comment>
+  </data>
+  <data name="SubRegionId" xml:space="preserve">
+    <value>آی دی منطقه فرعی</value>
+    <comment>115</comment>
+  </data>
+  <data name="SubRegionId1" xml:space="preserve">
+    <value>حوزه فرعی</value>
+    <comment>210</comment>
+  </data>
+  <data name="TazkiraTypeId" xml:space="preserve">
+    <value>نوع تذکره</value>
+    <comment>204</comment>
+  </data>
+  <data name="TechnicalSurveyId" xml:space="preserve">
+    <value>آی دی سروی تخنیکی</value>
+    <comment>75</comment>
+  </data>
+  <data name="TechnicalSurvry" xml:space="preserve">
+    <value>سروی تخنیکی</value>
+    <comment>27</comment>
+  </data>
+  <data name="TemporaryJobCreation" xml:space="preserve">
+    <value>ایجاد شغل موقت</value>
+    <comment>179</comment>
+  </data>
+  <data name="ToDepartmentId" xml:space="preserve">
+    <value>به دیپارتمنت آی دی</value>
+    <comment>76</comment>
+  </data>
+  <data name="ToDepartmentId1" xml:space="preserve">
+    <value>آی دی نمبر دیپارتمنت موخذ</value>
+    <comment>77</comment>
+  </data>
+  <data name="ToDocumentLink" xml:space="preserve">
+    <value>ارتباط با سند</value>
+    <comment>165</comment>
+  </data>
+  <data name="TotalNumberOfFamiliesUnderThreat" xml:space="preserve">
+    <value>تعداد مجموعی  خانواده های تحت تهدید</value>
+    <comment>124</comment>
+  </data>
+  <data name="TotalValueOfConstructionsUnderThreatInAFN" xml:space="preserve">
+    <value>ارزش کل ساخت و سازهای در معرض خطر افغانستان</value>
+    <comment>123</comment>
+  </data>
+  <data name="ToUserId" xml:space="preserve">
+    <value>به آی دی کاربر</value>
+  </data>
+  <data name="TrackingId" xml:space="preserve">
+    <value>آی دی نمبر ردیابی</value>
+    <comment>82</comment>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>نوعیت</value>
+    <comment>158</comment>
+  </data>
+  <data name="TypesOfCultivatedPlant" xml:space="preserve">
+    <value>انواع گیاه کشت شده</value>
+    <comment>139</comment>
+  </data>
+  <data name="UserId" xml:space="preserve">
+    <value>آی دی نمبر کاربر</value>
+    <comment>129</comment>
+  </data>
+  <data name="UserId1" xml:space="preserve">
+    <value>آی دی کاربر</value>
+    <comment>131</comment>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>نام کاربر</value>
+    <comment>130</comment>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>ورژن</value>
+    <comment>188</comment>
+  </data>
+  <data name="VillageName" xml:space="preserve">
+    <value>نام قریه</value>
+    <comment>142</comment>
+  </data>
+  <data name="VisitingDate" xml:space="preserve">
+    <value>تاریخ مراجعه</value>
+    <comment>147</comment>
+  </data>
+  <data name="VisitingTypeId" xml:space="preserve">
+    <value>آی دی نمبر نوعیت مراجعه</value>
+    <comment>146</comment>
+  </data>
+  <data name="VisitorId" xml:space="preserve">
+    <value>آی دی نمبر مراجعه کننده</value>
+    <comment>145</comment>
+  </data>
+  <data name="WaterCatchMentArea" xml:space="preserve">
+    <value>حوضه آبریز</value>
+    <comment>39</comment>
+  </data>
+  <data name="WaterFlowAmountInKarez" xml:space="preserve">
+    <value>مقدار جریان آب در کاریز</value>
+    <comment>21</comment>
+  </data>
+  <data name="WaterFlowAmountInSpring" xml:space="preserve">
+    <value>مقدار جریان آب در بهار</value>
+    <comment>20</comment>
+  </data>
+  <data name="WaterFlowType" xml:space="preserve">
+    <value>نوعیت جریان آب</value>
+    <comment>41</comment>
+  </data>
+  <data name="WithRespect" xml:space="preserve">
+    <value>با احترام</value>
+    <comment>216</comment>
+  </data>
+  <data name="YearId" xml:space="preserve">
+    <value>آی دی نمبر سال</value>
+    <comment>134</comment>
+  </data>
+  <data name="YearShamsi" xml:space="preserve">
+    <value>تاریخ شمسی</value>
+    <comment>166</comment>
+  </data>
+</root>
