@@ -66,20 +66,6 @@ namespace Crystal_Clinic_Mgm.Application.Common.Jobs
                 {
                     foreach (var job in jobs)
                     {
-                        if (job.item != null)
-                        {
-                            var baseQuantity = job.unit!.ConversionFactor * job.quantity;
-                            if (baseQuantity > job.item.CleaningStateQuantity)
-                                baseQuantity = job.item.CleaningStateQuantity;
-
-                            job.item.CleaningStateQuantity -= baseQuantity;
-                            job.item.RealTimeAvailableStock += baseQuantity;
-
-                            dbContext.Entry(job.item).Property(x => x.CleaningStateQuantity).IsModified = true;
-                            dbContext.Entry(job.item).Property(x => x.RealTimeAvailableStock).IsModified = true;
-                        }
-                        dbContext.ItemCleaningJob.Remove(job);
-                        await dbContext.SaveChangesAsync(stoppingToken);
                     }
                 });
             }

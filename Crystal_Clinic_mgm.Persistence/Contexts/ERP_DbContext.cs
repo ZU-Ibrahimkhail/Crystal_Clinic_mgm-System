@@ -1,18 +1,22 @@
 ﻿using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Domain.Entities.General;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
-using Crystal_Clinic_Mgm.Domain.Entities.Order;
-using Crystal_Clinic_Mgm.Domain.Entities.Order.Look;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Crystal_Clinic_Mgm.Persistence.Configuration.AssetMS;
+using Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look;
+using Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic;
+using Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic;
 using Crystal_Clinic_Mgm.Persistence.Configuration.General;
 using Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks;
 using Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject;
 using Crystal_Clinic_Mgm.Persistence.Configuration.Look;
-using Crystal_Clinic_Mgm.Persistence.Configuration.Order;
-using Crystal_Clinic_Mgm.Persistence.Configuration.Order.Look;
+using Crystal_Clinic_Mgm.Persistence.Configuration.Stocks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crystal_Clinic_Mgm.Persistence.Contexts
@@ -56,21 +60,20 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         #endregion
 
 
+        public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; } 
+        public DbSet<ItemUnit> ItemUnits { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
         public DbSet<Item> Items { get; set; }
-        public DbSet<ItemUnit> ItemUnits { get; set; }
-        public DbSet<Orders> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<OrderService> OrderServices { get; set; }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<StockMovement> StockMovements { get; set; }
-        public DbSet<Return> Returns { get; set; }
-        public DbSet<DamageReport> DamageReport { get; set; }
-        public DbSet<OrderAdjustment> OrderAdjustments { get; set; }
-        public DbSet<OrderPayment> OrderPayments { get; set; }
-        public DbSet<RentalReservation> RentalReservations { get; set; }
-        public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; } 
+        public DbSet<Stock> Stocks { get; set; } 
+        public DbSet<Doctor> Doctor { get; set; } 
+        public DbSet<Patient> Patient { get; set; } 
+        public DbSet<Visit> Visit { get; set; } 
+        public DbSet<VisitMedication> VisitMedication { get; set; } 
+        public DbSet<VisitServices> VisitServices { get; set; } 
+        public DbSet<VisitPayment> VisitPayment { get; set; } 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             #region LookUps 
@@ -115,17 +118,15 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             #endregion
 
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
-            modelBuilder.ApplyConfiguration(new ServiceConfiguration());
-            modelBuilder.ApplyConfiguration(new StockMovementConfiguration());
-            modelBuilder.ApplyConfiguration(new ReturnConfiguration());
-            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
             modelBuilder.ApplyConfiguration(new ItemCategoryConfiguration());
-            modelBuilder.ApplyConfiguration(new ItemUnitConfiguration());
-            modelBuilder.ApplyConfiguration(new ReturnPaymentConfiguration()); 
-            modelBuilder.ApplyConfiguration(new DamageReportConfiguration());
-            modelBuilder.ApplyConfiguration(new OrderAdjustmentConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceConfiguration());
+            modelBuilder.ApplyConfiguration(new StockConfiguration());
+            modelBuilder.ApplyConfiguration(new DoctorConfiguration());
+            modelBuilder.ApplyConfiguration(new PatientConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitMedicationConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitServicesConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitPaymentConfiguration());
 
 
         }

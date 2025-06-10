@@ -1,6 +1,6 @@
 ﻿using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
-using Crystal_Clinic_Mgm.Domain.Entities.Order;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -13,8 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public decimal DailyRate { get; set; }
-        public decimal HourlyRate { get; set; }
+        public decimal sessionRate { get; set; }
     }
 
     public class CreateServiceHandler(ERP_DbContext context) : IRequestHandler<CreateServiceCommand, int>
@@ -25,8 +24,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             {
                 Name = request.Name,
                 Description = request.Description,
-                DailyRate = request.DailyRate,
-                HourlyRate = request.HourlyRate
+                sessionRate = request.sessionRate,
             };
 
             context.Services.Add(service);
@@ -42,8 +40,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int ServiceId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public decimal DailyRate { get; set; }
-        public decimal HourlyRate { get; set; }
+        public decimal sessionRate { get; set; }
+
     }
 
     public class UpdateServiceHandler(ERP_DbContext context) : IRequestHandler<UpdateServiceCommand, bool>
@@ -51,12 +49,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public async Task<bool> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
         {
             var service = await context.Services.FindAsync(request.ServiceId);
-            if (service == null) return false;
+            if (service == null || service.IsDeleted) return false;
 
             service.Name = request.Name;
             service.Description = request.Description;
-            service.DailyRate = request.DailyRate;
-            service.HourlyRate = request.HourlyRate;
+            service.sessionRate = request.sessionRate;
 
             context.Services.Update(service);
             await context.SaveChangesAsync(cancellationToken);
@@ -65,19 +62,41 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     }
     #endregion
 
-    #region Add Image To Service
+    #region DeleteService
+    public class DeleteServiceCommand : IRequest<bool>
+    {
+        public int ServiceId { get; set; }
+    }
+
+    public class DeleteServiceHandler(ERP_DbContext context) : IRequestHandler<DeleteServiceCommand, bool>
+    {
+        public async Task<bool> Handle(DeleteServiceCommand request, CancellationToken cancellationToken)
+        {
+            var service = await context.Services.FindAsync(request.ServiceId);
+            if (service == null || service.IsDeleted) return false;
+            service.IsDeleted = true;
+            service.ModifiedOn = DateTime.Now;
+            context.Services.Update(service);
+            await context.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+    }
+    #endregion
+
+
+    #region Add Image To service
     public class AddImageToServiceCommand : IRequest<int>
     {
-        public int serviceId { get; set; }
+        public int ServiceId { get; set; }
         public IFormFile? FormFile { get; set; }
     }
-    public class AddImageToServiceHandler(ERP_DbContext context) : IRequestHandler<AddImageToServiceCommand, int>
+    public class AddImageServiceHandler(ERP_DbContext context) : IRequestHandler<AddImageToServiceCommand, int>
     {
         public async Task<int> Handle(AddImageToServiceCommand request, CancellationToken cancellationToken)
         {
 
-            var service = await context.Services.FindAsync(request.serviceId);
-            if (service == null) return 0;
+            var service = await context.Services.FindAsync(request.ServiceId);
+            if (service == null || service.IsDeleted) return 0;
 
             var attachment = request.FormFile;
             string FilePath = "";
@@ -100,26 +119,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     }
     #endregion
 
-    #region DeleteService
-    public class DeleteServiceCommand : IRequest<bool>
-    {
-        public int ServiceId { get; set; }
-    }
-
-    public class DeleteServiceHandler(ERP_DbContext context) : IRequestHandler<DeleteServiceCommand, bool>
-    {
-        public async Task<bool> Handle(DeleteServiceCommand request, CancellationToken cancellationToken)
-        {
-            var service = await context.Services.FindAsync(request.ServiceId);
-            if (service == null) return false;
-
-            context.Services.Remove(service);
-            await context.SaveChangesAsync(cancellationToken);
-            return true;
-        }
-    }
-    #endregion
-
     #region GetServiceById
     public class GetServiceByIdQuery : IRequest<Service>
     {
@@ -130,7 +129,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     {
         public async Task<Service> Handle(GetServiceByIdQuery request, CancellationToken cancellationToken)
         {
-            return await context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.ServiceId, cancellationToken);
+            return await context.Services.FirstOrDefaultAsync(s => s.ServiceId == request.ServiceId && !s.IsDeleted, cancellationToken) ?? new Service();
         }
     }
     #endregion
@@ -149,8 +148,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int ServiceId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public decimal DailyRate { get; set; }
-        public decimal HourlyRate { get; set; }
+        public decimal sessionRate { get; set; }
         public string? ImagePath { get; set; }
     }
 
@@ -158,7 +156,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     {
         public async Task<List<ServiceDto>> Handle(ListAllServicesQuery request, CancellationToken cancellationToken)
         {
-            var query = context.Services.AsQueryable();
+            var query = context.Services.Where(x => !x.IsDeleted).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
@@ -177,8 +175,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 ServiceId = s.ServiceId,
                 Name = s.Name,
                 Description = s.Description,
-                DailyRate = s.DailyRate,
-                HourlyRate = s.HourlyRate,
+                sessionRate = s.sessionRate,
                 ImagePath = s.ImagePath
             }).ToListAsync(cancellationToken);
         }

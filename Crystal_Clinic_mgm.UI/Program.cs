@@ -1,15 +1,14 @@
 ﻿
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Crystal_Clinic_Mgm.Application.Common.Jobs;
 using Crystal_Clinic_Mgm.Application.Common.SignalR;
 using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain.Entities.UMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Crystal_Clinic_Mgm.Persistence.Initializers;
 using Crystal_Clinic_Mgm.UI.Providers;
-using Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.Helpers;
-using Crystal_Clinic_Mgm.Application.Common.Jobs;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 //add services to container
 //-----add-Swagger-Service
@@ -19,10 +18,6 @@ builder.Services.AddApplicationServices(builder.Configuration);
 //------Add User Services
 builder.Services.AddIdentityProvider(builder.Configuration);
 //----------------------------------------------------------
-builder.Services.AddScoped<CreateOrderProcessor>();
-builder.Services.AddScoped<UpdateOrderProcessor>();
-builder.Services.AddScoped<ReturnProcessor>();
-builder.Services.AddScoped<RentalAvailabilityValidator>();
 
 //---for handling file size limit in byts --Allow 1500 MB Size
 

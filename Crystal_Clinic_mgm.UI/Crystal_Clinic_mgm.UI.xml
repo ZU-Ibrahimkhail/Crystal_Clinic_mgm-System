@@ -452,49 +452,6 @@
             </summary>
             <returns></returns> 
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Create(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Create.CreateLoanTypeCommand)">
-            <summary>
-            Create LoanType
-            </summary>
-            <param name="command"></param>
-            <returns>Json Record</returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Update(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Update.UpdateLoanTypeCommand,System.Int32)">
-            <summary>
-            Update LoanType By ID
-            </summary>
-            <param name="command"></param>
-            <param name="Id">ID is require</param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.Delete(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Commands.Delete.DeleteLoanTypeCommand,System.Int32)">
-            <summary>
-            Delete LoanType by ID
-            </summary>
-            <param name="command"></param>
-            <param name="Id"> ID is require</param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.LoanTypes.Queries.GetList.GetLoanTypeListQuery)">
-            <summary>
-             Get LoanType by filtration List/Record
-            </summary>
-            <param name="query"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetDetail(System.Int32)">
-            <summary>
-            Get LoanType Detail by ID
-            </summary>
-            <param name="Id">ID is require </param>
-            <returns></returns>      
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.LoanTypeController.GetLoanTypeDDL">
-            <summary>
-            Get LoanType Dropdown List
-            </summary>
-            <returns></returns> 
-        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.PayTypeController.Create(Crystal_Clinic_Mgm.Application.Look.PayTypes.Commands.Create.CreatePayTypeCommand)">
             <summary>
             Create PayType
@@ -537,79 +494,6 @@
             Get PayType Dropdown List
             </summary>
             <returns></returns> 
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Create(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.CreateOrderCommand)">
-            <summary>
-            Create a new order.
-            </summary>
-            <param name="command">Order creation data</param>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Update(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.UpdateOrderCommand)">
-            <summary>
-            Update an existing order by ID.
-            </summary>
-            <param name="command">Order update data</param>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.Delete(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.DeleteOrderCommand)">
-            <summary>
-            Delete an order by ID if not completed or in progress.
-            </summary>
-            <param name="command">Delete command with OrderId</param>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.StartDelivery(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.StartDeliveryCommand)">
-            <summary>
-            Start delivery process for a rental order.
-            </summary>
-            <param name="command">Start delivery command</param>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.ProcessReturn(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Commands.ProcessReturnCommand)">
-            <summary>
-            Process return for a rental order.
-            </summary>
-            <param name="command">Return processing data</param>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.GetOrderDetails(System.Int32)">
-            <summary>
-             The details of an Order
-            </summary>
-            <param name="orderId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.GetOrderRecipt(System.Int32)">
-            <summary>
-             The details of an Order
-            </summary>
-            <param name="orderId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.OrderController.ListOrders(Crystal_Clinic_Mgm.Application.OrderMgm.OrderCRUD.Query.ListOrdersQuery)">
-            <summary>
-            List of orders
-            </summary>
-            <param name="query"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.Create(Crystal_Clinic_Mgm.Application.OrderMgm.OrderPayments.CreateOrderPaymentCommand)">
-            <summary>
-            Create a new payment for an order.
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.Delete(System.Int32)">
-            <summary>
-            Delete an existing payment.
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.GetByOrder(System.Int32)">
-            <summary>
-            Get all payments for a specific order.
-            </summary>
-            <param name="orderId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.PaymentsController.ListAll(Crystal_Clinic_Mgm.Application.OrderMgm.OrderPayments.ListAllOrderPaymentsQuery)">
-            <summary>
-            List all payments (admin view with cursor pagination).
-            </summary>
         </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Create(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.CreateServiceCommand)">
             <summary>
