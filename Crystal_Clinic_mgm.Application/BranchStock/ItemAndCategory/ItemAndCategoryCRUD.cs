@@ -1,4 +1,6 @@
 ﻿// ItemCategory + Item CRUD Commands
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
@@ -17,16 +19,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public string Description { get; set; } = string.Empty;
     }
 
-    public class CreateItemCategoryHandler : IRequestHandler<CreateItemCategoryCommand, int>
+    public class CreateItemCategoryHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateItemCategoryCommand, int>
     {
-        private readonly ERP_DbContext _context;
-        public CreateItemCategoryHandler(ERP_DbContext context) => _context = context;
-
         public async Task<int> Handle(CreateItemCategoryCommand request, CancellationToken cancellationToken)
         {
-            var entity = new ItemCategory { Name = request.Name, Description = request.Description };
-            _context.ItemCategories.Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            var entity = new ItemCategory { Name = request.Name, Description = request.Description, CreatedBy = loggedInUser.Id, CreatedOn = DateTime.Now };
+            context.ItemCategories.Add(entity);
+            await context.SaveChangesAsync(cancellationToken);
             return entity.categoryId;
         }
     }
@@ -38,7 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public int ItemCategoryId { get; set; }
     }
 
-    public class UpdateItemCategoryHandler(ERP_DbContext context) : IRequestHandler<UpdateItemCategoryCommand, int>
+    public class UpdateItemCategoryHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateItemCategoryCommand, int>
     {
         public async Task<int> Handle(UpdateItemCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -47,6 +46,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             if (entity == null || entity.IsDeleted) return 0;
             entity.Name = request.Name;
             entity.Description = request.Description;
+            entity.ModifiedBy = loggedInUser.Id;
+            entity.ModifiedOn = DateTime.Now;
             context.ItemCategories.Update(entity);
             await context.SaveChangesAsync(cancellationToken);
             return entity.categoryId;
@@ -60,7 +61,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public int CategoryId { get; set; }
     }
 
-    public class DeleteItemCategoryHandler(ERP_DbContext context) : IRequestHandler<DeleteItemCategoryCommand, bool>
+    public class DeleteItemCategoryHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteItemCategoryCommand, bool>
     {
         public async Task<bool> Handle(DeleteItemCategoryCommand request, CancellationToken cancellationToken)
         {
@@ -68,6 +69,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             if (category == null || category.IsDeleted) return false;
             category.IsDeleted = true;
             category.ModifiedOn = DateTime.Now;
+            category.ModifiedBy = loggedInUser.Id;
             context.ItemCategories.Update(category);
             await context.SaveChangesAsync(cancellationToken);
             return true;
@@ -92,7 +94,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
     }
 
 
-    public class CreateItemHandler(ERP_DbContext context) : IRequestHandler<CreateItemCommand, int>
+    public class CreateItemHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateItemCommand, int>
     {
         public async Task<int> Handle(CreateItemCommand request, CancellationToken cancellationToken)
         {
@@ -106,7 +108,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
                 CurrentStock = request.CurrentStock,
                 UseableStock = request.UseableStock,
                 ReorderLevel = request.ReorderLevel,
-                CategoryId = request.CategoryId
+                CategoryId = request.CategoryId,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.Now
             };
 
             context.Items.Add(item);
@@ -129,7 +133,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public int BranchId { get; set; }
         public int ItemId { get; set; }
     }
-    public class UpdateItemWithUnitsHandler(ERP_DbContext context) : IRequestHandler<UpdateItemCommand, int>
+    public class UpdateItemWithUnitsHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateItemCommand, int>
     {
         public async Task<int> Handle(UpdateItemCommand request, CancellationToken cancellationToken)
         {
@@ -145,6 +149,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             item.CurrentStock = request.CurrentStock;
             item.ReorderLevel = request.ReorderLevel;
             item.CategoryId = request.CategoryId;
+            item.ModifiedBy = loggedInUser.Id;
+            item.ModifiedOn = DateTime.Now;
             context.Items.Update(item);
             await context.SaveChangesAsync(cancellationToken);
 
@@ -194,21 +200,19 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public int ItemId { get; set; }
     }
 
-    public class DeleteItemHandler : IRequestHandler<DeleteItemCommand, bool>
+    public class DeleteItemHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteItemCommand, bool>
     {
-        private readonly ERP_DbContext _context;
-        public DeleteItemHandler(ERP_DbContext context) => _context = context;
-
         public async Task<bool> Handle(DeleteItemCommand request, CancellationToken cancellationToken)
         {
-            var item = await _context.Items
+            var item = await context.Items
                 .FirstOrDefaultAsync(i => i.ItemId == request.ItemId && !i.IsDeleted, cancellationToken);
             if (item == null) return false;
 
             item.IsDeleted = true;
             item.ModifiedOn = DateTime.Now;
-            _context.Items.Update(item);
-            await _context.SaveChangesAsync(cancellationToken);
+            item.ModifiedBy = loggedInUser.Id;
+            context.Items.Update(item);
+            await context.SaveChangesAsync(cancellationToken);
             return true;
         }
     }

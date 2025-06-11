@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     /// <inheritdoc />
-    public partial class erpInitial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1181,34 +1181,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemCleaningJob",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    itemId = table.Column<int>(type: "int", nullable: false),
-                    unitId = table.Column<int>(type: "int", nullable: false),
-                    quantity = table.Column<int>(type: "int", nullable: false),
-                    dateToBeRestocked = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemCleaningJob", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_ItemCleaningJob_ItemUnits_unitId",
-                        column: x => x.unitId,
-                        principalTable: "ItemUnits",
-                        principalColumn: "unitId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ItemCleaningJob_Item_itemId",
-                        column: x => x.itemId,
-                        principalSchema: "Stock",
-                        principalTable: "Item",
-                        principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "VisitMedication",
                 schema: "CrystalClinic",
                 columns: table => new
@@ -1378,16 +1350,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Stock",
                 table: "Item",
                 column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemCleaningJob_itemId",
-                table: "ItemCleaningJob",
-                column: "itemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemCleaningJob_unitId",
-                table: "ItemCleaningJob",
-                column: "unitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemUnits_ItemId",
@@ -1584,7 +1546,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "AssetMS");
 
             migrationBuilder.DropTable(
-                name: "ItemCleaningJob");
+                name: "ItemUnits");
 
             migrationBuilder.DropTable(
                 name: "LoanType",
@@ -1631,9 +1593,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             migrationBuilder.DropTable(
                 name: "ExpenseType",
                 schema: "Look");
-
-            migrationBuilder.DropTable(
-                name: "ItemUnits");
 
             migrationBuilder.DropTable(
                 name: "News",

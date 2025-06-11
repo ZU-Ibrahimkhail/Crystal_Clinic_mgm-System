@@ -61,7 +61,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
 
 
         public DbSet<StockMovement> StockMovements { get; set; }
-        public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; } 
+        //public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; } 
         public DbSet<ItemUnit> ItemUnits { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
         public DbSet<Item> Items { get; set; }

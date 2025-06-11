@@ -574,33 +574,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("ItemCategory", "Stock");
                 });
 
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCleaningJob", b =>
-                {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("dateToBeRestocked")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("itemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("unitId")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("itemId");
-
-                    b.HasIndex("unitId");
-
-                    b.ToTable("ItemCleaningJob");
-                });
-
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemUnit", b =>
                 {
                     b.Property<int>("unitId")
@@ -2702,25 +2675,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasForeignKey("ItemCategorycategoryId");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCleaningJob", b =>
-                {
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "item")
-                        .WithMany()
-                        .HasForeignKey("itemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemUnit", "unit")
-                        .WithMany()
-                        .HasForeignKey("unitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("item");
-
-                    b.Navigation("unit");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemUnit", b =>

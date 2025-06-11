@@ -1,4 +1,5 @@
-﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+﻿using System.ComponentModel.DataAnnotations;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
     public class GetStockQuery : IRequest<GetStockResponse>
     {
         public string? SearchText { get; set; }
+        [Required]
         public int BranchId { get; set; } = 1; // Default to branch 1
         public int PageSize { get; set; } = 20; // Default page size
         public int? LastItemId { get; set; } // For pagination based on last item ID

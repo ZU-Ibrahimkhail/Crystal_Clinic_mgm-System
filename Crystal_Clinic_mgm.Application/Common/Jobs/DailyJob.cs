@@ -55,19 +55,18 @@ namespace Crystal_Clinic_Mgm.Application.Common.Jobs
             try
             {
 
-                var jobs = await dbContext.ItemCleaningJob
-                    .Where(x => x.dateToBeRestocked <= DateTime.Now.Date)
-                    .Include(x => x.item)
-                    .Include(x => x.unit)
-                    .ToListAsync(stoppingToken);
-                var executionStrategy = dbContext.Database.CreateExecutionStrategy();
+                //var jobs = await dbContext.ItemCleaningJob
+                //    .Where(x => x.dateToBeRestocked <= DateTime.Now.Date)
+                //    .Include(x => x.item)
+                //    .ToListAsync(stoppingToken);
+                //var executionStrategy = dbContext.Database.CreateExecutionStrategy();
 
-                await executionStrategy.ExecuteAsync(async () =>
-                {
-                    foreach (var job in jobs)
-                    {
-                    }
-                });
+                //await executionStrategy.ExecuteAsync(async () =>
+                //{
+                //    //foreach (var job in jobs)
+                //    //{
+                //    //}
+                //});
             }
             catch (Exception ex)
             {
