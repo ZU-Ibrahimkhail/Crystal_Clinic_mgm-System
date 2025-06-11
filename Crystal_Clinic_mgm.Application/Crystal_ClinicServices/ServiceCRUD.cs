@@ -1,4 +1,5 @@
-﻿using Crystal_Clinic_Mgm.Common.AppConfig;
+﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -16,7 +17,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public decimal sessionRate { get; set; }
     }
 
-    public class CreateServiceHandler(ERP_DbContext context) : IRequestHandler<CreateServiceCommand, int>
+    public class CreateServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateServiceCommand, int>
     {
         public async Task<int> Handle(CreateServiceCommand request, CancellationToken cancellationToken)
         {
@@ -25,6 +26,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 Name = request.Name,
                 Description = request.Description,
                 sessionRate = request.sessionRate,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.Now
             };
 
             context.Services.Add(service);
@@ -44,7 +47,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
 
     }
 
-    public class UpdateServiceHandler(ERP_DbContext context) : IRequestHandler<UpdateServiceCommand, bool>
+    public class UpdateServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateServiceCommand, bool>
     {
         public async Task<bool> Handle(UpdateServiceCommand request, CancellationToken cancellationToken)
         {
@@ -54,6 +57,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             service.Name = request.Name;
             service.Description = request.Description;
             service.sessionRate = request.sessionRate;
+            service.ModifiedBy = loggedInUser.Id;
+            service.ModifiedOn = DateTime.Now;
 
             context.Services.Update(service);
             await context.SaveChangesAsync(cancellationToken);
@@ -68,7 +73,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int ServiceId { get; set; }
     }
 
-    public class DeleteServiceHandler(ERP_DbContext context) : IRequestHandler<DeleteServiceCommand, bool>
+    public class DeleteServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteServiceCommand, bool>
     {
         public async Task<bool> Handle(DeleteServiceCommand request, CancellationToken cancellationToken)
         {
@@ -76,6 +81,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             if (service == null || service.IsDeleted) return false;
             service.IsDeleted = true;
             service.ModifiedOn = DateTime.Now;
+            service.ModifiedBy = loggedInUser.Id;
             context.Services.Update(service);
             await context.SaveChangesAsync(cancellationToken);
             return true;
@@ -152,7 +158,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string? ImagePath { get; set; }
     }
 
-    public class ListAllServicesHandler(ERP_DbContext context) : IRequestHandler<ListAllServicesQuery, List<ServiceDto>>
+    public class ListAllServicesHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<ListAllServicesQuery, List<ServiceDto>>
     {
         public async Task<List<ServiceDto>> Handle(ListAllServicesQuery request, CancellationToken cancellationToken)
         {
