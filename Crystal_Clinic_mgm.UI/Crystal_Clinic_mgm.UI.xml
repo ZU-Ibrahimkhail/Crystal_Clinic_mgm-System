@@ -495,27 +495,27 @@
             </summary>
             <returns></returns> 
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Create(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.CreateServiceCommand)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.Create(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.CreateServiceCommand)">
             <summary>
             Create a new service.
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Update(System.Int32,Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.UpdateServiceCommand)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.Update(System.Int32,Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.UpdateServiceCommand)">
             <summary>
             Update an existing service.
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.Delete(System.Int32)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.Delete(System.Int32)">
             <summary>
             Delete a service.
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.GetById(System.Int32)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.GetById(System.Int32)">
             <summary>
             Get a service by ID.
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.OrderMGM.ServicesController.ListAll(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ListAllServicesQuery)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.ListAll(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ListAllServicesQuery)">
             <summary>
             List all services with optional search and pagination.
             </summary>
