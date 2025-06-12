@@ -3,7 +3,7 @@ using Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Crystal_Clinic_Mgm.UI.Controllers.OrderMGM
+namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     public class InventoryController : BaseController

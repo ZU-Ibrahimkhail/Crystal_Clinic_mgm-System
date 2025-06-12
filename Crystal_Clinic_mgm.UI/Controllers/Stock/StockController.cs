@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
+namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     public class StockController : BaseController
