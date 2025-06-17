@@ -66,9 +66,8 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
 
     public class UpdateTransactionCommand : IRequest<Result>
     {
-        public Guid TransactionId { get; set; }
+        public int TransactionId { get; set; }
         public double? NewAmount { get; set; }
-        public int? NewCurrencyTypeId { get; set; }
         public Guid? NewToUserId { get; set; }
     }
 
@@ -77,7 +76,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
         public async Task<Result> Handle(UpdateTransactionCommand request, CancellationToken cancellationToken)
         {
             var transactionEntry = await context.AccountTracking.FindAsync(request.TransactionId);
-            if (transactionEntry == null)
+            if (transactionEntry == null || transactionEntry.IsDeleted || transactionEntry.transactionStatus != TransactionStatus.PENDING)
                 return Result.Fail("Transaction not found.");
 
             if (transactionEntry.UserId != loggedInUser.Id)
@@ -91,11 +90,6 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
             {
                 transactionEntry.DebitAmount = request.NewAmount.Value;
                 transactionEntry.BalanceAmount = transactionEntry.BalanceAmount + (transactionEntry.DebitAmount - transactionEntry.DebitAmount); // Adjust balance logic if needed
-            }
-
-            if (request.NewCurrencyTypeId.HasValue)
-            {
-                transactionEntry.CurrencyTypeId = request.NewCurrencyTypeId.Value;
             }
 
             if (request.NewToUserId.HasValue)
