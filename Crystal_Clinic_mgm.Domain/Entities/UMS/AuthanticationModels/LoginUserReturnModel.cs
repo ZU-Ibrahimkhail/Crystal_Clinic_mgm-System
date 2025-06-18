@@ -9,6 +9,7 @@
         public string PositionTitle { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool IsSuperAdmin { get; set; }
+        public bool IsBranchAdmin { get; set; }
         public bool IsActive { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public int? BranchId { get; set; }

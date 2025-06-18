@@ -142,6 +142,7 @@ namespace Crystal_Clinic_Mgm.Application.Common.Identity
                 //loginUserReturnModel.PositionTitle = Localize.GetName(model.Language, employee?.Position);
                 loginUserReturnModel.Email = user.Email ?? string.Empty;
                 loginUserReturnModel.IsSuperAdmin = user.IsSuperAdmin;
+                loginUserReturnModel.IsBranchAdmin = user.IsBranchAdmin;
                 loginUserReturnModel.IsActive = user.IsActive;
                 loginUserReturnModel.PhoneNumber = user.PhoneNumber ?? string.Empty;
                 loginUserReturnModel.BranchId = user.BranchId;
