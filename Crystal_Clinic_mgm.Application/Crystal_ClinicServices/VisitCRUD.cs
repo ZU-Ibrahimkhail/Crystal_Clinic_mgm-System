@@ -1,0 +1,779 @@
+﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Common.Message;
+using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
+using Crystal_Clinic_Mgm.Persistence.Contexts;
+using FluentValidation;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
+{
+    #region Create Visit
+
+    public class CreateVisitCommand : IRequest<JsonResult>
+    {
+        public int? PatientId { get; set; } // Nullable to allow new patient creation
+        public string? PatientName { get; set; } // Required if PatientId is null
+        public string? PatientContactInfo { get; set; } // Required if PatientId is null
+        public string? PatientEmail { get; set; } // Optional
+        public int? DoctorId { get; set; }
+        public DateTime VisitDate { get; set; }
+        public VisitStatus Status { get; set; } = VisitStatus.SCHEDULED;
+    }
+
+    public class CreateVisitCommandValidator : AbstractValidator<CreateVisitCommand>
+    {
+        public CreateVisitCommandValidator()
+        {
+            RuleFor(x => x.PatientId)
+                .NotEmpty()
+                .When(x => string.IsNullOrWhiteSpace(x.PatientName) || string.IsNullOrWhiteSpace(x.PatientContactInfo))
+                .WithMessage("PatientId is required if patient details are not provided.");
+
+            RuleFor(x => x.PatientName)
+                .NotEmpty()
+                .When(x => !x.PatientId.HasValue)
+                .WithMessage("PatientName is required when PatientId is not provided.");
+
+            RuleFor(x => x.PatientContactInfo)
+                .NotEmpty()
+                .When(x => !x.PatientId.HasValue)
+                .WithMessage("PatientContactInfo is required when PatientId is not provided.");
+
+            RuleFor(x => x.PatientEmail)
+                .EmailAddress()
+                .When(x => !string.IsNullOrWhiteSpace(x.PatientEmail))
+                .WithMessage("Invalid email format.");
+
+            RuleFor(x => x.VisitDate)
+                .NotEmpty()
+                .GreaterThanOrEqualTo(DateTime.UtcNow)
+                .WithMessage("VisitDate must be in the present or future.");
+
+            RuleFor(x => x.Status)
+                .IsInEnum()
+                .WithMessage("Invalid VisitStatus.");
+        }
+    }
+
+    public class CreateVisitHandler(ERP_DbContext context, ILoggedInUser loggedInUser, IMessage message) : IRequestHandler<CreateVisitCommand, JsonResult>
+    {
+        public async Task<JsonResult> Handle(CreateVisitCommand request, CancellationToken cancellationToken)
+        {
+            int patientId;
+            var validator = new CreateVisitCommandValidator().Validate(request).Errors;
+
+            if (validator.Count > 0) return message.CheckCCValidationError(validator);
+
+            if (request.PatientId.HasValue)
+            {
+                var patient = await context.Patient.FirstOrDefaultAsync(p => !p.IsDeleted && p.patientId == request.PatientId.Value, cancellationToken) ?? throw new KeyNotFoundException($"Patient with ID {request.PatientId} not found.");
+                patientId = request.PatientId.Value;
+            }
+            else
+            {
+                var newPatient = new Patient
+                {
+                    name = request.PatientName!,
+                    contactInfo = request.PatientContactInfo!,
+                    email = request.PatientEmail,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+                context.Patient.Add(newPatient);
+                await context.SaveChangesAsync(cancellationToken);
+                patientId = newPatient.patientId;
+            }
+
+            if (request.DoctorId.HasValue)
+            {
+                var doctor = await context.Doctor.FirstOrDefaultAsync(d => !d.IsDeleted && d.doctorId == request.DoctorId.Value, cancellationToken);
+                if (doctor == null || !doctor.isAvailable)
+                {
+                    throw new InvalidOperationException("Doctor not found or unavailable.");
+                }
+
+                // Check for scheduling conflicts
+                var conflictingVisit = await context.Visit
+                    .AnyAsync(v => !v.IsDeleted && v.doctorId == request.DoctorId && v.visitDate == request.VisitDate && v.status != VisitStatus.COMPLETED, cancellationToken);
+                if (conflictingVisit)
+                {
+                    throw new InvalidOperationException("Doctor has a conflicting visit at this time.");
+                }
+            }
+
+            var visit = new Visit
+            {
+                patientId = patientId,
+                doctorId = request.DoctorId,
+                visitDate = request.VisitDate,
+                status = request.Status,
+                totalAmount = 0,
+                paidAmount = 0,
+                remainingAmount = 0,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            context.Visit.Add(visit);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return new JsonResult(visit);
+        }
+    }
+
+    #endregion
+
+    #region Update Visit
+
+    public class UpdateVisitCommand : IRequest<JsonResult>
+    {
+        public int VisitId { get; set; }
+        public int? DoctorId { get; set; }
+        public DateTime VisitDate { get; set; }
+        public VisitStatus Status { get; set; }
+    }
+
+    public class UpdateVisitCommandValidator : AbstractValidator<UpdateVisitCommand>
+    {
+        public UpdateVisitCommandValidator()
+        {
+            RuleFor(x => x.VisitId)
+                .GreaterThan(0)
+                .WithMessage("VisitId must be greater than 0.");
+
+            RuleFor(x => x.VisitDate)
+                .NotEmpty()
+                .GreaterThanOrEqualTo(DateTime.UtcNow)
+                .WithMessage("VisitDate must be in the present or future.");
+
+            RuleFor(x => x.Status)
+                .IsInEnum()
+                .WithMessage("Invalid VisitStatus.");
+        }
+    }
+
+    public class UpdateVisitHandler(ERP_DbContext context, ILoggedInUser loggedInUser, IMessage message) : IRequestHandler<UpdateVisitCommand, JsonResult>
+    {
+        public async Task<JsonResult> Handle(UpdateVisitCommand request, CancellationToken cancellationToken)
+        {
+            var validator = new UpdateVisitCommandValidator().Validate(request).Errors;
+
+            if (validator.Count > 0) return message.CheckCCValidationError(validator);
+
+            var visit = await context.Visit.FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken) ?? throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            if (request.DoctorId.HasValue)
+            {
+                var doctor = await context.Doctor.FirstOrDefaultAsync(d => !d.IsDeleted && d.doctorId == request.DoctorId.Value, cancellationToken);
+                if (doctor == null || !doctor.isAvailable)
+                {
+                    throw new InvalidOperationException("Doctor not found or unavailable.");
+                }
+
+                // Check for scheduling conflicts
+                var conflictingVisit = await context.Visit
+                    .AnyAsync(v => !v.IsDeleted && v.visitId != request.VisitId && v.doctorId == request.DoctorId && v.visitDate == request.VisitDate && v.status != VisitStatus.COMPLETED, cancellationToken);
+                if (conflictingVisit)
+                {
+                    throw new InvalidOperationException("Doctor has a conflicting visit at this time.");
+                }
+            }
+
+            visit.doctorId = request.DoctorId;
+            visit.visitDate = request.VisitDate;
+            visit.status = request.Status;
+            visit.ModifiedBy = loggedInUser.Id;
+            visit.ModifiedOn = DateTime.UtcNow;
+
+            context.Visit.Update(visit);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return new JsonResult(visit);
+        }
+    }
+
+    #endregion
+
+    #region Delete Visit
+
+    public class DeleteVisitCommand : IRequest<bool>
+    {
+        public int VisitId { get; set; }
+    }
+
+    public class DeleteVisitHandler : IRequestHandler<DeleteVisitCommand, bool>
+    {
+        private readonly ERP_DbContext _context;
+        private readonly ILoggedInUser _loggedInUser;
+
+        public DeleteVisitHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
+        {
+            _context = context;
+            _loggedInUser = loggedInUser;
+        }
+
+        public async Task<bool> Handle(DeleteVisitCommand request, CancellationToken cancellationToken)
+        {
+            var visit = await _context.Visit.FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
+            if (visit == null)
+            {
+                return false;
+            }
+
+            visit.IsDeleted = true;
+            visit.ModifiedBy = _loggedInUser.Id;
+            visit.ModifiedOn = DateTime.UtcNow;
+
+            _context.Visit.Update(visit);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+    }
+
+    #endregion
+
+    #region Get Visit Details
+
+    public class GetVisitDetailsQuery : IRequest<VisitDto>
+    {
+        public int VisitId { get; set; }
+    }
+
+    public class GetVisitDetailsHandler : IRequestHandler<GetVisitDetailsQuery, VisitDto>
+    {
+        private readonly ERP_DbContext _context;
+
+        public GetVisitDetailsHandler(ERP_DbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<VisitDto> Handle(GetVisitDetailsQuery request, CancellationToken cancellationToken)
+        {
+            var visit = await _context.Visit
+                .Include(v => v.Patient)
+                .Include(v => v.Doctor)
+                .Include(v => v.Medications)
+                .ThenInclude(vm => vm.stock).ThenInclude(s => s.item)
+                .Include(v => v.Services)
+                .ThenInclude(vs => vs.service)
+                .FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
+
+            if (visit == null)
+            {
+                throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            }
+
+            return new VisitDto
+            {
+                VisitId = visit.visitId,
+                PatientId = visit.patientId,
+                PatientName = visit.Patient.name,
+                DoctorId = visit.doctorId,
+                DoctorName = visit.Doctor != null ? $"{visit.Doctor.firstName} {visit.Doctor.lastName}" : null,
+                VisitDate = visit.visitDate,
+                Status = visit.status,
+                TotalAmount = visit.totalAmount,
+                PaidAmount = visit.paidAmount,
+                RemainingAmount = visit.remainingAmount,
+                Medications = visit.Medications.Select(m => new VisitMedicationDto
+                {
+                    MedicationId = m.medicationId,
+                    Name = m.stock.item.Name,
+                    Dosage = m.dosage,
+                    Quantity = m.quantity,
+                    Price = m.price,
+                    BatchNumber = m.stock.batchNumber
+                }).ToList(),
+                Services = visit.Services.Select(s => new VisitServiceDto
+                {
+                    VisitServiceId = s.visitServiceId,
+                    ServiceName = s.service.Name,
+                    TotalSessions = s.totalSessions,
+                    CompletedSessions = s.completedSessions,
+                    PricePerSession = s.pricePerSession,
+                    TotalPrice = s.totalPrice,
+                    PaidAmount = s.paidAmount,
+                    RemainAmount = s.remainAmount
+                }).ToList()
+            };
+        }
+    }
+
+    #endregion
+
+    #region Get Visit List
+
+    public class GetVisitListQuery : IRequest<VisitListDto>
+    {
+        public string? Search { get; set; }
+        public int? PatientId { get; set; }
+        public int? LastVisitId { get; set; }
+        public int PageSize { get; set; } = 20;
+    }
+
+    public class GetVisitListQueryValidator : AbstractValidator<GetVisitListQuery>
+    {
+        public GetVisitListQueryValidator()
+        {
+            RuleFor(x => x.PageSize)
+                .GreaterThan(0)
+                .LessThanOrEqualTo(100)
+                .WithMessage("PageSize must be between 1 and 100.");
+
+            RuleFor(x => x.LastVisitId)
+                .GreaterThan(0)
+                .When(x => x.LastVisitId.HasValue)
+                .WithMessage("LastVisitId must be greater than 0.");
+
+            RuleFor(x => x.PatientId)
+                .GreaterThan(0)
+                .When(x => x.PatientId.HasValue)
+                .WithMessage("PatientId must be greater than 0.");
+        }
+    }
+
+    public class GetVisitListHandler : IRequestHandler<GetVisitListQuery, VisitListDto>
+    {
+        private readonly ERP_DbContext _context;
+
+        public GetVisitListHandler(ERP_DbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<VisitListDto> Handle(GetVisitListQuery request, CancellationToken cancellationToken)
+        {
+            var query = _context.Visit
+                .Include(v => v.Patient)
+                .Include(v => v.Doctor)
+                .Where(v => !v.IsDeleted)
+                .AsQueryable();
+
+            if (request.PatientId.HasValue)
+            {
+                query = query.Where(v => v.patientId == request.PatientId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(v => v.Patient.name.Contains(request.Search) ||
+                                         (v.Doctor != null && (v.Doctor.firstName.Contains(request.Search) || v.Doctor.lastName.Contains(request.Search))));
+            }
+
+            int totalCount = await query.CountAsync(cancellationToken);
+
+            if (request.LastVisitId.HasValue)
+            {
+                query = query.Where(v => v.visitId > request.LastVisitId.Value);
+            }
+
+            query = query.OrderBy(v => v.visitId).Take(request.PageSize);
+
+            var visits = await query
+                .Select(v => new VisitDto
+                {
+                    VisitId = v.visitId,
+                    PatientId = v.patientId,
+                    PatientName = v.Patient.name,
+                    DoctorId = v.doctorId,
+                    DoctorName = v.Doctor != null ? $"{v.Doctor.firstName} {v.Doctor.lastName}" : null,
+                    VisitDate = v.visitDate,
+                    Status = v.status,
+                    TotalAmount = v.totalAmount,
+                    PaidAmount = v.paidAmount,
+                    RemainingAmount = v.remainingAmount
+                })
+                .ToListAsync(cancellationToken);
+
+            return new VisitListDto
+            {
+                Data = visits,
+                TotalCount = totalCount
+            };
+        }
+    }
+
+    #endregion
+
+    #region Add Medications to Visit
+
+    public class AddVisitMedicationCommand : IRequest<bool>
+    {
+        public int VisitId { get; set; }
+        public List<MedicationDetails> Medications { get; set; } = new();
+    }
+
+    public class MedicationDetails
+    {
+        public int StockId { get; set; }
+        public string Dosage { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        public string BatchNumber { get; set; } = string.Empty;
+    }
+
+    public class AddVisitMedicationCommandValidator : AbstractValidator<AddVisitMedicationCommand>
+    {
+        public AddVisitMedicationCommandValidator()
+        {
+            RuleFor(x => x.VisitId)
+                .GreaterThan(0)
+                .WithMessage("VisitId must be greater than 0.");
+
+            RuleFor(x => x.Medications)
+                .NotEmpty()
+                .WithMessage("At least one medication must be provided.");
+
+            RuleForEach(x => x.Medications).SetValidator(new MedicationDetailsValidator());
+        }
+    }
+
+    public class MedicationDetailsValidator : AbstractValidator<MedicationDetails>
+    {
+        public MedicationDetailsValidator()
+        {
+            RuleFor(x => x.StockId)
+                .GreaterThan(0)
+                .WithMessage("StockId must be greater than 0.");
+
+            RuleFor(x => x.Dosage)
+                .NotEmpty()
+                .WithMessage("Dosage is required.");
+
+            RuleFor(x => x.Quantity)
+                .GreaterThan(0)
+                .WithMessage("Quantity must be greater than 0.");
+
+            RuleFor(x => x.Price)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Price must be non-negative.");
+
+            RuleFor(x => x.BatchNumber)
+                .NotEmpty()
+                .WithMessage("BatchNumber is required.");
+        }
+    }
+
+    public class AddVisitMedicationHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<AddVisitMedicationCommand, bool>
+    {
+        public async Task<bool> Handle(AddVisitMedicationCommand request, CancellationToken cancellationToken)
+        {
+            var visit = await context.Visit.FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
+            if (visit == null)
+            {
+                throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            }
+
+            var stockIds = request.Medications.Select(m => m.StockId).ToList();
+            var stocks = await context.Stocks
+                .Include(s => s.item)
+                .Where(s => stockIds.Contains(s.stockId))
+                .ToDictionaryAsync(s => s.stockId, s => s, cancellationToken);
+
+            foreach (var med in request.Medications)
+            {
+                if (!stocks.TryGetValue(med.StockId, out var stock) || stock.quantity < med.Quantity)
+                {
+                    throw new InvalidOperationException($"Stock with ID {med.StockId} not found or insufficient quantity.");
+                }
+
+                if (stock.batchNumber != med.BatchNumber)
+                {
+                    throw new InvalidOperationException($"Batch number does not match for stock ID {med.StockId}.");
+                }
+
+                var medication = new VisitMedication
+                {
+                    visitId = request.VisitId,
+                    stockId = med.StockId,
+                    name = stock.item.Name, // Fixed: Use stock.item.Name
+                    dosage = med.Dosage,
+                    quantity = med.Quantity,
+                    price = med.Price,
+                    stock = stock,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                stock.quantity -= med.Quantity;
+                if (stock.quantity < stock.item.ReorderLevel)
+                {
+                    // TODO: Trigger reorder alert
+                }
+
+                visit.totalAmount += med.Price * med.Quantity;
+
+                context.VisitMedication.Add(medication);
+                context.Stocks.Update(stock);
+            }
+
+            visit.remainingAmount = visit.totalAmount - visit.paidAmount;
+            context.Visit.Update(visit);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+    }
+
+    #endregion
+
+    #region Add Services to Visit
+
+    public class AddVisitServiceCommand : IRequest<bool>
+    {
+        public int VisitId { get; set; }
+        public List<ServiceDetails> Services { get; set; } = new();
+    }
+
+    public class ServiceDetails
+    {
+        public int ServiceId { get; set; }
+        public int TotalSessions { get; set; }
+        public decimal PricePerSession { get; set; }
+        public DateTime StartDate { get; set; }
+    }
+
+    public class AddVisitServiceCommandValidator : AbstractValidator<AddVisitServiceCommand>
+    {
+        public AddVisitServiceCommandValidator()
+        {
+            RuleFor(x => x.VisitId)
+                .GreaterThan(0)
+                .WithMessage("VisitId must be greater than 0.");
+
+            RuleFor(x => x.Services)
+                .NotEmpty()
+                .WithMessage("At least one service must be provided.");
+
+            RuleForEach(x => x.Services).SetValidator(new ServiceDetailsValidator());
+        }
+    }
+
+    public class ServiceDetailsValidator : AbstractValidator<ServiceDetails>
+    {
+        public ServiceDetailsValidator()
+        {
+            RuleFor(x => x.ServiceId)
+                .GreaterThan(0)
+                .WithMessage("ServiceId must be greater than 0.");
+
+            RuleFor(x => x.TotalSessions)
+                .GreaterThan(0)
+                .WithMessage("TotalSessions must be greater than 0.");
+
+            RuleFor(x => x.PricePerSession)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("PricePerSession must be non-negative.");
+
+            RuleFor(x => x.StartDate)
+                .NotEmpty()
+                .GreaterThanOrEqualTo(DateTime.Now)
+                .WithMessage("StartDate must be in the present or future.");
+        }
+    }
+
+    public class AddVisitServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<AddVisitServiceCommand, bool>
+    {
+        public async Task<bool> Handle(AddVisitServiceCommand request, CancellationToken cancellationToken)
+        {
+            var visit = await context.Visit.FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken) ?? throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            var serviceIds = request.Services.Select(s => s.ServiceId).ToList();
+            var services = await context.Services
+                .Where(s => serviceIds.Contains(s.ServiceId))
+                .ToDictionaryAsync(s => s.ServiceId, s => s, cancellationToken);
+
+            foreach (var svc in request.Services)
+            {
+                if (!services.TryGetValue(svc.ServiceId, out var service))
+                {
+                    throw new KeyNotFoundException($"Service with ID {svc.ServiceId} not found.");
+                }
+
+                var visitService = new VisitServices
+                {
+                    visitId = request.VisitId,
+                    serviceId = svc.ServiceId,
+                    service = service,
+                    startDate = svc.StartDate,
+                    totalSessions = svc.TotalSessions,
+                    completedSessions = 0,
+                    pricePerSession = svc.PricePerSession,
+                    totalPrice = svc.PricePerSession * svc.TotalSessions,
+                    paidAmount = 0,
+                    remainAmount = svc.PricePerSession * svc.TotalSessions,
+                    paymentStatus = PaymentStatus.Pending,
+                    //CreatedBy = _loggedInUser.Id,
+                    //CreatedOn = DateTime.UtcNow
+                };
+
+                visit.totalAmount += visitService.totalPrice;
+                context.VisitServices.Add(visitService);
+            }
+
+            visit.remainingAmount = visit.totalAmount - visit.paidAmount;
+            visit.ModifiedOn = DateTime.Now;
+            visit.ModifiedBy = loggedInUser.Id;
+            context.Visit.Update(visit);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return true;
+        }
+    }
+    #endregion
+
+    #region Record Payment
+
+    public class RecordVisitPaymentCommand : IRequest<VisitDto>
+    {
+        public int VisitId { get; set; }
+        public decimal AmountPaid { get; set; }
+    }
+
+    public class RecordVisitPaymentCommandValidator : AbstractValidator<RecordVisitPaymentCommand>
+    {
+        public RecordVisitPaymentCommandValidator()
+        {
+            RuleFor(x => x.VisitId)
+                .GreaterThan(0)
+                .WithMessage("VisitId must be greater than 0.");
+
+            RuleFor(x => x.AmountPaid)
+                .GreaterThan(0)
+                .WithMessage("AmountPaid must be greater than 0.");
+        }
+    }
+
+    public class RecordVisitPaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<RecordVisitPaymentCommand, VisitDto>
+    {
+        public async Task<VisitDto> Handle(RecordVisitPaymentCommand request, CancellationToken cancellationToken)
+        {
+            var visit = await context.Visit
+                .Include(v => v.Patient)
+                .Include(v => v.Doctor)
+                .Include(v => v.Medications)
+                .ThenInclude(vm => vm.stock).ThenInclude(s => s.item)
+                .Include(v => v.Services)
+                .ThenInclude(vs => vs.service)
+                .FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
+            if (visit == null)
+            {
+                throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            }
+
+            if (request.AmountPaid > visit.remainingAmount)
+            {
+                throw new InvalidOperationException("Payment amount exceeds remaining balance.");
+            }
+
+            var payment = new VisitPayment
+            {
+                visitId = request.VisitId,
+                amountPaid = request.AmountPaid,
+                paymentStatus = request.AmountPaid == visit.remainingAmount ? PaymentStatus.Completed : PaymentStatus.Paid,
+                paymentDate = DateTime.UtcNow,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            visit.paidAmount += request.AmountPaid;
+            visit.remainingAmount = visit.totalAmount - visit.paidAmount;
+
+            if (visit.remainingAmount == 0)
+            {
+                visit.status = VisitStatus.COMPLETED;
+            }
+
+            context.VisitPayment.Add(payment);
+            context.Visit.Update(visit);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return new VisitDto
+            {
+                VisitId = visit.visitId,
+                PatientId = visit.patientId,
+                PatientName = visit.Patient.name,
+                DoctorId = visit.doctorId,
+                DoctorName = visit.Doctor != null ? $"{visit.Doctor.firstName} {visit.Doctor.lastName}" : null,
+                VisitDate = visit.visitDate,
+                Status = visit.status,
+                TotalAmount = visit.totalAmount,
+                PaidAmount = visit.paidAmount,
+                RemainingAmount = visit.remainingAmount,
+                Medications = visit.Medications.Select(m => new VisitMedicationDto
+                {
+                    MedicationId = m.medicationId,
+                    Name = m.stock.item.Name,
+                    Dosage = m.dosage,
+                    Quantity = m.quantity,
+                    Price = m.price,
+                    BatchNumber = m.stock.batchNumber
+                }).ToList(),
+                Services = visit.Services.Select(s => new VisitServiceDto
+                {
+                    VisitServiceId = s.visitServiceId,
+                    ServiceName = s.service.Name,
+                    TotalSessions = s.totalSessions,
+                    CompletedSessions = s.completedSessions,
+                    PricePerSession = s.pricePerSession,
+                    TotalPrice = s.totalPrice,
+                    PaidAmount = s.paidAmount,
+                    RemainAmount = s.remainAmount
+                }).ToList()
+            };
+        }
+    }
+
+    #endregion
+
+    #region Visit DTOs
+
+    public class VisitDto
+    {
+        public int VisitId { get; set; }
+        public int PatientId { get; set; }
+        public string PatientName { get; set; } = string.Empty;
+        public int? DoctorId { get; set; }
+        public string? DoctorName { get; set; }
+        public DateTime VisitDate { get; set; }
+        public VisitStatus Status { get; set; }
+        public string StatusName { get => this.Status.ToString(); }
+        public decimal TotalAmount { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal RemainingAmount { get; set; }
+        public List<VisitMedicationDto> Medications { get; set; } = new();
+        public List<VisitServiceDto> Services { get; set; } = new();
+    }
+
+    public class VisitListDto
+    {
+        public List<VisitDto> Data { get; set; } = new();
+        public int TotalCount { get; set; }
+    }
+
+    public class VisitMedicationDto
+    {
+        public int MedicationId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Dosage { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        public string BatchNumber { get; set; } = string.Empty;
+    }
+
+    public class VisitServiceDto
+    {
+        public int VisitServiceId { get; set; }
+        public string ServiceName { get; set; } = string.Empty;
+        public int TotalSessions { get; set; }
+        public int CompletedSessions { get; set; }
+        public decimal PricePerSession { get; set; }
+        public decimal TotalPrice { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal RemainAmount { get; set; }
+    }
+
+    #endregion
+}

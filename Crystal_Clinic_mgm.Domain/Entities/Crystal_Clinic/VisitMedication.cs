@@ -4,7 +4,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
     public class VisitMedication : AuditableEntity
     {
         public int medicationId { get; set; }
-        public int name { get; set; }
+        public string name { get; set; }  = string.Empty;
         public string dosage { get; set; } = string.Empty;
         public int quantity { get; set; }
         public decimal price { get; set; }
