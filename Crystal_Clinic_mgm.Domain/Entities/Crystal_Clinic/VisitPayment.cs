@@ -11,6 +11,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public int sessionNumber { get; set; } // Session 1, 2, 3, ...
         public decimal amountPaid { get; set; }
         public PaymentStatus paymentStatus { get; set; }
+        public PaymentType paymentType { get; set; }
         public DateTime paymentDate { get; set; }
     }
 
@@ -21,4 +22,10 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         Completed
     }
 
+    public enum PaymentType
+    {
+        Service,
+        Medication,
+        General
+    }
 }

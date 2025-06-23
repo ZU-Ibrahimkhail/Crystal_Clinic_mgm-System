@@ -74,9 +74,115 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
         [HttpPost("record-payment")]
         public async Task<IActionResult> RecordVisitPayment([FromBody] RecordVisitPaymentCommand command)
         {
-            var visitDto = await Mediator.Send(command);
-            return Ok(visitDto);
+            try
+            {
+                var result = await Mediator.Send(command);
+                return Ok(result); // Returns VisitDto
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         #endregion
+
+        // Pay for all services, a single service, or a single session
+        [HttpPost("pay-service")]
+        public async Task<IActionResult> PayVisitService([FromBody] PayVisitServiceCommand command)
+        {
+            try
+            {
+                var success = await Mediator.Send(command);
+                return success ? Ok("Service payment recorded successfully.") : BadRequest("Failed to record service payment.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Pay for medications
+        [HttpPost("pay-medication")]
+        public async Task<IActionResult> PayVisitMedication([FromBody] PayVisitMedicationCommand command)
+        {
+            try
+            {
+                var success = await Mediator.Send(command);
+                return success ? Ok("Medication payment recorded successfully.") : BadRequest("Failed to record medication payment.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Change visit status
+        [HttpPut("status")]
+        public async Task<IActionResult> ChangeVisitStatus([FromBody] ChangeVisitStatusCommand command)
+        {
+            try
+            {
+                var success = await Mediator.Send(command);
+                return success ? Ok("Visit status updated successfully.") : BadRequest("Failed to update visit status.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Postpone a visit
+        [HttpPut("postpone")]
+        public async Task<IActionResult> PostponeVisit([FromBody] PostponeVisitCommand command)
+        {
+            try
+            {
+                var success = await Mediator.Send(command);
+                return success ? Ok("Visit postponed successfully.") : BadRequest("Failed to postpone visit.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Remove a payment, medication, or service
+        [HttpDelete("item")]
+        public async Task<IActionResult> RemoveVisitItem([FromBody] RemoveVisitItemCommand command)
+        {
+            try
+            {
+                var success = await Mediator.Send(command);
+                return success ? Ok("Item removed successfully.") : BadRequest("Failed to remove item.");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

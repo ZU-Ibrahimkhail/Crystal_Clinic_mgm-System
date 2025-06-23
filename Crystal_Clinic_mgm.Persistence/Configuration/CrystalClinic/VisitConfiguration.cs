@@ -56,7 +56,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .WithOne()
                 .HasForeignKey(vm => vm.visitId)  // Assuming a foreign key of visitId in VisitMedication
                 .OnDelete(DeleteBehavior.Cascade);
-
+            // Collection Properties (VisitMedications, Services)
+            entity.HasMany(v => v.Payments)
+                .WithOne()
+                .HasForeignKey(vm => vm.visitId)  // Assuming a foreign key of visitId in VisitMedication
+                .OnDelete(DeleteBehavior.Cascade);
             entity.HasMany(v => v.Services)
                 .WithOne()
                 .HasForeignKey(s => s.visitId)  // Assuming a foreign key of visitId in Service

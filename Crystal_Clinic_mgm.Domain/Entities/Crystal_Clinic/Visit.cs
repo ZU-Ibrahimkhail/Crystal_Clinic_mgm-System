@@ -30,6 +30,7 @@
 
         // Collection of services (like PRP, laser treatment, etc.)
         public ICollection<VisitServices> Services { get; set; } = [];
+        public ICollection<VisitPayment> Payments { get; set; } = [];
 
         // The ID of the doctor assigned to the visit, which is nullable for cases where no doctor is selected
         public bool IsCompleted => status == VisitStatus.COMPLETED;
