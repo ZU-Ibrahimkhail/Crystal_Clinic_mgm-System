@@ -41,7 +41,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.De
             }
             #endregion
 
-            #region Add Withdrawal Tracking Record
+            #region Add Deposit Tracking Record
             var entity = new WithdrawalTracking
             {
                 CurrencyTypeId = mainAccount.CurrencyTypeId,
@@ -59,15 +59,15 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.De
             _GRepoWithdrawalTracking.SaveAsync(entity, cancellationToken);
             #endregion
 
-            #region Update Main Asset Record
+            #region Update Main Account Record
             mainAccount.BalanceAmount += request.DepositAmount;
-            mainAccount.TotalDebitAmount += request.DepositAmount;
+            mainAccount.TotalCreditAmount += request.DepositAmount;
             mainAccount.ModifiedOn = DateTime.Now;
             mainAccount.ModifiedBy = _loggedInUser.Id;
             _GRepoMainAccount.EditeAsync(mainAccount, cancellationToken);
             #endregion
 
-            #region Add Asset Tracking Record
+            #region Add Account Tracking Record
             AccountTracking AccountTracking = new()
             {
                 CurrencyTypeId = mainAccount.CurrencyTypeId,

@@ -65,7 +65,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.WithdrawalTrackings.Commands.Cr
             #endregion
 
             #region Update Main Asset Record
-            mainAccount.TotalDebitAmount -= request.WithdrawalAmount;
+            mainAccount.TotalDebitAmount += request.WithdrawalAmount;
             mainAccount.BalanceAmount -= request.WithdrawalAmount;
             mainAccount.ModifiedOn = DateTime.Now;
             mainAccount.ModifiedBy = _loggedInUser.Id;
