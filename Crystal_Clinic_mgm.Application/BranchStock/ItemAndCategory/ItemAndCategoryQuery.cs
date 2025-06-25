@@ -48,6 +48,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public decimal ReorderLevel { get; set; }
         public int BranchId { get; set; }
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
     }
 
     public class GetItemsHandler(ERP_DbContext context) : IRequestHandler<GetItemsQuery, GetItemsResponse>
@@ -81,6 +82,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
                     ReorderLevel = i.ReorderLevel,
                     BranchId = i.BranchId,
                     CategoryId = i.CategoryId,
+                    CategoryName = i.Category!.Name ?? "",
                     CurrentStock = i.CurrentStock,
                 })
                 .ToListAsync(cancellationToken);
