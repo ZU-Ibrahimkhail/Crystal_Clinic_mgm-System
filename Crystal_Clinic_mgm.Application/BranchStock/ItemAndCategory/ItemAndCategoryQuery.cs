@@ -70,7 +70,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
 
             var items = await query
                 .OrderBy(i => i.ItemId)
-                .Take(request.PageSize)
+                .Take(request.PageSize).Include(i => i.Category)
                 .Select(i => new ItemDto
                 {
                     ItemId = i.ItemId,
