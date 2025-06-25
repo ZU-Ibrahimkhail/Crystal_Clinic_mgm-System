@@ -1,11 +1,13 @@
 ﻿// InventoryController.cs
 using Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory;
+using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
+    [RBAC]
     public class InventoryController : BaseController
     {
 

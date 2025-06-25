@@ -1,10 +1,12 @@
 ﻿using Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands;
+using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.AssetMS
 {
     [Authorize]
+    [RBAC]
     public class TransactionsController : BaseController
     {
 

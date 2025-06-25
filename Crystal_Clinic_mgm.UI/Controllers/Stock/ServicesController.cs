@@ -1,4 +1,5 @@
 ﻿// ServicesController for CRUD operations
+using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Crystal_Clinic_Mgm.Application.Crystal_ClinicServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
 
     [Authorize]
+    [RBAC]
     public class ServicesController : BaseController
     {
 
