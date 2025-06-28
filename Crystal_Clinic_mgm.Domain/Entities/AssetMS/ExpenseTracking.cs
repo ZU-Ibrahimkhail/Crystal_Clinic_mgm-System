@@ -14,6 +14,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.AssetMS
         public float Amount { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public string AttachmentPath { get; set; } = string.Empty;
         public int BranchId { get; set; }
         public Branch? Branch { get; set; }
         public Guid UserId { get; set; }

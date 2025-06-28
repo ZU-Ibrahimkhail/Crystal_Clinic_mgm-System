@@ -22,6 +22,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.AssetMS
             entity.Property(c => c.Amount).HasColumnName("Amount").HasColumnType("real").IsRequired(true);
             entity.Property(c => c.Date).HasColumnName("Date").HasColumnType("DateTime").IsRequired(true);
             entity.Property(c => c.Description).HasColumnName("Description").HasColumnType("nvarchar(max)").IsRequired(false);
+            entity.Property(c => c.InvoiceNumber).HasColumnName("InvoiceNumber").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
+            entity.Property(c => c.AttachmentPath).HasColumnName("AttachmentPath").HasColumnType("nvarchar(max)").IsRequired(false);
 
             entity.Property(c => c.BranchId).HasColumnName("BranchId").HasColumnType("int").IsRequired(true);
             entity.HasOne(x => x.Branch).WithMany().HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.NoAction);

@@ -20,6 +20,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
             entity.Property(c => c.BranchId).HasColumnName("BranchId").HasColumnType("int").IsRequired(true).HasDefaultValue(1);
             entity.HasOne<Branch>("Branch").WithMany().HasForeignKey(f => f.BranchId).OnDelete(DeleteBehavior.NoAction);
             entity.Property(c => c.IsActive).HasColumnName("IsActive").HasColumnType("bit").HasDefaultValue(true);
+            entity.Property(c => c.JobDescription).HasColumnName("JobDescription").HasColumnType("nvarchar(max)").IsRequired(false);
 
 
 

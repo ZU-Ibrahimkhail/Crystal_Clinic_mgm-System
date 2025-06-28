@@ -7,6 +7,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks
         public int BranchId { get; set; }
         public Branch? Branch { get; set; }
         public bool IsActive { get; set; } = true;
+        public string JobDescription { get; set; } = string.Empty;
 
 
     }

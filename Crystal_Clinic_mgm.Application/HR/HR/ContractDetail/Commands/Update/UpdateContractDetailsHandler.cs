@@ -8,6 +8,9 @@ using Crystal_Clinic_Mgm.Domain.Entities.UMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Crystal_Clinic_Mgm.Common.CommonLocalizations;
 using Crystal_Clinic_Mgm.Common.CommonColumnNameLocalization;
+using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Storage;
+using System.Reflection.PortableExecutable;
 
 namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Update
 {
@@ -63,8 +66,21 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Update
             {
                 return _message.RecordNotFound(request.ID);
             }
+            string FilePath = "";
+            if (request.Attachment != null)
+            {
+                var attachment = request.Attachment;
+                FileHandler _sotrage = new();
+                await _sotrage.RemoveFile("wwwroot", entity.AttachmentPath);
+                if (attachment.FileName.Length > 0)
+                {
+                    string ext = Path.GetExtension(attachment.FileName);
+                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
+                }
+            }
 
             entity.EmployeeProfileId = request.EmployeeProfileId;
+            entity.AttachmentPath = FilePath;
             entity.ContractTypeId = request.ContractTypeId;
             entity.PositionTitleId = request.PositionTitleId;
             entity.CurrencyTypeId = request.CurrencyTypeId;

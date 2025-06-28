@@ -7,6 +7,8 @@ using Crystal_Clinic_Mgm.Common.CommonLocalizations;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Crystal_Clinic_Mgm.Common.CommonColumnNameLocalization;
+using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Storage;
 
 namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Update
 {
@@ -56,6 +58,18 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Updat
             #endregion
 
             #region Update Expense Tracking Record
+            string FilePath = "";
+            if (request.Attachment != null)
+            {
+                var attachment = request.Attachment;
+                FileHandler _sotrage = new();
+                if (attachment.FileName.Length > 0)
+                {
+                    await _sotrage.RemoveFile("wwwroot", entity.AttachmentPath);
+                    string ext = Path.GetExtension(attachment.FileName);
+                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
+                }
+            }
             entity.CurrencyTypeId = mainAccount.CurrencyTypeId;
             entity.ExpenseTypeId = request.ExpenseTypeId;
             entity.Date = request.Date;

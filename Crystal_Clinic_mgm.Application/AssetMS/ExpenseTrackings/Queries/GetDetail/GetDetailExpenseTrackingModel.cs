@@ -17,6 +17,8 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Queries.GetDet
         public string Description { get; set; } = string.Empty;
         public int BranchId { get; set; }
         public string Branch { get; set; } = string.Empty;
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public string AttachmentPath { get; set; } = string.Empty;
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public double Amount { get; set; }

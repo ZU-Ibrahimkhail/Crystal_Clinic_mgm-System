@@ -21,7 +21,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.AssetMS
         /// <param name="command"></param>
         /// <returns>Json Record</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(CreateExpenseTrackingCommand command)
+        public async Task<IActionResult> Create([FromForm] CreateExpenseTrackingCommand command)
         {
             if (ModelState.IsValid)
             {
@@ -39,7 +39,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.AssetMS
         /// <param name="Id">ID is require</param>
         /// <returns></returns>
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> Update(UpdateExpenseTrackingCommand command, int Id)
+        public async Task<IActionResult> Update([FromForm] UpdateExpenseTrackingCommand command, int Id)
         {
             if (Id <= 0)
             {

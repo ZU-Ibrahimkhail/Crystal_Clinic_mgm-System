@@ -15,7 +15,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.HR
     public class ContractDetailsController : BaseController
     {
         [HttpPost]
-        public async Task<IActionResult> Create(CreateContractDetailsCommand command)
+        public async Task<IActionResult> Create([FromForm] CreateContractDetailsCommand command)
         {
             if (ModelState.IsValid)
             {
@@ -27,7 +27,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.HR
             }
         }
         [HttpPut("{Id:int}")]
-        public async Task<IActionResult> Update(UpdateContractDetailsCommand command, int Id)
+        public async Task<IActionResult> Update([FromForm] UpdateContractDetailsCommand command, int Id)
         {
             if (!ModelState.IsValid)
             {

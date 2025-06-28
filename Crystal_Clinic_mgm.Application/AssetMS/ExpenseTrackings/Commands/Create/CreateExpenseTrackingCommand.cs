@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Create
@@ -7,10 +8,10 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
     {
         public Guid MainAccountId { get; set; }
         public int ExpenseTypeId { get; set; }
-        //public int CurrencyTypeId { get; set; }
         public float Amount { get; set; }
-        //public double CRateToMainAccountCurrencyType { get; set; }
         public DateTime Date { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public IFormFile? Attachment { get; set; }
     }
 }

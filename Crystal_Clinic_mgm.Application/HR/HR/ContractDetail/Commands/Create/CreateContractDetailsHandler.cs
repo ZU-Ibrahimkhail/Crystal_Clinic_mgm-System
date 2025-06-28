@@ -8,6 +8,8 @@ using Crystal_Clinic_Mgm.Common.CommonLocalizations;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.UMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
+using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Storage;
 
 namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
 {
@@ -60,7 +62,17 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
                 return _message.CheckCCValidationError(validator);
             }
 
-
+            string FilePath = "";
+            if (request.Attachment != null)
+            {
+                var attachment = request.Attachment;
+                FileHandler _sotrage = new();
+                if (attachment.FileName.Length > 0)
+                {
+                    string ext = Path.GetExtension(attachment.FileName);
+                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
+                }
+            }
             var entity = new ContractDetails
             {
                 EmployeeProfileId = request.EmployeeProfileId,
@@ -71,6 +83,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
                 BranchId = request.BranchId,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate ?? null,
+                AttachmentPath = FilePath,
                 IsActive = request.IsActive,
                 Remarks = request.Remarks,
                 CreatedBy = _loggedInUser.Id,

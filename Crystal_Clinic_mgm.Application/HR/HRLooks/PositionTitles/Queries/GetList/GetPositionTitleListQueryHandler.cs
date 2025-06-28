@@ -8,17 +8,8 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 
 namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Queries.GetList
 {
-    public class GetPositionTitleListQueryHandler : IRequestHandler<GetPositionTitleListQuery, ResponseDataTable<GetPositionTitleListModel>>
+    public class GetPositionTitleListQueryHandler(IGenericRepositoryAsync<ERP_DbContext, PositionTitle> genericRepositoryAsync, IMapper mapper) : IRequestHandler<GetPositionTitleListQuery, ResponseDataTable<GetPositionTitleListModel>>
     {
-        private readonly IGenericRepositoryAsync<ERP_DbContext, PositionTitle> _genericRepositoryAsync;
-        private readonly IMapper _mapper;
-
-        public GetPositionTitleListQueryHandler(IGenericRepositoryAsync<ERP_DbContext, PositionTitle> genericRepositoryAsync, IMapper mapper)
-        {
-            _genericRepositoryAsync = genericRepositoryAsync;
-            _mapper = mapper;
-        }
-
         public async Task<ResponseDataTable<GetPositionTitleListModel>> Handle(GetPositionTitleListQuery request, CancellationToken cancellationToken)
         {
             var GradeStep = await Task.Run(() =>
@@ -28,7 +19,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Queries.GetLi
                 {
                     searchBy = request.Name.ToLower().Trim();
                 }
-                return _genericRepositoryAsync.FindByCondition(x => x.IsDeleted == false
+                return genericRepositoryAsync.FindByCondition(x => x.IsDeleted == false
                                     &&
                                     (searchBy == null ||
                                     x.EnglishName.ToLower().Contains(searchBy) ||
@@ -41,7 +32,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Queries.GetLi
 
 
 
-            var entity = _mapper.Map<List<GetPositionTitleListModel>>(GradeStep);
+            var entity = mapper.Map<List<GetPositionTitleListModel>>(GradeStep);
 
             var result = MyDataTable<GetPositionTitleListModel>.Generate(entity, request.PageSize, request.PageIndex);
             return result;

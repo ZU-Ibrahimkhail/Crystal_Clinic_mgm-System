@@ -5,8 +5,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Queries.GetLi
     public class GetPositionTitleListModel : GeneralLookListModel
     {
 
-        public int JobPositionId { get; set; }
-        public string JobPosition { get; set; } = string.Empty;
+        public string JobDescription { get; set; } = string.Empty;
         public int BranchId { get; set; }
         public string Branch { get; set; } = string.Empty;
         public bool IsActive { get; set; } = false;

@@ -8,6 +8,9 @@ using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using System.ComponentModel;
+using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Storage;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 
 namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Create
 {
@@ -46,6 +49,18 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
             #endregion
 
             #region Add Expense Tracking Record
+            
+            string FilePath = "";
+            if (request.Attachment != null)
+            {
+                var attachment = request.Attachment;
+                FileHandler _sotrage = new();
+                if (attachment.FileName.Length > 0)
+                {
+                    string ext = Path.GetExtension(attachment.FileName);
+                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
+                }
+            }
             var entity = new ExpenseTracking
             {
                 CurrencyTypeId = mainAccount.CurrencyTypeId,
@@ -54,7 +69,9 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
                 Amount = request.Amount,
                 Date = request.Date,
                 Description = request.Description,
+                InvoiceNumber = request.InvoiceNumber,
                 BranchId = _loggedInUser.BranchId,
+                AttachmentPath = FilePath,
                 UserId = _loggedInUser.Id,
                 CreatedBy = _loggedInUser.Id,
                 CreatedOn = DateTime.Now,

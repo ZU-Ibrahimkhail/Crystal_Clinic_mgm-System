@@ -10,37 +10,20 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 
 namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Command.Create
 {
-    public class CreatePositionTitleCommandHandler : IRequestHandler<CreatePositionTitleCommand, JsonResult>
+    public class CreatePositionTitleCommandHandler(
+        IMessage message,
+        ILoggedInUser loggedInUser,
+        IGenericRepositoryAsync<ERP_DbContext, PositionTitle> genericRepositoryAsync,
+        IStringLocalizer<CommonValidationResource> localizer,
+        IStringLocalizer<CommonColumnNameResource> columnLocalizer,
+        IGeneralHelperRepositoryAsync<ERP_DbContext, PositionTitle> helper) : IRequestHandler<CreatePositionTitleCommand, JsonResult>
     {
-        private readonly IMessage _message;
-        private readonly ILoggedInUser _loggedInUser;
-        private readonly IGenericRepositoryAsync<ERP_DbContext, PositionTitle> _genericRepositoryAsync;
-        private readonly IStringLocalizer<CommonValidationResource> _localizer;
-        private readonly IStringLocalizer<CommonColumnNameResource> _columnLocalizer;
-        private readonly IGeneralHelperRepositoryAsync<ERP_DbContext, PositionTitle> _helper;
-
-        public CreatePositionTitleCommandHandler(
-            IMessage message,
-            ILoggedInUser loggedInUser,
-            IGenericRepositoryAsync<ERP_DbContext, PositionTitle> genericRepositoryAsync,
-            IStringLocalizer<CommonValidationResource> localizer,
-            IStringLocalizer<CommonColumnNameResource> columnLocalizer,
-            IGeneralHelperRepositoryAsync<ERP_DbContext, PositionTitle> helper)
-        {
-            _message = message;
-            _loggedInUser = loggedInUser;
-            _genericRepositoryAsync = genericRepositoryAsync;
-            _localizer = localizer;
-            _columnLocalizer = columnLocalizer;
-            _helper = helper;
-        }
-
         public async Task<JsonResult> Handle(CreatePositionTitleCommand request, CancellationToken cancellationToken)
         {
-            var validator = new CreatePositionTitleCommandValidator(_helper, _columnLocalizer, _localizer).Validate(request).Errors;
+            var validator = new CreatePositionTitleCommandValidator(helper, columnLocalizer, localizer).Validate(request).Errors;
             if (validator.Count > 0)
             {
-                return _message.CheckValidationError(validator);
+                return message.CheckValidationError(validator);
             }
             var entity = new PositionTitle()
             {
@@ -49,12 +32,13 @@ namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Command.Creat
                 DariName = request.DariName,
                 Code = request.Code,
                 BranchId = request.BranchId,
+                JobDescription = request.JobDescription,
                 IsActive = request.IsActive,
-                CreatedBy = _loggedInUser.Id,
+                CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.Now,
                 ModifiedOn = DateTime.Now
             };
-            return await _genericRepositoryAsync.AddAsync(entity, cancellationToken);
+            return await genericRepositoryAsync.AddAsync(entity, cancellationToken);
 
         }
     }

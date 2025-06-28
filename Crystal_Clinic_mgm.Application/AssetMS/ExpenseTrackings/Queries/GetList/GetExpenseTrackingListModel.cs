@@ -20,5 +20,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Queries.GetLis
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public double Amount { get; set; }
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public string AttachmentPath { get; set; } = string.Empty;
     }
 }

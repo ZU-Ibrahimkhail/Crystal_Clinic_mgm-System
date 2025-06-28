@@ -11,6 +11,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HRLooks.PositionTitles.Command.Creat
         public string Code { get; set; } = string.Empty;
         public int BranchId { get; set; }
         public bool IsActive { get; set; } = false;
+        public string JobDescription { get; set; } = string.Empty;
 
     }
 }
