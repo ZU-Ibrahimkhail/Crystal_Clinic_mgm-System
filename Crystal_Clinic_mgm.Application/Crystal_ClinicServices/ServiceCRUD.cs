@@ -15,6 +15,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal sessionRate { get; set; }
+        public int BranchId { get; set; }
+        public int CurrencyTypeId { get; set; }
     }
 
     public class CreateServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateServiceCommand, int>
@@ -26,6 +28,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 Name = request.Name,
                 Description = request.Description,
                 sessionRate = request.sessionRate,
+                BranchId = request.BranchId,
+                CurrencyTypeId = request.CurrencyTypeId,
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.Now
             };
@@ -44,6 +48,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal sessionRate { get; set; }
+        public int BranchId { get; set; }
+        public int CurrencyTypeId { get; set; }
+
 
     }
 
@@ -57,6 +64,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             service.Name = request.Name;
             service.Description = request.Description;
             service.sessionRate = request.sessionRate;
+            service.BranchId = request.BranchId;
+            service.CurrencyTypeId = request.CurrencyTypeId;
             service.ModifiedBy = loggedInUser.Id;
             service.ModifiedOn = DateTime.Now;
 
@@ -156,6 +165,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string Description { get; set; } = string.Empty;
         public decimal sessionRate { get; set; }
         public string? ImagePath { get; set; }
+        public int BranchId { get; set; }
+        public int CurrencyTypeId { get; set; }
+        public string CurrencyTypeName { get; set; } = string.Empty;
     }
 
     public class ListAllServicesHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<ListAllServicesQuery, List<ServiceDto>>

@@ -35,6 +35,19 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic
                 .HasColumnType("nvarchar(255)")
                 .IsRequired(false);
 
+            entity.Property(s => s.BranchId)
+                .HasColumnName("BranchId")
+                .HasColumnType("int")
+                .IsRequired(true).HasDefaultValue(1);
+            entity.Property(s => s.CurrencyTypeId)
+                .HasColumnName("CurrencyTypeId")
+                .HasColumnType("int")
+                .IsRequired(true).HasDefaultValue(2);
+            entity.HasOne(x=>x.CurrencyType)
+                .WithMany()
+                .HasForeignKey(x=>x.CurrencyTypeId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             // Optional: You can also add other configurations, like indexes, defaults, etc.
             // For example, if you want to add an index to `Name` for better search performance:
             entity.HasIndex(s => s.Name).HasDatabaseName("IX_Service_Name");

@@ -75,7 +75,27 @@ namespace Crystal_Clinic_Mgm.Persistence.Initializers
                         CreatedOn = DateTime.UtcNow,
                         CreatedBy = GUID
 
-                    }); ;
+                    },
+                    new CurrencyType
+                    {
+                        EnglishName = "Euro",
+                        PashtoName = "یورو",
+                        DariName = "یورو",
+                        Code = "EUR",
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedBy = GUID
+
+                    },
+                    new CurrencyType
+                    {
+                        EnglishName = "Pakistan Rupee",
+                        PashtoName = "پاکستانی روپۍ",
+                        DariName = "روپیه پاکستانی",
+                        Code = "PKR",
+                        CreatedOn = DateTime.UtcNow,
+                        CreatedBy = GUID
+
+                    }); 
                     await context.SaveChangesAsync();
                 }
                 catch (Exception)

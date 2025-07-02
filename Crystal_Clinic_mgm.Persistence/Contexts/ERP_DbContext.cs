@@ -72,7 +72,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<Visit> Visit { get; set; } 
         public DbSet<VisitMedication> VisitMedication { get; set; } 
         public DbSet<VisitServices> VisitServices { get; set; } 
-        public DbSet<VisitPayment> VisitPayment { get; set; } 
+        public DbSet<VisitPayment> VisitPayment { get; set; }
+        public DbSet<CurrencyExchangeRate> CurrencyExchangeRates { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -127,6 +128,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new VisitMedicationConfiguration());
             modelBuilder.ApplyConfiguration(new VisitServicesConfiguration());
             modelBuilder.ApplyConfiguration(new VisitPaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
+
 
 
         }
