@@ -74,6 +74,24 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<VisitServices> VisitServices { get; set; } 
         public DbSet<VisitPayment> VisitPayment { get; set; }
         public DbSet<CurrencyExchangeRate> CurrencyExchangeRates { get; set; }
+        public DbSet<ServiceSessions> ServiceSessions { get; set; }
+
+        public async Task<decimal> GetExchangeRate(int fromCurrencyId, int toCurrencyId, CancellationToken cancellationToken)
+        {
+            if (fromCurrencyId == toCurrencyId)
+                return 1m;
+
+            var rate = await CurrencyExchangeRates
+                .Where(r => !r.IsDeleted && r.FromCurrencyId == fromCurrencyId && r.ToCurrencyId == toCurrencyId)
+                .OrderByDescending(r => r.ModifiedOn ?? r.CreatedOn)
+                .Select(r => r.ExchangeRate)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (rate == 0)
+                throw new InvalidOperationException($"No exchange rate found from CurrencyId {fromCurrencyId} to CurrencyId {toCurrencyId}.");
+
+            return rate;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

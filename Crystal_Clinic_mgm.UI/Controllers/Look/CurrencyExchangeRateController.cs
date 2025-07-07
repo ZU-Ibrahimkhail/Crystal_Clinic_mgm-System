@@ -1,11 +1,15 @@
-﻿using Crystal_Clinic_Mgm.Application.Look.CurrencyExchangeRates;
+﻿using Crystal_Clinic_Mgm.Application.Common.RBAC;
+using Crystal_Clinic_Mgm.Application.Look.CurrencyExchangeRates;
 using Crystal_Clinic_Mgm.Common.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Look
 {
+    [Authorize]
+    [RBAC]
     public class CurrencyExchangeRateController : BaseController
     {
 

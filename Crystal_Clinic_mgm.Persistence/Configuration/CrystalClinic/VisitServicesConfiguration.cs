@@ -20,6 +20,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                   .HasForeignKey(vs => vs.serviceId)
                   .OnDelete(DeleteBehavior.NoAction);
 
+            entity.HasMany(vs => vs.sessions)
+                  .WithOne() // Assuming each service is used by multiple visits
+                  .HasForeignKey(vs => vs.visitServiceId)
+                  .OnDelete(DeleteBehavior.NoAction);
+
+            entity.Property(vs => vs.CurrencyTypeId)
+                  .HasColumnType("int")
+                  .IsRequired().HasDefaultValue(2);
+
+
+            // Foreign Key relationships
+            entity.HasOne(vs => vs.CurrencyType)
+                  .WithMany() // Assuming each service is used by multiple visits
+                  .HasForeignKey(vs => vs.CurrencyTypeId)
+                  .OnDelete(DeleteBehavior.NoAction);
+
             // Properties Configuration
             entity.Property(vs => vs.startDate)
                   .HasColumnType("datetime")
@@ -32,20 +48,15 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
             entity.Property(vs => vs.completedSessions)
                   .HasColumnType("int")
                   .IsRequired();
+            entity.Property(vs => vs.PaidSessions)
+                  .HasColumnType("int")
+                  .IsRequired().HasDefaultValue(0);
 
             entity.Property(vs => vs.pricePerSession)
                   .HasColumnType("decimal(18,2)")
                   .IsRequired();
 
             entity.Property(vs => vs.totalPrice)
-                  .HasColumnType("decimal(18,2)")
-                  .IsRequired();
-
-            entity.Property(vs => vs.paidAmount)
-                  .HasColumnType("decimal(18,2)")
-                  .IsRequired();
-
-            entity.Property(vs => vs.remainAmount)
                   .HasColumnType("decimal(18,2)")
                   .IsRequired();
 

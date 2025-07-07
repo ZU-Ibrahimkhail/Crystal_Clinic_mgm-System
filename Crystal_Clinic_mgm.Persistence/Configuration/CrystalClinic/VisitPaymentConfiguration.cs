@@ -40,8 +40,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic
                 .HasColumnType("int")
                 .IsRequired();
 
-            entity.Property(vp => vp.PaymentToAFNExchangeRate)
-                  .HasColumnName("PaymentToAFNExchangeRate")
+            entity.Property(vp => vp.ExchangeRateToAFN)
+                  .HasColumnName("ExchangeRateToAFN")
                   .HasColumnType("decimal")
                   .IsRequired();
 
@@ -50,6 +50,17 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic
                 .HasColumnName("AmountPaid")
                 .HasColumnType("decimal")
                 .IsRequired();
+
+            entity.Property(vp => vp.AmountInAFN)
+                  .HasColumnName("AmountInAFN")
+                  .HasColumnType("decimal")
+                  .IsRequired();
+
+
+            entity.Property(vp => vp.RefundAmountInAFN)
+                  .HasColumnName("RefundAmountInAFN")
+                  .HasColumnType("decimal")
+                  .IsRequired();
 
             entity.Property(vp => vp.paymentStatus)
                 .HasColumnName("PaymentStatus")

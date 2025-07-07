@@ -11,19 +11,23 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public Service? service { get; set; }
         public int? CurrencyTypeId { get; set; }
         public CurrencyType? CurrencyType { get; set; }
-        public decimal PaymentToAFNExchangeRate { get; set; }
+        public decimal ExchangeRateToAFN { get; set; }
         public int sessionNumber { get; set; } 
         public decimal amountPaid { get; set; }
         public PaymentStatus paymentStatus { get; set; }
         public PaymentType paymentType { get; set; }
         public DateTime paymentDate { get; set; }
+        public decimal AmountInAFN { get; set; }
+        public decimal RefundAmountInAFN { get; set; } = 0;
     }
 
     public enum PaymentStatus
     {
         Pending,
         Paid,
-        Completed
+        Completed,
+        FullyRefunded,
+        PartiallyRefunded
     }
 
     public enum PaymentType

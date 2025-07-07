@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704100045_remaining")]
+    partial class remaining
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -930,59 +933,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("Patient", "CrystalClinic");
                 });
 
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.ServiceSessions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("ImplementationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ImplementorEmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsImplemented")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("PriceInAFN")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("contactInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("patientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("serviceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("serviceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("sessionNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("visitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("visitServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImplementorEmployeeId");
-
-                    b.HasIndex("visitServiceId");
-
-                    b.ToTable("ServiceSessions");
-                });
-
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", b =>
                 {
                     b.Property<int>("visitId")
@@ -1147,6 +1097,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal")
                         .HasColumnName("ExchangeRateToAFN");
 
+                    b.Property<decimal?>("ExchangeRateToServiceCurrency")
+                        .HasColumnType("decimal")
+                        .HasColumnName("ExchangeRateToServiceCurrency");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1155,10 +1109,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("RefundAmountInAFN")
-                        .HasColumnType("decimal")
-                        .HasColumnName("RefundAmountInAFN");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -1214,11 +1164,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasDefaultValue(2);
 
-                    b.Property<int>("PaidSessions")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<int>("completedSessions")
                         .HasColumnType("int");
 
@@ -1228,11 +1173,17 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<DateTime?>("nextSessionDate")
                         .HasColumnType("datetime");
 
+                    b.Property<decimal>("paidAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("paymentStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("pricePerSession")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("remainAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("serviceId")
@@ -2882,21 +2833,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.ServiceSessions", b =>
-                {
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "ImplementorEmployee")
-                        .WithMany()
-                        .HasForeignKey("ImplementorEmployeeId");
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", null)
-                        .WithMany("sessions")
-                        .HasForeignKey("visitServiceId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("ImplementorEmployee");
-                });
-
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Doctor", "Doctor")
@@ -3196,11 +3132,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("Payments");
 
                     b.Navigation("Services");
-                });
-
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", b =>
-                {
-                    b.Navigation("sessions");
                 });
 #pragma warning restore 612, 618
         }

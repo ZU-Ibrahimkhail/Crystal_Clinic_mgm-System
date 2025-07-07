@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250705180403_serviceSession")]
+    partial class serviceSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -950,25 +953,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<decimal>("PriceInAFN")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("contactInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("patientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("serviceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("serviceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("sessionNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("visitId")
                         .HasColumnType("int");
 
                     b.Property<int>("visitServiceId")
@@ -977,8 +962,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasKey("Id");
 
                     b.HasIndex("ImplementorEmployeeId");
-
-                    b.HasIndex("visitServiceId");
 
                     b.ToTable("ServiceSessions");
                 });
@@ -1147,6 +1130,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal")
                         .HasColumnName("ExchangeRateToAFN");
 
+                    b.Property<decimal?>("ExchangeRateToServiceCurrency")
+                        .HasColumnType("decimal")
+                        .HasColumnName("ExchangeRateToServiceCurrency");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1155,10 +1142,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("RefundAmountInAFN")
-                        .HasColumnType("decimal")
-                        .HasColumnName("RefundAmountInAFN");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -2888,12 +2871,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .WithMany()
                         .HasForeignKey("ImplementorEmployeeId");
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", null)
-                        .WithMany("sessions")
-                        .HasForeignKey("visitServiceId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("ImplementorEmployee");
                 });
 
@@ -3196,11 +3173,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("Payments");
 
                     b.Navigation("Services");
-                });
-
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", b =>
-                {
-                    b.Navigation("sessions");
                 });
 #pragma warning restore 612, 618
         }

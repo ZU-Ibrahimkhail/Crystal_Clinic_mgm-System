@@ -66,6 +66,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasForeignKey(s => s.visitId)  // Assuming a foreign key of visitId in Service
                 .OnDelete(DeleteBehavior.Cascade);
 
+
             // Auditable entity fields configuration (if applicable)
             EntityConfiguration<Visit>.AuditableEntityConfigurations(entity);
         }

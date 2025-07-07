@@ -1,5 +1,6 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Localizations;
 using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -98,7 +99,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     }
     #endregion
 
-
     #region Add Image To service
     public class AddImageToServiceCommand : IRequest<int>
     {
@@ -170,12 +170,13 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string CurrencyTypeName { get; set; } = string.Empty;
     }
 
-    public class ListAllServicesHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<ListAllServicesQuery, List<ServiceDto>>
+    public class ListAllServicesHandler(ERP_DbContext context,IHttpContextAccessor httpContextAccessor) : IRequestHandler<ListAllServicesQuery, List<ServiceDto>>
     {
         public async Task<List<ServiceDto>> Handle(ListAllServicesQuery request, CancellationToken cancellationToken)
         {
             var query = context.Services.Where(x => !x.IsDeleted).AsQueryable();
 
+            Localization localize = new(httpContextAccessor);
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(s => s.Name.Contains(request.Search));
@@ -186,7 +187,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 query = query.Where(s => s.ServiceId > request.LastServiceId.Value);
             }
 
-            query = query.OrderBy(s => s.ServiceId).Take(request.PageSize);
+            query = query.Include(x=>x.CurrencyType).OrderBy(s => s.ServiceId).Take(request.PageSize);
 
             return await query.Select(s => new ServiceDto
             {
@@ -194,6 +195,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 Name = s.Name,
                 Description = s.Description,
                 sessionRate = s.sessionRate,
+                CurrencyTypeId = s.CurrencyTypeId,
+                CurrencyTypeName = localize.GetName(s.CurrencyType),
                 ImagePath = s.ImagePath
             }).ToListAsync(cancellationToken);
         }
