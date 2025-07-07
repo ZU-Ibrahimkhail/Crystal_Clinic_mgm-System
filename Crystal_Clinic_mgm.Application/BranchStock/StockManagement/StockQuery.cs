@@ -33,20 +33,14 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         public decimal SellPrice { get; set; }
         public DateTime PurchaseDate { get; set; }
         public DateTime ExpiryDate { get; set; }
+        public string? BarCode { get; set; }
     }
 
-    public class GetStockHandler : IRequestHandler<GetStockQuery, GetStockResponse>
+    public class GetStockHandler(ERP_DbContext context) : IRequestHandler<GetStockQuery, GetStockResponse>
     {
-        private readonly ERP_DbContext _context;
-
-        public GetStockHandler(ERP_DbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<GetStockResponse> Handle(GetStockQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Stocks
+            var query = context.Stocks
                 .Include(s => s.item) // Include related item data
                 .Where(s => !s.IsDeleted && s.BranchId == request.BranchId)
                 .AsQueryable();
@@ -85,5 +79,52 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
             };
         }
     }
+
+
+
     #endregion
+
+    public class GetStockByBarcodeQuery : IRequest<StockDto?>
+    {
+        [Required]
+        public string Barcode { get; set; }= string.Empty;
+        [Required]
+        public int BranchId { get; set; } = 1; 
+    }
+
+
+
+    public class GetStockByBarcodeHandler(ERP_DbContext context) : IRequestHandler<GetStockByBarcodeQuery, StockDto?>
+    {
+        public async Task<StockDto?> Handle(GetStockByBarcodeQuery request, CancellationToken cancellationToken)
+        {
+            var query = context.Stocks
+                .Include(s => s.item) // Include related item data
+                .Where(s => !s.IsDeleted && s.BranchId == request.BranchId && s.quantity > 0 && s.barCode.Equals(request.Barcode))
+                .AsQueryable();
+          
+            return await query
+                .OrderBy(s => s.expiryDate) 
+                .ThenBy(s => s.stockId) 
+                .Take(1)
+                .Select(s => new StockDto
+                {
+                    StockId = s.stockId,
+                    ItemId = s.itemId,
+                    ItemName = s.item!.Name,
+                    BatchNumber = s.batchNumber,
+                    Quantity = s.quantity,
+                    PurchasePrice = s.purchasePrice,
+                    SellPrice = s.sellPrice,
+                    PurchaseDate = s.purchaseDate,
+                    ExpiryDate = s.expiryDate,
+                    BarCode = s.barCode
+                }).FirstOrDefaultAsync(cancellationToken);
+
+        }
+    }
+
+
+
 }
+

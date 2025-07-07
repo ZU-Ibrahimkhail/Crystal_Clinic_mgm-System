@@ -19,6 +19,13 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             var result = await Mediator.Send(query);
             return Ok(result);
         }
+        // Get all stock items with pagination and search
+        [HttpGet("ByBarcode")]
+        public async Task<IActionResult> GetStockByBarcode([FromQuery] GetStockByBarcodeQuery query)
+        {
+            var result = await Mediator.Send(query);
+            return Ok(result);
+        }
 
         // Create a new stock item
         [HttpPost("create")]
