@@ -48,12 +48,15 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("/{date:datetime}")]
+        public async Task<IActionResult> GetAll(DateTime date)
         {
             try
             {
-                var result = await Mediator.Send(new GetAllCurrencyExchangeRatesQuery());
+                var result = await Mediator.Send(new GetAllCurrencyExchangeRatesQuery()
+                {
+                    date= date,
+                });
                 return Ok(result);
             }
             catch (KeyNotFoundException ex)

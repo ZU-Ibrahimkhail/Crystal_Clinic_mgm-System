@@ -389,6 +389,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.Create(Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Commands.Create.CreateCurrencyTypeCommand)">
+            <summary>
+            Create CurrencyType
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.Update(Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Commands.Update.UpdateCurrencyTypeCommand,System.Int32)">
+            <summary>
+            Update CurrencyType By ID
+            </summary>
+            <param name="command"></param>
+            <param name="Id">ID is require</param>
+            <returns></returns>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetList(Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Queries.GetList.GetCurrencyTypeListQuery)">
             <summary>
              Get CurrencyType by filtration List/Record
@@ -403,7 +418,7 @@
             <param name="Id">ID is require </param>
             <returns></returns>      
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetCurrencyTypeDDL">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.GetCurrencyTypeDDL(System.Nullable{System.DateTime})">
             <summary>
             Get CurrencyType Dropdown List
             </summary>

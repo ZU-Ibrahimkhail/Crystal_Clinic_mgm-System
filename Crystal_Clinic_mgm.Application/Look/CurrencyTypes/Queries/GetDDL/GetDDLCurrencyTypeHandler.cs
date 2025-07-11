@@ -6,19 +6,24 @@ using Crystal_Clinic_Mgm.Common.Helper;
 using Crystal_Clinic_Mgm.Common.Localizations;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
+using Crystal_Clinic_Mgm.Common.Constants;
 
 namespace Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Queries.GetDDL
 {
-    public class GetCurrencyTypeDDLHandler(IGenericRepositoryAsync<ERP_DbContext, CurrencyType> genericRepositoryAsync) : IRequestHandler<GetCurrencyTypeDDLQuery, List<GetDropDownGeneralModel>>
+    public class GetCurrencyTypeDDLHandler(IGenericRepositoryAsync<ERP_DbContext, CurrencyType> genericRepositoryAsync, IGenericRepositoryAsync<ERP_DbContext, CurrencyExchangeRate> genericRepositoryCurrencyExchangeRate) : IRequestHandler<GetCurrencyTypeDDLQuery, List<GetDropDownGeneralModel>>
     {
 
-        private readonly IGenericRepositoryAsync<ERP_DbContext, CurrencyType> _GenericRepositoryAsync = genericRepositoryAsync;
 
         public async Task<List<GetDropDownGeneralModel>> Handle(GetCurrencyTypeDDLQuery request, CancellationToken cancellationToken)
         {
             string language = GeneralHelper.SelectedLanauge(request.Language);
+            List<int> currencyIds = [];
             Localization localize = new();
-            List<GetDropDownGeneralModel> branchs = await _GenericRepositoryAsync.FindByCondition(x => !x.IsDeleted).Select(x => new GetDropDownGeneralModel()
+            if (request.ExchangeRateDate.HasValue)
+            {
+                currencyIds = [.. genericRepositoryCurrencyExchangeRate.FindByCondition(x => !x.IsDeleted && x.CreatedOn.Date == request.ExchangeRateDate.GetValueOrDefault().Date && x.ToCurrencyId == Constants.CurrencyTypes.AFN).Select(x => x.FromCurrencyId)];
+            }
+            List<GetDropDownGeneralModel> branchs = await genericRepositoryAsync.FindByCondition(x => !x.IsDeleted && (currencyIds.Count == 0 || currencyIds.Contains(x.ID) || x.ID == Constants.CurrencyTypes.AFN)).Select(x => new GetDropDownGeneralModel()
             {
                 Name = localize.GetName(language, x),
                 Code = x.Code,

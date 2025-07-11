@@ -225,7 +225,10 @@ namespace Crystal_Clinic_Mgm.Application.Look.CurrencyExchangeRates
     #endregion
 
     #region Get All Rates 
-    public class GetAllCurrencyExchangeRatesQuery : IRequest<List<CurrencyExchangeRateDto>> { }
+    public class GetAllCurrencyExchangeRatesQuery : IRequest<List<CurrencyExchangeRateDto>> 
+    {
+        public DateTime date { get; set; }
+    }
 
     public class GetAllCurrencyExchangeRatesHandler(ERP_DbContext context) : IRequestHandler<GetAllCurrencyExchangeRatesQuery, List<CurrencyExchangeRateDto>>
     {
@@ -237,7 +240,7 @@ namespace Crystal_Clinic_Mgm.Application.Look.CurrencyExchangeRates
                 return await context.CurrencyExchangeRates
                     .Include(e => e.FromCurrency)
                     .Include(e => e.ToCurrency)
-                    .Where(e => !e.IsDeleted)
+                    .Where(e => !e.IsDeleted && e.CreatedOn.Date == request.date.Date)
                     .Select(e => new CurrencyExchangeRateDto
                     {
                         CurrencyExchangeRateId = e.CurrencyExchangeRateId,

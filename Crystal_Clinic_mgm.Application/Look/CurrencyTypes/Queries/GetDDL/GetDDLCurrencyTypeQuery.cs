@@ -8,5 +8,6 @@ namespace Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Queries.GetDDL
     {
         [JsonIgnore]
         public string? Language { get; set; }
+        public DateTime? ExchangeRateDate { get; set; }
     }
 }

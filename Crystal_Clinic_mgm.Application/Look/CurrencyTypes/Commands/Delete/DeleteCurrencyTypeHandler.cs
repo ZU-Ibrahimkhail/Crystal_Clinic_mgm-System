@@ -4,6 +4,8 @@ using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
+using System.Reflection.Metadata;
+using Crystal_Clinic_Mgm.Common.Constants;
 
 namespace Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Commands.Delete
 {
@@ -21,7 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Commands.Delete
 
 
             var entity = await _genericRepositoryAsync.GetDetailAsync(request.ID);
-            if (entity == null || entity.IsDeleted)
+            if (entity == null || entity.IsDeleted || entity.ID == Constants.CurrencyTypes.AFN)
             {
                 return _message.RecordNotFound(request.ID);
             }

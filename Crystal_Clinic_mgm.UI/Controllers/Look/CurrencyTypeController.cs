@@ -16,46 +16,47 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
     public class CurrencyTypeController : BaseController
     {
 
-        ///// <summary>
-        ///// Create CurrencyType
-        ///// </summary>
-        ///// <param name="command"></param>
-        ///// <returns>Json Record</returns>
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CreateCurrencyTypeCommand command)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        return await Mediator.Send(command);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //}
-        ///// <summary>
-        ///// Update CurrencyType By ID
-        ///// </summary>
-        ///// <param name="command"></param>
-        ///// <param name="Id">ID is require</param>
-        ///// <returns></returns>
-        //[HttpPut("{Id:int}")]
-        //public async Task<IActionResult> Update(UpdateCurrencyTypeCommand command, int Id)
-        //{
-        //    if (Id <= 0)
-        //    {
-        //        return BadRequest("Not valid Id");
-        //    }
-        //    if (ModelState.IsValid)
-        //    {
-        //        command.ID = Id;
-        //        return await Mediator.Send(command);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-        //}/// <summary>
+        /// <summary>
+        /// Create CurrencyType
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>Json Record</returns>
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateCurrencyTypeCommand command)
+        {
+            if (ModelState.IsValid)
+            {
+                return await Mediator.Send(command);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+        /// <summary>
+        /// Update CurrencyType By ID
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="Id">ID is require</param>
+        /// <returns></returns>
+        [HttpPut("{Id:int}")]
+        public async Task<IActionResult> Update(UpdateCurrencyTypeCommand command, int Id)
+        {
+            if (Id <= 0)
+            {
+                return BadRequest("Not valid Id");
+            }
+            if (ModelState.IsValid)
+            {
+                command.ID = Id;
+                return await Mediator.Send(command);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+        // /// <summary>
         // /// Delete CurrencyType by ID
         // /// </summary>
         // /// <param name="command"></param>
@@ -109,11 +110,12 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
         /// <returns></returns> 
         [DisableRBAC]
         [HttpGet("GetCurrencyTypeDDL")]
-        public async Task<IActionResult> GetCurrencyTypeDDL()
+        public async Task<IActionResult> GetCurrencyTypeDDL([FromQuery] DateTime? ExchangeRateDate)
         {
             var branch = new GetCurrencyTypeDDLQuery
             {
-                Language = Request.Cookies[Constants.CultureCookies.CookiesName] ?? string.Empty
+                Language = Request.Cookies[Constants.CultureCookies.CookiesName] ?? string.Empty,
+                ExchangeRateDate = ExchangeRateDate
             };
             var result = await Mediator.Send(branch);
             return Ok(result);

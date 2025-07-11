@@ -839,6 +839,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     payment.ModifiedOn = DateTime.UtcNow;
 
                     visit.paidAmount -= payment.AmountInAFN;
+                    visit.paidAmount += payment.RefundAmountInAFN;
                     visit.remainingAmount = visit.totalAmount - visit.paidAmount;
 
                     context.VisitPayment.Update(payment);

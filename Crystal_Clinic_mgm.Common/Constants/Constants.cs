@@ -6,31 +6,7 @@
         /// To Check users Sign in pass in autorization
         /// </summary>
         public static bool CheckPassword = true;
-        public enum DocumentType : int
-        {
-            OfferLetter = 1,
-            InquiryLetter = 2,
-            DocumentLetter = 3
-        }
 
-        public static class PMISActivityAccessType
-        {
-            public const int View = 1;
-            public const int Create = 2;
-            public const int Update = 3;
-            public const int Delete = 4;
-            public const int Recomendation = 5;
-            public const int AssignActivity = 6;
-        }
-        public static class PMISActivityType
-        {
-            public const int Plan = 1;
-            public const int InitialSurvey = 2;
-            public const int PreFeasibilityStudy = 3;
-            public const int TechnicalSurvey = 4;
-            public const int FeasibilityStudy = 5;
-            public const int Design = 6;
-        }
         public static class ResponsCodes
         {
             public const int SAVED = 1;
@@ -42,20 +18,6 @@
             public const int PARAMETER_MISSING = 7;
             public const int Validation_Error = 8;
             public const int ReportDownloaded = 9;
-        }
-
-        public static class DocumentFileType
-        {
-            public const int InternalDocument = 1;
-            public const int ExternalDocument = 2;
-        }
-        public static class TrackingActions
-        {
-            public const int Forward = 1;
-            public const int UnForwad = 2;
-            public const int QuickForwad = 3;
-            //-----For PMIS--
-            public const int PMISStatus = 4;
         }
         public static class ProcessStatus
         {
@@ -86,12 +48,6 @@
             public const int WebServerDown = 521;
             public const int SSLFailed = 525;
         }
-        // for itsms
-        public static class RequestCategory
-        {
-            public const int IT = 1;
-            public const int MIS = 2;
-        }
         // ERP NAME
         public static class ERPSystemName
         {
@@ -100,9 +56,6 @@
         }
         public static class Language
         {
-            //public const string English = "en";
-            //public const string Pashto = "ps-AF";
-            //public const string Dari = "fa-IR";
             public const string English = "en";
             public const string Pashto = "ps-AF";
             public const string Dari = "fa-IR";
@@ -162,23 +115,16 @@
         }
         public static class ApplicationModule
         {
-            public const int DMTS = 2;
+            public const int HR = 3;
             public const int UMS = 6;
-            public const int ITSMS = 4;
-            public const int Reception = 5;
-            public const int PMIS = 9;
+            public const int Stock = 5;
         }
 
-        //public static class PMISActivityType
-        //{
-        //    public const int InitialSurvey = 1;
-        //    public const int TechnicalSurvey = 2;
-        //    public const int Design = 3;
-        //    public const int PreFeasibilityStudy = 4;
-        //    public const int FeasibilityStudy = 5;
-        //    public const int Plan = 6;
-        //}
-
+        public static class CurrencyTypes
+        {
+            public const int USD = 1;
+            public const int AFN = 2;
+        }
         public static class BranchLevels
         {
             public const int Ministry = 1;
