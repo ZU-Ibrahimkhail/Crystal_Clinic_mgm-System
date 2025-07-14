@@ -148,8 +148,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 
             RuleFor(x => x.VisitDate)
                 .NotEmpty()
-                .GreaterThanOrEqualTo(DateTime.UtcNow)
-                .WithMessage("VisitDate must be in the present or future.");
+                .WithMessage("VisitDate is required.");
 
             RuleFor(x => x.Status)
                 .IsInEnum()
