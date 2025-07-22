@@ -3,7 +3,6 @@ using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients.PatientCRUD;
 
 namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
 {

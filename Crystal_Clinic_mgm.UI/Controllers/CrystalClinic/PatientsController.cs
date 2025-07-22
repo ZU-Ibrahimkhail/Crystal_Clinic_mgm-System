@@ -1,10 +1,11 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
 {
-    [ApiController]
+    [Authorize]
     [RBAC]
     public class PatientsController : BaseController
     {

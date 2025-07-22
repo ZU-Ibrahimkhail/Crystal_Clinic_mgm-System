@@ -1,14 +1,14 @@
 ﻿using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Domain.Entities.General;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
-using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
-using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Crystal_Clinic_Mgm.Persistence.Configuration.AssetMS;
+using Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look;
 using Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic;
@@ -75,6 +75,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<VisitPayment> VisitPayment { get; set; }
         public DbSet<CurrencyExchangeRate> CurrencyExchangeRates { get; set; }
         public DbSet<ServiceSessions> ServiceSessions { get; set; }
+
+        public DbSet<Supplier> Supplier { get; set; }
+        public DbSet<SupplierDue> SupplierDue { get; set; }
+        public DbSet<DuePayment> DuePayment { get; set; }
 
         public async Task<decimal> GetExchangeRate(int fromCurrencyId, int toCurrencyId, CancellationToken cancellationToken)
         {
@@ -147,6 +151,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new VisitServicesConfiguration());
             modelBuilder.ApplyConfiguration(new VisitPaymentConfiguration());
             modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
+            modelBuilder.ApplyConfiguration(new SupplierConfiguration());
+            modelBuilder.ApplyConfiguration(new SupplierDueConfiguration());
+            modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
 
 
 
