@@ -6,6 +6,7 @@ using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
+using FluentValidation;
 using ImageMagick;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -18,11 +19,27 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int SupplierDueId { get; set; }
         public int? CurrencyTypeId { get; set; }
         public decimal ExchangeRateToDueCurrency { get; set; }
-        public decimal AmmountPaid { get; set; }
+        public decimal AmountPaid { get; set; }
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
         public IFormFile? Attachment { get; set; }
+    }
+
+    public class CreateDuePaymentCommandValidator : AbstractValidator<CreateDuePaymentCommand>
+    {
+        public CreateDuePaymentCommandValidator(ERP_DbContext context)
+        {
+            RuleFor(x => x.SupplierDueId)
+                .MustAsync(async (id, ct) => await context.SupplierDue.AnyAsync(sd => sd.Id == id && !sd.IsDeleted, ct))
+                .WithMessage("Supplier due not found.");
+            RuleFor(x => x.AmountPaid)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Amount paid cannot be negative.");
+            RuleFor(x => x.ExchangeRateToDueCurrency)
+                .GreaterThan(0)
+                .WithMessage("Exchange rate must be positive.");
+        }
     }
 
     public class UpdateDuePaymentCommand : IRequest<bool>
@@ -31,7 +48,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int SupplierDueId { get; set; }
         public int? CurrencyTypeId { get; set; }
         public decimal ExchangeRateToDueCurrency { get; set; }
-        public decimal AmmountPaid { get; set; }
+        public decimal AmountPaid { get; set; }
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
@@ -41,7 +58,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     public class DeleteDuePaymentCommand : IRequest<bool>
     {
         public int DuePaymentId { get; set; }
-        public object Remarks { get; internal set; }
+        public string? Remarks { get; set; }
     }
 
     public class GetDuePaymentByIdQuery : IRequest<DuePayment?>
@@ -61,6 +78,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     {
         public async Task<int> Handle(CreateDuePaymentCommand request, CancellationToken cancellationToken)
         {
+            var validations = new CreateDuePaymentCommandValidator(context).Validate(request).Errors;
+            if (!validations.Any()) {
+                throw new InvalidOperationException(validations.ToString());
+            }
             var due = await context.SupplierDue.FindAsync(request.SupplierDueId, cancellationToken) ?? throw new KeyNotFoundException($"Due not fount with id {request.SupplierDueId}");
             var mainAccount = context.MainAccount.FirstOrDefault(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id) ?? throw new KeyNotFoundException($"No account with currency Id {request.CurrencyTypeId} found");
             var entity = new DuePayment
@@ -68,7 +89,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 SupplierDueId = request.SupplierDueId,
                 CurrencyTypeId = request.CurrencyTypeId,
                 ExchangeRateToDueCurrency = request.ExchangeRateToDueCurrency,
-                AmmountPaid = request.AmmountPaid,
+                AmountPaid = request.AmountPaid,
                 AmountInDueCurrency = request.AmountInDueCurrency,
                 paymentDate = request.PaymentDate,
                 CreatedOn = DateTime.UtcNow,
@@ -76,8 +97,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             };
 
             #region Update Main Asset Record
-            mainAccount.TotalDebitAmount += Convert.ToDouble(request.AmmountPaid);
-            mainAccount.BalanceAmount -= Convert.ToDouble(request.AmmountPaid);
+            mainAccount.TotalDebitAmount += Convert.ToDouble(request.AmountPaid);
+            mainAccount.BalanceAmount -= Convert.ToDouble(request.AmountPaid);
             mainAccount.ModifiedOn = DateTime.Now;
             mainAccount.ModifiedBy = loggedInUser.Id;
             context.MainAccount.Update(mainAccount);
@@ -90,7 +111,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 TransactionDate = DateTime.Now,
                 Description = $"{nameof(DuePayment)}: {request.Remarks}",
                 UserId = loggedInUser.Id,
-                DebitAmount = Convert.ToDouble(request.AmmountPaid),
+                DebitAmount = Convert.ToDouble(request.AmountPaid),
                 CreditAmount = 0,
                 BalanceAmount = mainAccount.BalanceAmount,
                 MainAccountId = mainAccount.ID,
@@ -113,6 +134,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 }
             }
             entity.AttachmentPath = FilePath;
+            entity.Remarks = request.Remarks;
             due.PaidAmount += request.AmountInDueCurrency;
             due.RemainAmount = due.DueAmount - due.PaidAmount;
             context.SupplierDue.Update(due);
@@ -133,37 +155,40 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             if (entity == null || entity.IsDeleted)
                 return false;
             var due = await context.SupplierDue.FindAsync(request.SupplierDueId, cancellationToken) ?? throw new KeyNotFoundException($"Due not fount with id {request.SupplierDueId}");
-            var oldAmount = Convert.ToDouble(entity.AmmountPaid);
+
+            var oldAmount = Convert.ToDouble(entity.AmountPaid);
             MainAccount newMainAcount;
             var mainAccount = context.MainAccount.Where(x => !x.IsDeleted && x.CurrencyTypeId == entity.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id).FirstOrDefault() ?? throw new KeyNotFoundException($"No account with currency Id {request.CurrencyTypeId} found");
+            if (mainAccount.BalanceAmount < Convert.ToDouble(request.AmountPaid))
+                throw new InvalidOperationException("Insufficient balance in main account.");
+            if (due.RemainAmount < request.AmountPaid)
+                throw new InvalidOperationException("Amount can not exceed the remain amount " + due.RemainAmount);
 
-            mainAccount.TotalDebitAmount -= Convert.ToDouble(entity.AmmountPaid);
-            mainAccount.BalanceAmount += Convert.ToDouble(entity.AmmountPaid);
+            mainAccount.TotalDebitAmount -= Convert.ToDouble(entity.AmountPaid);
+            mainAccount.BalanceAmount += Convert.ToDouble(entity.AmountPaid);
             if (entity.CurrencyTypeId != request.CurrencyTypeId)
             {
-                #region Add Asset Tracking Record
-                AccountTracking UAccountTracking = new()
+                mainAccount.TotalDebitAmount -= Convert.ToDouble(entity.AmountPaid);
+                mainAccount.BalanceAmount += Convert.ToDouble(entity.AmountPaid);
+                context.MainAccount.Update(mainAccount);
+                context.AccountTracking.Add(new AccountTracking
                 {
                     CurrencyTypeId = mainAccount.CurrencyTypeId,
-                    TransactionDate = DateTime.Now,
-                    Description = $"{nameof(DuePayment)}_Update: {request.Remarks}",
-                    UserId = entity.CreatedBy,
+                    TransactionDate = DateTime.UtcNow,
+                    Description = $"{nameof(DuePayment)}_Reversed: {request.Remarks}",
+                    UserId = loggedInUser.Id,
                     DebitAmount = 0,
-                    CreditAmount = oldAmount,
+                    CreditAmount = Convert.ToDouble(entity.AmountPaid),
                     BalanceAmount = mainAccount.BalanceAmount,
                     MainAccountId = mainAccount.ID,
                     trackType = TrackType.EXPENSE,
                     CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.Now,
-                    ModifiedOn = DateTime.Now
-                };
+                    CreatedOn = DateTime.UtcNow,
+                    ModifiedOn = DateTime.UtcNow
+                });
 
-                context.AccountTracking.Add(UAccountTracking);
-                #endregion
-
-                context.MainAccount.Update(mainAccount);
-                newMainAcount = context.MainAccount.Where(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id).FirstOrDefault() ?? throw new KeyNotFoundException($"No account with currency Id {request.CurrencyTypeId} found");
-
+                newMainAcount = await context.MainAccount.FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken)
+                    ?? throw new KeyNotFoundException($"No account with currency Id {request.CurrencyTypeId} found");
             }
             else
             {
@@ -174,12 +199,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             entity.SupplierDueId = request.SupplierDueId;
             entity.CurrencyTypeId = request.CurrencyTypeId;
             entity.ExchangeRateToDueCurrency = request.ExchangeRateToDueCurrency;
-            entity.AmmountPaid = request.AmmountPaid;
+            entity.AmountPaid = request.AmountPaid;
             entity.AmountInDueCurrency = request.AmountInDueCurrency;
             entity.paymentDate = request.PaymentDate;
             entity.ModifiedOn = DateTime.UtcNow;
             entity.ModifiedBy = loggedInUser.Id;
             string FilePath = "";
+            entity.Remarks = request.Remarks;
 
             if (request.Attachment != null)
             {
@@ -198,9 +224,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             due.RemainAmount = due.DueAmount - due.PaidAmount;
             context.SupplierDue.Update(due);
 
+
             #region Update Main Asset Record
-            newMainAcount.TotalDebitAmount += Convert.ToDouble(entity.AmmountPaid);
-            newMainAcount.BalanceAmount -= Convert.ToDouble(entity.AmmountPaid);
+            newMainAcount.TotalDebitAmount += Convert.ToDouble(entity.AmountPaid);
+            newMainAcount.BalanceAmount -= Convert.ToDouble(entity.AmountPaid);
             newMainAcount.ModifiedOn = DateTime.Now;
             newMainAcount.ModifiedBy = loggedInUser.Id;
             context.MainAccount.Update(newMainAcount);
@@ -213,8 +240,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 TransactionDate = DateTime.Now,
                 Description = $"{nameof(DuePayment)}_Update: {request.Remarks}",
                 UserId = entity.CreatedBy,
-                DebitAmount = Convert.ToDouble(entity.AmmountPaid),
-                CreditAmount = oldAmount,
+                DebitAmount = Convert.ToDouble(entity.AmountPaid),
+                CreditAmount = 0,
                 BalanceAmount = newMainAcount.BalanceAmount,
                 MainAccountId = newMainAcount.ID,
                 trackType = TrackType.EXPENSE,
@@ -243,18 +270,18 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             context.DuePayment.Update(entity);
 
             var mainAccount = context.MainAccount.Where(x => !x.IsDeleted && x.CurrencyTypeId == entity.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id).FirstOrDefault() ?? throw new KeyNotFoundException($"No account with currency Id {entity.CurrencyTypeId} found");
-            mainAccount.TotalDebitAmount -= Convert.ToDouble(entity.AmmountPaid);
-            mainAccount.BalanceAmount += Convert.ToDouble(entity.AmmountPaid);
+            mainAccount.TotalDebitAmount -= Convert.ToDouble(entity.AmountPaid);
+            mainAccount.BalanceAmount += Convert.ToDouble(entity.AmountPaid);
 
             #region Add Asset Tracking Record
             AccountTracking UAccountTracking = new()
             {
                 CurrencyTypeId = mainAccount.CurrencyTypeId,
                 TransactionDate = DateTime.Now,
-                Description = $"{nameof(DuePayment)}_Update: {request.Remarks}",
+                Description = $"{nameof(DuePayment)}_Deleted: {request.Remarks ?? "Payment deleted"}",
                 UserId = entity.CreatedBy,
                 DebitAmount = 0,
-                CreditAmount = Convert.ToDouble(entity.AmmountPaid),
+                CreditAmount = Convert.ToDouble(entity.AmountPaid),
                 BalanceAmount = mainAccount.BalanceAmount,
                 MainAccountId = mainAccount.ID,
                 trackType = TrackType.EXPENSE,
@@ -278,7 +305,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public async Task<DuePayment?> Handle(GetDuePaymentByIdQuery request, CancellationToken cancellationToken)
         {
             return await context.DuePayment
-                //.Include(dp => dp.SupplierDue)
                 .Include(dp => dp.CurrencyType)
                 .Where(dp => !dp.IsDeleted)
                 .FirstOrDefaultAsync(dp => dp.DuePaymentId == request.DuePaymentId, cancellationToken);
@@ -291,8 +317,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public async Task<List<DuePaymentDTO>> Handle(GetAllDuePaymentsQuery request, CancellationToken cancellationToken)
         {
             var data = context.DuePayment
-                //.Include(dp => dp.SupplierDue)
-                //.ThenInclude(sd => sd!.Supplier)
                 .Where(dp => !dp.IsDeleted)
                 .OrderByDescending(dp => dp.DuePaymentId)
                 .AsQueryable();
@@ -308,7 +332,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 data = data.Where(dp => dp.DuePaymentId < request.LastId);
             }
 
-            return await data.Take(request.PageSize).Select(x=> new DuePaymentDTO(x)).ToListAsync(cancellationToken);
+            return await data.Take(request.PageSize).Select(x => new DuePaymentDTO(x)).ToListAsync(cancellationToken);
         }
     }
 }

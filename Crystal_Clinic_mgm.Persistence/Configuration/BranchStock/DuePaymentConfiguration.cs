@@ -33,8 +33,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
                 .HasColumnType("decimal(18,6)")
                 .IsRequired();
 
-            entity.Property(dp => dp.AmmountPaid)
-                .HasColumnName("AmmountPaid")
+            entity.Property(dp => dp.AmountPaid)
+                .HasColumnName("AmountPaid")
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 

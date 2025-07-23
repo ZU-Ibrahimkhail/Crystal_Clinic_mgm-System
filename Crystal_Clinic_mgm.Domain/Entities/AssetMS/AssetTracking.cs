@@ -29,7 +29,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.AssetMS
         WITHDRAW,
         DEPOSIT,
         PAYROLL,
-        TRANSFER
+        TRANSFER,
+        INCOME
     }
 
     public enum TransactionStatus

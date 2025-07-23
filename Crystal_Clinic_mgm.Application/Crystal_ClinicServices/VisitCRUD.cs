@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Common.Message;
+using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -840,7 +841,52 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     visit.paidAmount -= payment.AmountInAFN;
                     visit.paidAmount += payment.RefundAmountInAFN;
                     visit.remainingAmount = visit.totalAmount - visit.paidAmount;
+                    // Find or create MainAccount for the payment currency
+                    var mainAccount = await context.MainAccount
+                        .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == payment.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
 
+                    if (mainAccount == null)
+                    {
+                        mainAccount = new MainAccount
+                        {
+                            CurrencyTypeId = payment.CurrencyTypeId ?? afnCurrencyId,
+                            OwnerUserId = loggedInUser.Id,
+                            BalanceAmount = 0,
+                            TotalCreditAmount = 0,
+                            TotalDebitAmount = 0,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+                        context.MainAccount.Add(mainAccount);
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+
+                    // Update Main Account for payment deletion
+                    mainAccount.TotalCreditAmount -= Convert.ToDouble(payment.amountPaid); // Reverse payment received
+                    mainAccount.TotalDebitAmount -= Convert.ToDouble(payment.RefundAmountInAFN / payment.ExchangeRateToAFN); // Reverse refund given
+                    mainAccount.BalanceAmount -= Convert.ToDouble(payment.amountPaid - (payment.RefundAmountInAFN / payment.ExchangeRateToAFN));
+                    mainAccount.ModifiedOn = DateTime.UtcNow;
+                    mainAccount.ModifiedBy = loggedInUser.Id;
+
+                    // Add Account Tracking Record
+                    var accountTracking = new AccountTracking
+                    {
+                        CurrencyTypeId = payment.CurrencyTypeId ?? afnCurrencyId,
+                        TransactionDate = DateTime.UtcNow,
+                        Description = $"Payment Reversal for Visit Payment ID {payment.visitPaymentId}",
+                        UserId = loggedInUser.Id,
+                        DebitAmount = Convert.ToDouble(payment.amountPaid), // Reverse payment as debit
+                        CreditAmount = Convert.ToDouble( payment.RefundAmountInAFN / payment.ExchangeRateToAFN), // Reverse refund as credit
+                        BalanceAmount = mainAccount.BalanceAmount,
+                        MainAccountId = mainAccount.ID,
+                        trackType = TrackType.EXPENSE, // Reversal treated as expense
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow,
+                        ModifiedOn = DateTime.UtcNow
+                    };
+
+                    context.MainAccount.Update(mainAccount);
+                    context.AccountTracking.Add(accountTracking);
                     context.VisitPayment.Update(payment);
                 }
                 else if (request.MedicationId.HasValue)

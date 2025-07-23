@@ -1,5 +1,6 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.CrystalClinic.Visits;
+using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
@@ -84,6 +85,53 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             {
                 visit.status = VisitStatus.COMPLETED;
             }
+
+            // Find or create MainAccount for the payment currency
+            var mainAccount = await context.MainAccount
+                .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
+
+            if (mainAccount == null)
+            {
+                mainAccount = new MainAccount
+                {
+                    CurrencyTypeId = request.CurrencyTypeId,
+                    OwnerUserId = loggedInUser.Id,
+                    BalanceAmount = 0,
+                    TotalCreditAmount = 0,
+                    TotalDebitAmount = 0,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+                context.MainAccount.Add(mainAccount);
+                await context.SaveChangesAsync(cancellationToken);
+            }
+
+            // Update Main Account
+            mainAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+            mainAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+            mainAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
+            mainAccount.ModifiedOn = DateTime.UtcNow;
+            mainAccount.ModifiedBy = loggedInUser.Id;
+
+            // Add Account Tracking Record
+            var accountTracking = new AccountTracking
+            {
+                CurrencyTypeId = request.CurrencyTypeId,
+                TransactionDate = DateTime.UtcNow,
+                Description = $"Visit Payment for Visit ID {request.VisitId}",
+                UserId = loggedInUser.Id,
+                CreditAmount = Convert.ToDouble(request.AmountPaid), // Payment received
+                DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
+                BalanceAmount = mainAccount.BalanceAmount,
+                MainAccountId = mainAccount.ID,
+                trackType = TrackType.INCOME, // Clinic receives payment
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.UtcNow,
+                ModifiedOn = DateTime.UtcNow
+            };
+
+            context.MainAccount.Update(mainAccount);
+            context.AccountTracking.Add(accountTracking);
 
             context.VisitPayment.Add(payment);
             context.Visit.Update(visit);
@@ -245,6 +293,54 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 {
                     visit.status = VisitStatus.COMPLETED;
                 }
+
+
+                // Find or create MainAccount for the payment currency
+                var mainAccount = await context.MainAccount
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
+
+                if (mainAccount == null)
+                {
+                    mainAccount = new MainAccount
+                    {
+                        CurrencyTypeId = request.CurrencyTypeId,
+                        OwnerUserId = loggedInUser.Id,
+                        BalanceAmount = 0,
+                        TotalCreditAmount = 0,
+                        TotalDebitAmount = 0,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    };
+                    context.MainAccount.Add(mainAccount);
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+
+                // Update Main Account
+                mainAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+                mainAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+                mainAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
+                mainAccount.ModifiedOn = DateTime.UtcNow;
+                mainAccount.ModifiedBy = loggedInUser.Id;
+
+                // Add Account Tracking Record
+                var accountTracking = new AccountTracking
+                {
+                    CurrencyTypeId = request.CurrencyTypeId,
+                    TransactionDate = DateTime.UtcNow,
+                    Description = $"Medication Payment for Visit ID {request.VisitId}",
+                    UserId = loggedInUser.Id,
+                    CreditAmount = Convert.ToDouble(request.AmountPaid), // Payment received
+                    DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
+                    BalanceAmount = mainAccount.BalanceAmount,
+                    MainAccountId = mainAccount.ID,
+                    trackType = TrackType.INCOME, // Clinic receives payment
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow,
+                    ModifiedOn = DateTime.UtcNow
+                };
+
+                context.MainAccount.Update(mainAccount);
+                context.AccountTracking.Add(accountTracking);
 
                 context.VisitPayment.Add(payment);
                 context.Visit.Update(visit);

@@ -23,6 +23,15 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     {
         public async Task<int> Handle(CreateSupplierDueCommand request, CancellationToken cancellationToken)
         {
+            if (request.DueAmount < 0)
+                throw new ArgumentException("Due amount cannot be negative.");
+            var supplier = await context.Supplier.FindAsync(request.SupplierId, cancellationToken);
+            if (supplier == null)
+                throw new InvalidOperationException("Supplier not found.");
+
+            var currencyType = await context.CurrencyType.FindAsync(request.CurrencyTypeId, cancellationToken);
+            if (currencyType == null)
+                throw new InvalidOperationException("Currency type not found.");
             var supplierDue = new SupplierDue
             {
                 SupplierId = request.SupplierId,
@@ -54,7 +63,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             var supplierDue = await  context.SupplierDue.FindAsync(request.Id, cancellationToken);
             if (supplierDue == null || supplierDue.IsDeleted)
                 return false;
-
+            if (request.DueAmount < supplierDue.PaidAmount)
+                throw new ArgumentException("Due amount cannot be less than paid amount.");
             supplierDue.SupplierId = request.SupplierId;
             supplierDue.DueAmount = request.DueAmount;
             supplierDue.ModifiedOn = DateTime.UtcNow;
@@ -160,10 +170,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int? CurrencyTypeId { get; set; } = payment.CurrencyTypeId;
         public string? CurrencyTypeCode { get; set; } = payment.CurrencyType?.Code;
         public decimal ExchangeRateToDueCurrency { get; set; } = payment.ExchangeRateToDueCurrency;
-        public decimal AmmountPaid { get; set; } = payment.AmmountPaid;
+        public decimal AmmountPaid { get; set; } = payment.AmountPaid;
         public decimal AmountInDueCurrency { get; set; } = payment.AmountInDueCurrency;
         public DateTime paymentDate { get; set; } = payment.paymentDate;
         public string? Remarks { get; set; } = payment.Remarks;
         public string? AttachmentPath { get; set; } = payment.AttachmentPath;
     }
+
 }
