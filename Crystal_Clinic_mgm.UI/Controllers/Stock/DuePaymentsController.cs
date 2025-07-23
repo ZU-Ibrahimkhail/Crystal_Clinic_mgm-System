@@ -12,7 +12,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
     {
 
         [HttpPost]
-        public async Task<IActionResult> CreateDuePayment([FromBody] CreateDuePaymentCommand command)
+        public async Task<IActionResult> CreateDuePayment([FromForm] CreateDuePaymentCommand command)
         {
             var duePaymentId = await Mediator.Send(command);
             return CreatedAtAction(nameof(GetDuePaymentById), new { duePaymentId }, new { duePaymentId });
@@ -35,7 +35,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         }
 
         [HttpPut("{duePaymentId}")]
-        public async Task<IActionResult> UpdateDuePayment(int duePaymentId, [FromBody] UpdateDuePaymentCommand command)
+        public async Task<IActionResult> UpdateDuePayment(int duePaymentId, [FromForm] UpdateDuePaymentCommand command)
         {
             if (duePaymentId != command.DuePaymentId)
                 return BadRequest("DuePayment ID mismatch");

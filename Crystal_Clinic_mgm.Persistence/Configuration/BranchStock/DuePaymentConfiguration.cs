@@ -14,7 +14,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
             // Primary Key
             entity.HasKey(dp => dp.DuePaymentId);
 
-            
+
             entity.HasOne(dp => dp.CurrencyType)
                 .WithMany()
                 .HasForeignKey(dp => dp.CurrencyTypeId)
@@ -47,6 +47,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
                 .HasColumnName("PaymentDate")
                 .HasColumnType("datetime")
                 .IsRequired();
+
+            entity.Property(dp => dp.AttachmentPath)
+                .HasColumnName("AttachmentPath")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
 
             // Auditable entity fields configuration
             EntityConfiguration<DuePayment>.AuditableEntityConfigurations(entity);
