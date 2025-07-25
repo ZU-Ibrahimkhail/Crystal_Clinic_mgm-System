@@ -199,6 +199,33 @@
             <param name="Id">ID is require </param>
             <returns></returns>      
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.DashboardController.GetDashboard(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+            <summary>
+            Retrieves aggregated metrics for the clinic dashboard.
+            </summary>
+            <param name="startDate">Optional start date filter.</param>
+            <param name="endDate">Optional end date filter.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Dashboard metrics including visits, sessions, dues, patients, and employees.</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.DashboardController.GetVisitsByDoctorChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+            <summary>
+            Retrieves a chart of visits grouped by doctor over time.
+            </summary>
+            <param name="startDate">Optional start date filter.</param>
+            <param name="endDate">Optional end date filter.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Chart data for visits by doctor.</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.DashboardController.GetSessionsByEmployeeChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+            <summary>
+            Retrieves a chart of service sessions grouped by employee over time.
+            </summary>
+            <param name="startDate">Optional start date filter.</param>
+            <param name="endDate">Optional end date filter.</param>
+            <param name="cancellationToken">Cancellation token.</param>
+            <returns>Chart data for sessions by employee.</returns>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ServiceSesssionsController.GetServiceSessionReport(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ServiceSessionReportQuery)">
             <summary>
             Retrieves a paginated service sessions report with optional filters, grouped by employee.
