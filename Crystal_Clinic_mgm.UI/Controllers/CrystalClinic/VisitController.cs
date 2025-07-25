@@ -1,6 +1,7 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Crystal_Clinic_Mgm.Application.Crystal_ClinicServices;
 using Crystal_Clinic_Mgm.Application.CrystalClinic.Visits;
+using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -127,6 +128,33 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a paginated visit report with optional filters, grouped by doctor.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>The visit report with doctor summaries and visit details.</returns>
+        [HttpGet("report")]
+        [ProducesResponseType(typeof(VisitReportResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetVisitReport(
+            [FromQuery] VisitReportQuery query)
+        {
+            try
+            {
+                var result = await Mediator.Send(query);
+                return Ok(result.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An unexpected error occurred." });
             }
         }
     }

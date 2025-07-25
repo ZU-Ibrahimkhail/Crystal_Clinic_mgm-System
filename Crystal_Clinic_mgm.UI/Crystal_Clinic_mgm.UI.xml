@@ -199,6 +199,20 @@
             <param name="Id">ID is require </param>
             <returns></returns>      
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ServiceSesssionsController.GetServiceSessionReport(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ServiceSessionReportQuery)">
+            <summary>
+            Retrieves a paginated service sessions report with optional filters, grouped by employee.
+            </summary>
+            <param name="query"></param>
+            <returns>The service sessions report with employee summaries and session details.</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.VisitController.GetVisitReport(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.VisitReportQuery)">
+            <summary>
+            Retrieves a paginated visit report with optional filters, grouped by doctor.
+            </summary>
+            <param name="query"></param>
+            <returns>The visit report with doctor summaries and visit details.</returns>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.ChangeLanguageController.SetCulture(System.String)">
             <summary>
             fa-IR|en|ps-AF
@@ -534,6 +548,32 @@
             <summary>
             List all services with optional search and pagination.
             </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.SupplierDueReportController.GetSupplierDuesReport(Crystal_Clinic_Mgm.Application.BranchStock.Suppliers.SupplierDuesReportQuery)">
+            <summary>
+            Retrieves a paginated supplier dues report with optional filters.
+            </summary>
+            <param name="query"></param>
+            <param name="supplierName">Optional supplier name filter.</param>
+            <param name="startDate">Optional start date filter.</param>
+            <param name="endDate">Optional end date filter.</param>
+            <param name="currencyTypeId">Optional currency type ID filter.</param>
+            <param name="pageSize">Number of records per page (1-100).</param>
+            <param name="lastId">Last ID for pagination.</param>
+            <returns>The supplier dues report.</returns>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.SupplierDueReportController.GetDuePaymentsReport(Crystal_Clinic_Mgm.Application.BranchStock.Suppliers.DuePaymentsReportQuery)">
+            <summary>
+            Retrieves a paginated due payments report with optional filters.
+            </summary>
+            <param name="query"></param>
+            <param name="supplierName">Optional supplier name filter.</param>
+            <param name="startDate">Optional start date filter.</param>
+            <param name="endDate">Optional end date filter.</param>
+            <param name="currencyTypeId">Optional currency type ID filter.</param>
+            <param name="pageSize">Number of records per page (1-100).</param>
+            <param name="lastId">Last ID for pagination.</param>
+            <returns>The due payments report.</returns>
         </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.UMS.ApplicationController.GetAll">
             <summary>

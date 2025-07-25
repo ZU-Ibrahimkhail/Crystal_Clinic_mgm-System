@@ -7,6 +7,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
@@ -36,11 +37,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var executionStrategy = context.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                var visitService = await context.VisitServices.Include(x=>x.service)
+                var visitService = await context.VisitServices.Include(x => x.service)
                     .FirstOrDefaultAsync(v => v.visitServiceId == request.VisitServiceId, cancellationToken)
                     ?? throw new KeyNotFoundException($"Visit Service with ID {request.VisitServiceId} not found.");
 
-                var visit = await context.Visit.Include(x=>x.Patient)
+                var visit = await context.Visit.Include(x => x.Patient)
                     .FirstOrDefaultAsync(v => v.visitId == visitService.visitId, cancellationToken)
                                        ?? throw new KeyNotFoundException($"Visit with ID {visitService.visitId} not found.");
 
@@ -162,7 +163,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int serviceId { get; set; }
         public string serviceName { get; set; } = string.Empty;
         public string patientName { get; set; } = string.Empty;
-        public string contactInfo { get; set; } = string.Empty; 
+        public string contactInfo { get; set; } = string.Empty;
         public int sessionNumber { get; set; }
         public decimal PriceInAFN { get; set; }
         public bool IsImplemented { get; set; } = false;
@@ -212,4 +213,117 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         }
     }
     #endregion
+
+    public class ServiceSessionReportDto(ServiceSessions session)
+    {
+        public int Id { get; set; } = session.Id;
+        public int VisitServiceId { get; set; } = session.visitServiceId;
+        public int VisitId { get; set; } = session.visitId;
+        public int ServiceId { get; set; } = session.serviceId;
+        public string ServiceName { get; set; } = session.serviceName;
+        public string PatientName { get; set; } = session.patientName;
+        public string ContactInfo { get; set; } = session.contactInfo;
+        public int SessionNumber { get; set; } = session.sessionNumber;
+        public decimal PriceInAFN { get; set; } = session.PriceInAFN;
+        public bool IsImplemented { get; set; } = session.IsImplemented;
+        public DateTime? ImplementationDate { get; set; } = session.ImplementationDate;
+        public int? ImplementorEmployeeId { get; set; } = session.ImplementorEmployeeId;
+        public string ImplementorEmployeeName { get; set; } = session.ImplementorEmployee != null
+                ? $"{session.ImplementorEmployee.EnglishFirstName} {session.ImplementorEmployee.EnglishSurName}"
+                : string.Empty;
+    }
+    public class ServiceSessionReportResult
+    {
+        public List<ServiceSessionReportDto> Sessions { get; set; } = new();
+        public List<EmployeeSummary> Summaries { get; set; } = new();
+
+        public class EmployeeSummary
+        {
+            public int? EmployeeId { get; set; }
+            public string EmployeeName { get; set; } = string.Empty;
+            public decimal TotalPriceInAFN { get; set; }
+            public int TotalSessions { get; set; }
+            public int ImplementedSessions { get; set; }
+        }
+    }
+
+    public class ServiceSessionReportQuery : IRequest<JsonResult>
+    {
+        public string? PatientName { get; set; }
+        public string? ServiceName { get; set; }
+        public bool? IsImplemented { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int PageSize { get; set; } = 30;
+        public int? LastId { get; set; }
+    }
+
+    public class ServiceSessionReportHandler(ERP_DbContext context) : IRequestHandler<ServiceSessionReportQuery, JsonResult>
+    {
+        public async Task<JsonResult> Handle(ServiceSessionReportQuery request, CancellationToken cancellationToken)
+        {
+            var query = context.ServiceSessions
+                .Include(s => s.ImplementorEmployee)
+                .OrderByDescending(s => s.Id)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(request.PatientName))
+            {
+                query = query.Where(s => s.patientName.Contains(request.PatientName));
+            }
+
+            if (!string.IsNullOrEmpty(request.ServiceName))
+            {
+                query = query.Where(s => s.serviceName.Contains(request.ServiceName));
+            }
+
+            if (request.IsImplemented.HasValue)
+            {
+                query = query.Where(s => s.IsImplemented == request.IsImplemented.Value);
+            }
+
+            if (request.StartDate.HasValue)
+            {
+                query = query.Where(s => s.ImplementationDate >= request.StartDate.Value);
+            }
+
+            if (request.EndDate.HasValue)
+            {
+                query = query.Where(s => s.ImplementationDate <= request.EndDate.Value);
+            }
+
+            if (request.LastId.HasValue)
+            {
+                query = query.Where(s => s.Id < request.LastId.Value);
+            }
+
+            // Validate PageSize
+            if (request.PageSize <= 0 || request.PageSize > 100)
+            {
+                throw new ArgumentException("Page size must be between 1 and 100.");
+            }
+
+            var sessions = await query
+                .Take(request.PageSize)
+                .Select(s => new ServiceSessionReportDto(s))
+                .ToListAsync(cancellationToken);
+
+            var summaries = await query
+                .GroupBy(s => s.ImplementorEmployeeId)
+                .Select(g => new ServiceSessionReportResult.EmployeeSummary
+                {
+                    EmployeeId = g.Key,
+                    EmployeeName = g.Key.HasValue ? g.First().ImplementorEmployee != null
+                        ? $"{g.First().ImplementorEmployee.EnglishFirstName} {g.First().ImplementorEmployee.EnglishSurName}"
+                        : "Unknown Employee" : "No Employee",
+                    TotalPriceInAFN = g.Sum(s => s.PriceInAFN),
+                    TotalSessions = g.Count(),
+                    ImplementedSessions = g.Count(s => s.IsImplemented)
+                })
+                .ToListAsync(cancellationToken);
+
+            return new JsonResult(new { Summaries = summaries, Sessions = sessions });
+        }
+    }
 }

@@ -23,6 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal RemainAmount { get; set; }
         public int CurrencyTypeId { get; set; }
         public string CurrencyTypeCode { get; set; } = string.Empty;
+        public DateTime? DueDate { get; set; }
         public DateTime CreatedOn { get; set; }
         public Guid CreatedBy { get; set; }
 
@@ -38,19 +39,20 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             RemainAmount = due.RemainAmount;
             CurrencyTypeId = due.CurrencyTypeId;
             CurrencyTypeCode = due.CurrencyType?.Code ?? string.Empty;
+            DueDate = due.DueDate;
             CreatedOn = due.CreatedOn;
             CreatedBy = due.CreatedBy;
         }
     }
     public class SupplierDuesReportResult
     {
-        public List<SupplierDueReportDTO> Dues { get; set; } = [];
         public int currencyTypeId { get; set; }
         public string? currencyTypeName { get; set; }
         public decimal TotalDueAmount { get; set; }
         public decimal TotalPaidAmount { get; set; }
         public decimal TotalRemainAmount { get; set; }
     }
+    
     public class SupplierDuesReportQuery : IRequest<JsonResult>
     {
         public string? SupplierName { get; set; }
@@ -60,7 +62,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int PageSize { get; set; } = 30;
         public int? LastId { get; set; }
     }
-
     public class SupplierDuesReportHandler(ERP_DbContext context)
     : IRequestHandler<SupplierDuesReportQuery, JsonResult>
     {
@@ -117,7 +118,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                         })
                         .FirstOrDefaultAsync(cancellationToken);
 
-            return new JsonResult(summary, list);
+            return new JsonResult(new { summary, list });
             
          }
     }

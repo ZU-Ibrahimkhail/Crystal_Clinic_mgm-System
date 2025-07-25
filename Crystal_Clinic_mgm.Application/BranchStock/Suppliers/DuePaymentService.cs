@@ -25,7 +25,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public string? Remarks { get; set; }
         public IFormFile? Attachment { get; set; }
     }
-
     public class CreateDuePaymentCommandValidator : AbstractValidator<CreateDuePaymentCommand>
     {
         public CreateDuePaymentCommandValidator(ERP_DbContext context)
@@ -41,38 +40,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 .WithMessage("Exchange rate must be positive.");
         }
     }
-
-    public class UpdateDuePaymentCommand : IRequest<bool>
-    {
-        public int DuePaymentId { get; set; }
-        public int SupplierDueId { get; set; }
-        public int? CurrencyTypeId { get; set; }
-        public decimal ExchangeRateToDueCurrency { get; set; }
-        public decimal AmountPaid { get; set; }
-        public decimal AmountInDueCurrency { get; set; }
-        public DateTime PaymentDate { get; set; }
-        public string? Remarks { get; set; }
-        public IFormFile? Attachment { get; set; }
-    }
-
-    public class DeleteDuePaymentCommand : IRequest<bool>
-    {
-        public int DuePaymentId { get; set; }
-        public string? Remarks { get; set; }
-    }
-
-    public class GetDuePaymentByIdQuery : IRequest<DuePayment?>
-    {
-        public int DuePaymentId { get; set; }
-    }
-
-    public class GetAllDuePaymentsQuery : IRequest<List<DuePaymentDTO>>
-    {
-        public string? SearchBy { get; set; }
-        public int PageSize { get; set; } = 30;
-        public int? LastId { get; set; }
-    }
-
     public class CreateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<CreateDuePaymentCommand, int>
     {
@@ -145,6 +112,19 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         }
     }
 
+
+    public class UpdateDuePaymentCommand : IRequest<bool>
+    {
+        public int DuePaymentId { get; set; }
+        public int SupplierDueId { get; set; }
+        public int? CurrencyTypeId { get; set; }
+        public decimal ExchangeRateToDueCurrency { get; set; }
+        public decimal AmountPaid { get; set; }
+        public decimal AmountInDueCurrency { get; set; }
+        public DateTime PaymentDate { get; set; }
+        public string? Remarks { get; set; }
+        public IFormFile? Attachment { get; set; }
+    }
     public class UpdateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<UpdateDuePaymentCommand, bool>
     {
@@ -257,6 +237,12 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         }
     }
 
+
+    public class DeleteDuePaymentCommand : IRequest<bool>
+    {
+        public int DuePaymentId { get; set; }
+        public string? Remarks { get; set; }
+    }
     public class DeleteDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<DeleteDuePaymentCommand, bool>
     {
@@ -298,7 +284,12 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             return true;
         }
     }
+    
 
+    public class GetDuePaymentByIdQuery : IRequest<DuePayment?>
+    {
+        public int DuePaymentId { get; set; }
+    }
     public class GetDuePaymentByIdHandler(ERP_DbContext context)
         : IRequestHandler<GetDuePaymentByIdQuery, DuePayment?>
     {
@@ -311,6 +302,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         }
     }
 
+
+    public class GetAllDuePaymentsQuery : IRequest<List<DuePaymentDTO>>
+    {
+        public string? SearchBy { get; set; }
+        public int PageSize { get; set; } = 30;
+        public int? LastId { get; set; }
+    }
     public class GetAllDuePaymentsHandler(ERP_DbContext context)
         : IRequestHandler<GetAllDuePaymentsQuery, List<DuePaymentDTO>>
     {

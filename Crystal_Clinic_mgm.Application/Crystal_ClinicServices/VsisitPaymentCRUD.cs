@@ -1,5 +1,7 @@
-﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+﻿using System.Reflection.Metadata;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.CrystalClinic.Visits;
+using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -86,13 +88,17 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 visit.status = VisitStatus.COMPLETED;
             }
 
+            // Initialize MainAccounts
+            MainAccount paymentAccount;
+            MainAccount afnAccount = null;
+
             // Find or create MainAccount for the payment currency
-            var mainAccount = await context.MainAccount
+            paymentAccount = await context.MainAccount
                 .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
 
-            if (mainAccount == null)
+            if (paymentAccount == null)
             {
-                mainAccount = new MainAccount
+                paymentAccount = new MainAccount
                 {
                     CurrencyTypeId = request.CurrencyTypeId,
                     OwnerUserId = loggedInUser.Id,
@@ -102,37 +108,117 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
-                context.MainAccount.Add(mainAccount);
+                context.MainAccount.Add(paymentAccount);
                 await context.SaveChangesAsync(cancellationToken);
             }
 
-            // Update Main Account
-            mainAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
-            mainAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
-            mainAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
-            mainAccount.ModifiedOn = DateTime.UtcNow;
-            mainAccount.ModifiedBy = loggedInUser.Id;
+            // If currency is not AFN and RefundAmountInAFN > 0, find or create AFN MainAccount
+            if (request.CurrencyTypeId != Constants.CurrencyTypes.AFN && request.RefundAmountInAFN > 0)
+            {
+                afnAccount = await context.MainAccount
+                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == afnCurrencyId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
 
-            // Add Account Tracking Record
-            var accountTracking = new AccountTracking
+                if (afnAccount == null)
+                {
+                    afnAccount = new MainAccount
+                    {
+                        CurrencyTypeId = afnCurrencyId,
+                        OwnerUserId = loggedInUser.Id,
+                        BalanceAmount = 0,
+                        TotalCreditAmount = 0,
+                        TotalDebitAmount = 0,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    };
+                    context.MainAccount.Add(afnAccount);
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+            }
+
+            // Update MainAccounts
+            if (request.CurrencyTypeId == Constants.CurrencyTypes.AFN)
+            {
+                // Single account (AFN) for both payment and refund
+                paymentAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+                paymentAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+                paymentAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid - request.RefundAmountInAFN);
+                paymentAccount.ModifiedOn = DateTime.UtcNow;
+                paymentAccount.ModifiedBy = loggedInUser.Id;
+            }
+            else
+            {
+                // Payment account for AmountPaid
+                paymentAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+                paymentAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
+                paymentAccount.ModifiedOn = DateTime.UtcNow;
+                paymentAccount.ModifiedBy = loggedInUser.Id;
+
+                // AFN account for RefundAmountInAFN
+                if (afnAccount != null && request.RefundAmountInAFN > 0)
+                {
+                    afnAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+                    afnAccount.BalanceAmount -= Convert.ToDouble(request.RefundAmountInAFN);
+                    afnAccount.ModifiedOn = DateTime.UtcNow;
+                    afnAccount.ModifiedBy = loggedInUser.Id;
+                }
+            }
+
+            // Add AccountTracking Records
+            var paymentTracking = new AccountTracking
             {
                 CurrencyTypeId = request.CurrencyTypeId,
                 TransactionDate = DateTime.UtcNow,
                 Description = $"Visit Payment for Visit ID {request.VisitId}",
                 UserId = loggedInUser.Id,
                 CreditAmount = Convert.ToDouble(request.AmountPaid), // Payment received
-                DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
-                BalanceAmount = mainAccount.BalanceAmount,
-                MainAccountId = mainAccount.ID,
+                DebitAmount = request.CurrencyTypeId == Constants.CurrencyTypes.AFN ? Convert.ToDouble(request.RefundAmountInAFN) : 0, // Refund only in AFN account if not AFN
+                BalanceAmount = paymentAccount.BalanceAmount,
+                MainAccountId = paymentAccount.ID,
                 trackType = TrackType.INCOME, // Clinic receives payment
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.UtcNow,
                 ModifiedOn = DateTime.UtcNow
             };
 
-            context.MainAccount.Update(mainAccount);
-            context.AccountTracking.Add(accountTracking);
+            AccountTracking afnTracking = null;
+            if (request.CurrencyTypeId != Constants.CurrencyTypes.AFN && request.RefundAmountInAFN > 0 && afnAccount != null)
+            {
+                afnTracking = new AccountTracking
+                {
+                    CurrencyTypeId = afnCurrencyId,
+                    TransactionDate = DateTime.UtcNow,
+                    Description = $"Refund for Visit Payment for Visit ID {request.VisitId}",
+                    UserId = loggedInUser.Id,
+                    DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
+                    BalanceAmount = afnAccount.BalanceAmount,
+                    MainAccountId = afnAccount.ID,
+                    trackType = TrackType.EXPENSE, // Refund is an expense
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow,
+                    ModifiedOn = DateTime.UtcNow
+                };
+            }
+            var transaction = context.Database.CreateExecutionStrategy();
 
+            await transaction.ExecuteAsync(async () =>
+            {
+                try
+                {
+                    context.VisitPayment.Add(payment);
+                    context.Visit.Update(visit);
+                    context.MainAccount.Update(paymentAccount);
+                    if (afnAccount != null)
+                        context.MainAccount.Update(afnAccount);
+                    if (afnTracking != null)
+                        context.AccountTracking.Add(afnTracking);
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+                catch
+                {
+                    throw;
+                }
+
+            });
             context.VisitPayment.Add(payment);
             context.Visit.Update(visit);
             await context.SaveChangesAsync(cancellationToken);
@@ -294,14 +380,17 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                     visit.status = VisitStatus.COMPLETED;
                 }
 
+                // Initialize MainAccounts
+                MainAccount? paymentAccount = null;
+                MainAccount? afnAccount = null;
 
                 // Find or create MainAccount for the payment currency
-                var mainAccount = await context.MainAccount
-                    .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
+                paymentAccount = await context.MainAccount
+                    .FirstOrDefaultAsync(p => !p.IsDeleted && p.CurrencyTypeId == request.CurrencyTypeId && p.OwnerUserId == loggedInUser.Id, cancellationToken);
 
-                if (mainAccount == null)
+                if (paymentAccount == null)
                 {
-                    mainAccount = new MainAccount
+                    paymentAccount = new MainAccount
                     {
                         CurrencyTypeId = request.CurrencyTypeId,
                         OwnerUserId = loggedInUser.Id,
@@ -311,36 +400,119 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     };
-                    context.MainAccount.Add(mainAccount);
+                    context.MainAccount.Add(paymentAccount);
                     await context.SaveChangesAsync(cancellationToken);
                 }
 
-                // Update Main Account
-                mainAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
-                mainAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
-                mainAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
-                mainAccount.ModifiedOn = DateTime.UtcNow;
-                mainAccount.ModifiedBy = loggedInUser.Id;
+                // If currency is not AFN and RefundAmountInAFN > 0, find or create AFN MainAccount
+                if (request.CurrencyTypeId != Constants.CurrencyTypes.AFN && request.RefundAmountInAFN > 0)
+                {
+                    afnAccount = await context.MainAccount
+                        .FirstOrDefaultAsync(x => !x.IsDeleted && x.CurrencyTypeId == afnCurrencyId && x.OwnerUserId == loggedInUser.Id, cancellationToken);
 
-                // Add Account Tracking Record
-                var accountTracking = new AccountTracking
+                    if (afnAccount == null)
+                    {
+                        afnAccount = new MainAccount
+                        {
+                            CurrencyTypeId = afnCurrencyId,
+                            OwnerUserId = loggedInUser.Id,
+                            BalanceAmount = 0,
+                            TotalCreditAmount = 0,
+                            TotalDebitAmount = 0,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+                        context.MainAccount.Add(afnAccount);
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                }
+
+                // Update MainAccounts
+                if (request.CurrencyTypeId == Constants.CurrencyTypes.AFN)
+                {
+                    // Single account (AFN) for both payment and refund
+                    paymentAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+                    paymentAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+                    paymentAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid - request.RefundAmountInAFN);
+                    paymentAccount.ModifiedOn = DateTime.Now;
+                    paymentAccount.ModifiedBy = loggedInUser.Id;
+                }
+                else
+                {
+                    // Payment account for AmountPaid
+                    paymentAccount.TotalCreditAmount += Convert.ToDouble(request.AmountPaid); // Payment received
+                    paymentAccount.BalanceAmount += Convert.ToDouble(request.AmountPaid);
+                    paymentAccount.ModifiedOn = DateTime.Now;
+                    paymentAccount.ModifiedBy = loggedInUser.Id;
+
+                    // AFN account for RefundAmountInAFN
+                    if (afnAccount != null && request.RefundAmountInAFN > 0)
+                    {
+                        afnAccount.TotalDebitAmount += Convert.ToDouble(request.RefundAmountInAFN); // Refund given
+                        afnAccount.BalanceAmount -= Convert.ToDouble(request.RefundAmountInAFN);
+                        afnAccount.ModifiedOn = DateTime.Now;
+                        afnAccount.ModifiedBy = loggedInUser.Id;
+                    }
+                }
+
+                // Add AccountTracking Records
+                var paymentTracking = new AccountTracking
                 {
                     CurrencyTypeId = request.CurrencyTypeId,
                     TransactionDate = DateTime.UtcNow,
                     Description = $"Medication Payment for Visit ID {request.VisitId}",
                     UserId = loggedInUser.Id,
                     CreditAmount = Convert.ToDouble(request.AmountPaid), // Payment received
-                    DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
-                    BalanceAmount = mainAccount.BalanceAmount,
-                    MainAccountId = mainAccount.ID,
+                    DebitAmount = request.CurrencyTypeId == Constants.CurrencyTypes.AFN ? Convert.ToDouble(request.RefundAmountInAFN) : 0, // Refund only in AFN account if not AFN
+                    BalanceAmount = paymentAccount.BalanceAmount,
+                    MainAccountId = paymentAccount.ID,
                     trackType = TrackType.INCOME, // Clinic receives payment
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow,
                     ModifiedOn = DateTime.UtcNow
                 };
 
-                context.MainAccount.Update(mainAccount);
-                context.AccountTracking.Add(accountTracking);
+                AccountTracking? afnTracking = null;
+                if (request.CurrencyTypeId != Constants.CurrencyTypes.AFN && request.RefundAmountInAFN > 0 && afnAccount != null)
+                {
+                    afnTracking = new AccountTracking
+                    {
+                        CurrencyTypeId = afnCurrencyId,
+                        TransactionDate = DateTime.UtcNow,
+                        Description = $"Refund for Medication Payment for Visit ID {request.VisitId}",
+                        UserId = loggedInUser.Id,
+                        DebitAmount = Convert.ToDouble(request.RefundAmountInAFN), // Refund given
+                        BalanceAmount = afnAccount.BalanceAmount,
+                        MainAccountId = afnAccount.ID,
+                        trackType = TrackType.EXPENSE, // Refund is an expense
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow,
+                        ModifiedOn = DateTime.UtcNow
+                    };
+                }
+
+                var transaction = context.Database.CreateExecutionStrategy();
+                await transaction.ExecuteAsync(async () =>
+                {
+                    try
+                    {
+                        context.VisitPayment.Add(payment);
+                        context.Visit.Update(visit);
+                        context.MainAccount.Update(paymentAccount);
+                        context.AccountTracking.Add(paymentTracking);
+                        if (afnAccount != null)
+                            context.MainAccount.Update(afnAccount);
+                        if (afnTracking != null)
+                            context.AccountTracking.Add(afnTracking);
+                        await context.SaveChangesAsync(cancellationToken);
+                        return true;
+                    }
+                    catch
+                    {
+                        throw;
+                    }
+                });
+
 
                 context.VisitPayment.Add(payment);
                 context.Visit.Update(visit);

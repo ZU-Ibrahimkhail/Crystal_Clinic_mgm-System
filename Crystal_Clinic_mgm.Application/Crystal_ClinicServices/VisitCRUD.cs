@@ -1022,4 +1022,5 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
     }
 
     #endregion
+
 }

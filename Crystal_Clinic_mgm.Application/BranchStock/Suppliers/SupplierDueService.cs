@@ -14,6 +14,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int SupplierId { get; set; }
         [Required]
         public decimal DueAmount { get; set; }
+        public DateTime? DueDate { get; set; } = DateTime.Now;
 
         [Required]
         public int CurrencyTypeId { get; set; }
@@ -54,6 +55,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public int Id { get; set; }
         public int SupplierId { get; set; }
         public decimal DueAmount { get; set; }
+        public DateTime? DueDate { get; set; } = DateTime.Now;
+
     }
     public class UpdateSupplierDueHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<UpdateSupplierDueCommand, bool>

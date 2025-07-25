@@ -63,5 +63,33 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
             return Ok(visitList);
         }
 
+
+        /// <summary>
+        /// Retrieves a paginated service sessions report with optional filters, grouped by employee.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>The service sessions report with employee summaries and session details.</returns>
+        [HttpGet("sessions-report")]
+        [ProducesResponseType(typeof(ServiceSessionReportResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetServiceSessionReport(
+            [FromQuery] ServiceSessionReportQuery query)
+        {
+            try
+            {
+                var result = await Mediator.Send(query);
+                return Ok(result.Value);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An unexpected error occurred." });
+            }
+        }
+
     }
 }

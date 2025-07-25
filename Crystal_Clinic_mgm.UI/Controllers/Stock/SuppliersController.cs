@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     [RBAC]
-    public class SuppliersController : BaseController
+    public class SupplierController : BaseController
     {
 
         [HttpPost]
