@@ -37,17 +37,17 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var executionStrategy = context.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                var visitService = await context.VisitServices.Include(x => x.service)
-                    .FirstOrDefaultAsync(v => v.visitServiceId == request.VisitServiceId, cancellationToken)
+                var visitService = await context.VisitServices.Include(x => x.service).Include(x=>x.sessions)
+                    .FirstOrDefaultAsync(v => v.visitServiceId == request.VisitServiceId , cancellationToken)
                     ?? throw new KeyNotFoundException($"Visit Service with ID {request.VisitServiceId} not found.");
 
                 var visit = await context.Visit.Include(x => x.Patient)
                     .FirstOrDefaultAsync(v => v.visitId == visitService.visitId, cancellationToken)
                                        ?? throw new KeyNotFoundException($"Visit with ID {visitService.visitId} not found.");
-
-                if (visitService.completedSessions == visitService.totalSessions)
+                
+                if (visitService.sessions.Count >= visitService.totalSessions)
                 {
-                    throw new InvalidOperationException("All sessions of the service are completed.");
+                    throw new InvalidOperationException("All sessions of the service are added.");
                 }
 
                 var afnCurrencyId = (await context.CurrencyType.FirstAsync(c => c.Code == "AFN", cancellationToken)).ID;

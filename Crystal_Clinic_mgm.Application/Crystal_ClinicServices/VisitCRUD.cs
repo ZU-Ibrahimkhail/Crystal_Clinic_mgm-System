@@ -257,6 +257,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 .Include(v => v.Services).ThenInclude(x => x.CurrencyType)
                 .Include(v => v.Services)
                 .ThenInclude(vs => vs.service)
+                .Include(v => v.Services)
+                .ThenInclude(vs => vs.sessions)
                 .FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
 
             if (visit == null)
@@ -291,6 +293,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     ServiceName = s.service?.Name??"",
                     TotalSessions = s.totalSessions,
                     CompletedSessions = s.completedSessions,
+                    AddedSessions = s.sessions.Count,
                     PricePerSession = s.pricePerSession,
                     TotalPrice = s.totalPrice,
                     CurrencyTypeId = s.CurrencyTypeId,
@@ -999,6 +1002,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public decimal TotalPrice { get; set; }
         public int CurrencyTypeId { get; set; }
         public string? CurrencyCode { get; set; }
+        public int AddedSessions { get;  set; }
     }
 
 
