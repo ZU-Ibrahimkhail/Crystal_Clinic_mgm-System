@@ -9,6 +9,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
         public int itemId { get; set; }
         public int BranchId { get; set; }
         public Item? item { get; set; }
+        public int? SupplierId { get; set; }
+        public Supplier? Supplier { get; set; }
         public decimal purchasePrice { get; set; }
         public decimal sellPrice { get; set; }
         public DateTime purchaseDate { get; set; }

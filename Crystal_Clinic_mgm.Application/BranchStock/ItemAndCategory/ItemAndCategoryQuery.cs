@@ -16,7 +16,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
 
         public async Task<List<ItemCategory>> Handle(GetItemCategoriesQuery request, CancellationToken cancellationToken)
         {
-            return await _context.ItemCategories.OrderBy(x => x.Name).ToListAsync(cancellationToken);
+            return await _context.ItemCategories.Where(x=>!x.IsDeleted).OrderBy(x => x.Name).ToListAsync(cancellationToken);
         }
     }
     #endregion

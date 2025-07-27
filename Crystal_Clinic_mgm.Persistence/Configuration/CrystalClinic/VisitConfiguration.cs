@@ -24,6 +24,21 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .WithMany()
                 .HasForeignKey(v => v.doctorId)
                 .OnDelete(DeleteBehavior.SetNull);  // If no doctor is assigned, set to null
+            
+            entity.Property(v => v.BranchId)
+                .HasColumnName("BranchId")
+                .HasColumnType("int")
+                .IsRequired().HasDefaultValue(1);
+            
+            entity.Property(v => v.BranchDetailsId)
+                .HasColumnName("BranchDetailsId")
+                .HasColumnType("int")
+                .IsRequired(false);
+
+            entity.HasOne(v => v.BranchDetails)
+                .WithMany()
+                .HasForeignKey(v => v.BranchDetailsId)
+                .OnDelete(DeleteBehavior.SetNull);  // If no doctor is assigned, set to null
 
             // Properties configurations
             entity.Property(v => v.visitDate)
@@ -35,6 +50,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasColumnName("Status")
                 .HasColumnType("int")
                 .IsRequired();
+
 
             entity.Property(v => v.totalAmount)
                 .HasColumnName("TotalAmount")

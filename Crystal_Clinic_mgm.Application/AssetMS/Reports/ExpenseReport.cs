@@ -7,6 +7,7 @@ using Crystal_Clinic_Mgm.Common.Localizations;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using System.Linq.Expressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Crystal_Clinic_Mgm.Application.AssetMS.Reports
 {
@@ -29,7 +30,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.Reports
             Localization localize = new(httpContextAccessor);
             var language = localize.GetMyCookieValue(httpContextAccessor);
             var Data = _GRepoExpenseTracking.FindByCondition(x => !x.IsDeleted &&
-                x.Date >= request.FromDate && x.Date <= request.ToDate
+                x.Date.Date >= request.FromDate.Date && x.Date.Date <= request.ToDate.Date
                 &&
                 (request.BranchIds.Count == 0 || request.BranchIds.Contains(x.BranchId))
                 &&

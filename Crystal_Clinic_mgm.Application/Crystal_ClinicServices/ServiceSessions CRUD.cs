@@ -250,7 +250,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     public class ServiceSessionReportQuery : IRequest<JsonResult>
     {
         public string? PatientName { get; set; }
-        public string? ServiceName { get; set; }
+        public int? ServiceName { get; set; }
         public bool? IsImplemented { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -273,9 +273,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 query = query.Where(s => s.patientName.Contains(request.PatientName));
             }
 
-            if (!string.IsNullOrEmpty(request.ServiceName))
+            if (request.ServiceName.HasValue)
             {
-                query = query.Where(s => s.serviceName.Contains(request.ServiceName));
+                query = query.Where(s => s.serviceId == request.ServiceName);
             }
 
             if (request.IsImplemented.HasValue)

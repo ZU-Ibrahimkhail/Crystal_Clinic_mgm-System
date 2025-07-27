@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using System.Xml.Linq;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
@@ -59,7 +60,7 @@ namespace Crystal_Clinic_Mgm.Application.Look.BranchDetail
         }
         #endregion
 
-        #region Update BranchDetails
+    #region Update BranchDetails
         public class UpdateBranchDetailsCommand : IRequest<bool>
         {
             [JsonIgnore]
@@ -115,7 +116,7 @@ namespace Crystal_Clinic_Mgm.Application.Look.BranchDetail
     }
     #endregion
 
-    #region Delete BranchDetails
+    #region Activate BranchDetails
     public class ActivateBranchDetailsCommand : IRequest<bool>
     {
         public int Id { get; set; }
@@ -194,5 +195,41 @@ namespace Crystal_Clinic_Mgm.Application.Look.BranchDetail
         public bool IsActive { get; set; } = branchDetails.IsActive;
     }
 
+
+
     #endregion
+    public class GetOneBranchDetailsQuery : IRequest<BranchDetailsDto>
+    {
+        public int? BranchId { get; set; }
+    }
+
+    public class GetOneBranchDetailsHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetOneBranchDetailsQuery, BranchDetailsDto>
+    {
+        public async Task<BranchDetailsDto> Handle(GetOneBranchDetailsQuery request, CancellationToken cancellationToken)
+        {
+            var query = context.BranchDetails.AsQueryable();
+            if (request.BranchId.HasValue)
+            {
+                query.Where(x => x.BranchId == request.BranchId);
+            }
+            else
+            {
+                query.Where(x => x.BranchId == loggedInUser.BranchId);
+            }
+         
+
+            // Apply pagination
+            var branchDetails = await query
+                .Select(x => new BranchDetailsDto(x)).FirstOrDefaultAsync(cancellationToken);
+
+            return branchDetails ?? new BranchDetailsDto(new BranchDetails
+            {
+                Title = "Afghan Crystal Beauty Clinic",
+                HeaderNote = "Your Beauty Our Duty",
+                FooterNote = "Than you for selecting us \n Please keep this paper with yourself!", 
+                Address = "Kabul Lesei maryam!"
+            });
+        }
+    }
+
 }

@@ -48,5 +48,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
             var response = await Mediator.Send(query);
             return Ok(response);
         }
+        [HttpGet("get-one")]
+        public async Task<IActionResult> GetBranchDetails([FromQuery] GetOneBranchDetailsQuery query)
+        {
+            var response = await Mediator.Send(query);
+            return Ok(response);
+        }
     }
 }

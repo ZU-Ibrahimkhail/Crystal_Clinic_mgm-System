@@ -1,9 +1,11 @@
 ﻿using System.Reflection.Metadata;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.CrystalClinic.Visits;
+using Crystal_Clinic_Mgm.Application.Look.BranchDetail;
 using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
+using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
 using MediatR;
@@ -536,6 +538,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         {
             var visit = await context.Visit
                 .Include(v => v.Patient)
+                .Include(v => v.BranchDetails)
                 .Include(v => v.Medications).ThenInclude(vm => vm.stock).ThenInclude(s => s!.item)
                 .Include(v => v.Services).ThenInclude(vs => vs.service)
                 .Include(v => v.Services).ThenInclude(vs => vs.CurrencyType)
@@ -573,6 +576,13 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 TotalAmount = visit.totalAmount,
                 PaidAmount = visit.paidAmount,
                 RemainingAmount = visit.remainingAmount,
+                BranchDetails = new BranchDetailsDto(visit.BranchDetails ?? new BranchDetails
+                {
+                    Title = "Afghan Crystal Beauty Clinic",
+                    HeaderNote = "Your Beauty Our Duty",
+                    FooterNote = "Than you for selecting us \n Please keep this paper with yourself!",
+                    Address = "Kabul Lesei maryam!"
+                }),
                 Medications = visit.Medications.Select(m => new VisitMedicationDto
                 {
                     MedicationId = m.medicationId,
@@ -598,6 +608,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public decimal TotalAmount { get; set; }
         public decimal PaidAmount { get; set; }
         public decimal RemainingAmount { get; set; }
+        public BranchDetailsDto? BranchDetails { get; set; }
         public List<VisitMedicationDto> Medications { get; set; } = new();
         public List<VisitServiceBillDto> Services { get; set; } = new();
         public Dictionary<string, decimal> CurrencyTotals { get; set; } = new();

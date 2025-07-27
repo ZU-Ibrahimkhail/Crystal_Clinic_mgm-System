@@ -28,6 +28,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         public int ItemId { get; set; }
         public string? ItemName { get; set; } = string.Empty;
         public string BatchNumber { get; set; } = string.Empty;
+        public int? SupplierId { get; set; }
+        public string SupplierName { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal PurchasePrice { get; set; }
         public decimal SellPrice { get; set; }
@@ -42,6 +44,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         {
             var query = context.Stocks
                 .Include(s => s.item) // Include related item data
+                .Include(s => s.Supplier) // Include related item data
                 .Where(s => !s.IsDeleted && s.BranchId == request.BranchId)
                 .AsQueryable();
 
@@ -63,6 +66,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
                     StockId = s.stockId,
                     ItemId = s.itemId,
                     ItemName = s.item!.Name,
+                    SupplierId = s.SupplierId,
+                    SupplierName = s.Supplier!.Name,
                     BatchNumber = s.batchNumber,
                     Quantity = s.quantity,
                     PurchasePrice = s.purchasePrice,
@@ -100,6 +105,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         {
             var query = context.Stocks
                 .Include(s => s.item) // Include related item data
+                .Include(s => s.Supplier) // Include related item data
                 .Where(s => !s.IsDeleted && s.BranchId == request.BranchId && s.quantity > 0 && s.barCode.Equals(request.Barcode))
                 .AsQueryable();
           
@@ -112,6 +118,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
                     StockId = s.stockId,
                     ItemId = s.itemId,
                     ItemName = s.item!.Name,
+                    SupplierId = s.SupplierId,
+                    SupplierName = s.Supplier!.Name,
                     BatchNumber = s.batchNumber,
                     Quantity = s.quantity,
                     PurchasePrice = s.purchasePrice,

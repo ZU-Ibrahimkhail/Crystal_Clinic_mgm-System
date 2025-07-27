@@ -107,11 +107,19 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 }
             }
 
+            var branchDetails = context.BranchDetails.Where(x => x.BranchId == loggedInUser.BranchId).ToList();
+            int? branchDetailId=null;
+            if (branchDetails.Count > 0) {
+                branchDetailId = branchDetails.FirstOrDefault(x => x.IsActive)?.Id ?? branchDetails.First().Id;
+            }
+
             var visit = new Visit
             {
                 patientId = patientId,
                 doctorId = request.DoctorId,
                 visitDate = request.VisitDate,
+                BranchId = loggedInUser.BranchId,
+                BranchDetailsId = branchDetailId,
                 status = request.Status,
                 totalAmount = 0,
                 paidAmount = 0,

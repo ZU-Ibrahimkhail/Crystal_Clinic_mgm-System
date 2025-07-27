@@ -11,8 +11,6 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Queries.GetDDL
         public Guid Id { get; set; }
         public int CurrencyTypeId { get; set; }
         public string? CurrencyType { get; set; }
-        public int AssetTypeId { get; set; }
-        public string? AssetType { get; set; }
         public string Code { get; set; } = string.Empty;
         public double BalanceAmount { get; set; }
     }

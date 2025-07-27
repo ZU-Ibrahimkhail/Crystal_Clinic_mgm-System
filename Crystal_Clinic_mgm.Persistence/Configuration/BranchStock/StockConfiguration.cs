@@ -29,11 +29,21 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
                   .HasColumnType("int")
                   .IsRequired();
 
+            entity.Property(s => s.SupplierId)
+                  .HasColumnName("SupplierId")
+                  .HasColumnType("int")
+                  .IsRequired(false);
+
             // Relationship configuration
             entity.HasOne(s => s.item)
                   .WithMany() // Assuming the relationship with Item is not one-to-many
                   .HasForeignKey(s => s.itemId)
                   .OnDelete(DeleteBehavior.Restrict); // Handle as per your business needs (Restrict for now)
+
+            entity.HasOne(s => s.Supplier)
+                  .WithMany() 
+                  .HasForeignKey(s => s.SupplierId)
+                  .OnDelete(DeleteBehavior.SetNull); 
 
             entity.Property(s => s.purchasePrice)
                   .HasColumnName("PurchasePrice")

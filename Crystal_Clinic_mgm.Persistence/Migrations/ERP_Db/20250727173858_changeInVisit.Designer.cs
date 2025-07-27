@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250727173858_changeInVisit")]
+    partial class changeInVisit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -805,10 +808,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("Remarks");
 
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int")
-                        .HasColumnName("SupplierId");
-
                     b.Property<string>("barCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -844,8 +843,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnName("SellPrice");
 
                     b.HasKey("stockId");
-
-                    b.HasIndex("SupplierId");
 
                     b.HasIndex("itemId");
 
@@ -3114,18 +3111,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Stock", b =>
                 {
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "item")
                         .WithMany()
                         .HasForeignKey("itemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Supplier");
 
                     b.Navigation("item");
                 });

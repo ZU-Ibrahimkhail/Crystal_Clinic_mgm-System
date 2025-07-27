@@ -13,6 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
         public int Quantity { get; set; }
         public decimal PurchasePrice { get; set; }
         public decimal SellPrice { get; set; }
+        public int? SupplierId { get; set; }
         public DateTime PurchaseDate { get; set; }
         public string BatchNumber { get; set; } = string.Empty;
         public string BarCode { get; set; } = string.Empty;
@@ -37,6 +38,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
                 sellPrice = request.SellPrice,
                 purchaseDate = request.PurchaseDate,
                 batchNumber = request.BatchNumber,
+                SupplierId = request.SupplierId,
                 barCode = request.BarCode,
                 expiryDate = request.ExpiryDate,
                 BranchId = item.BranchId,
@@ -64,6 +66,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
         public DateTime PurchaseDate { get; set; }
         public string BatchNumber { get; set; } = string.Empty;
         public string BarCode { get; set; } = string.Empty;
+        public int? SupplierId { get; set; }
         public DateTime ExpiryDate { get; set; }
     }
 
@@ -89,6 +92,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
             stock.quantity = request.Quantity;
             stock.purchasePrice = request.PurchasePrice;
             stock.sellPrice = request.SellPrice;
+            stock.SupplierId = request.SupplierId;
             stock.purchaseDate = request.PurchaseDate;
             stock.batchNumber = request.BatchNumber;
             stock.barCode = request.BarCode;

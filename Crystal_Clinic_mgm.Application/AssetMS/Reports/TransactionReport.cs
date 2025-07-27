@@ -30,7 +30,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.Reports
             Localization localize = new(httpContextAccessor);
             var language = localize.GetMyCookieValue(httpContextAccessor);
             var Data = _GRepoTransactionTracking.FindByCondition(x => !x.IsDeleted &&
-                x.TransactionDate >= request.FromDate && x.TransactionDate <= request.ToDate
+                x.TransactionDate.Date >= request.FromDate.Date && x.TransactionDate.Date <= request.ToDate.Date
                 &&
                 (request.MainAccountIds.Count == 0 || request.MainAccountIds.Contains(x.MainAccountId)))
             .Include(x => x.MainAccount)

@@ -65,11 +65,10 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     public class VisitReportQuery : IRequest<JsonResult>
     {
         public string? PatientName { get; set; }
-        public string? DoctorName { get; set; }
+        public int? DoctorName { get; set; }
         public VisitStatus? Status { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public int? CurrencyTypeId { get; set; }
         public int PageSize { get; set; } = 30;
         public int? LastId { get; set; }
     }
@@ -93,9 +92,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 query = query.Where(v => v.Patient != null && v.Patient.name.Contains(request.PatientName));
             }
 
-            if (!string.IsNullOrEmpty(request.DoctorName))
+            if (request.DoctorName.HasValue)
             {
-                query = query.Where(v => v.Doctor != null && (v.Doctor.firstName + " " + v.Doctor.lastName).Contains(request.DoctorName));
+                query = query.Where(v => v.doctorId == request.DoctorName);
             }
 
             if (request.Status.HasValue)
@@ -111,11 +110,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             if (request.EndDate.HasValue)
             {
                 query = query.Where(v => v.visitDate <= request.EndDate.Value);
-            }
-
-            if (request.CurrencyTypeId.HasValue)
-            {
-                query = query.Where(v => v.Payments.Any(p => p.CurrencyTypeId == request.CurrencyTypeId.Value && !p.IsDeleted));
             }
 
             if (request.LastId.HasValue)

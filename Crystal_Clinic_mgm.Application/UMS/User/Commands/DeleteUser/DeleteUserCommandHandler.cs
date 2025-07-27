@@ -46,12 +46,6 @@ namespace Crystal_Clinic_Mgm.Application.UMS.User.Commands.DeleteUser
                 entity.ModifiedBy = _loggedInUser.Id;
                 entity.ModifiedOn = DateTime.Now;
                 entity.Remarks = request.Remarks;
-                var hasChiled = _context.Users.Any(o => o.IsDeleted == false && o.IsActive == true);
-                if (hasChiled)
-                {
-                    // TODO: Add functional test for this behaviour.
-                    throw new DeleteFailureException(nameof(ApplicationUser), request.Id, _umslocalizeMessage.ParentChildRecord);
-                }
                 await _context.SaveChangesAsync(cancellationToken);
                 return _message.Delete();
             }

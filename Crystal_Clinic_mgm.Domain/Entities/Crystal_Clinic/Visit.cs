@@ -1,10 +1,15 @@
-﻿namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
+﻿using Crystal_Clinic_Mgm.Domain.Entities.Look;
+
+namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
 {
     public class Visit : AuditableEntity
     {
         public int visitId { get; set; }
 
         // Foreign key to the Patient table
+        public int BranchId { get; set; } = 1;
+        public int? BranchDetailsId { get; set; }
+        public BranchDetails? BranchDetails { get; set; }
         public int patientId { get; set; }
         public Patient? Patient { get; set; } // Navigation property
 
