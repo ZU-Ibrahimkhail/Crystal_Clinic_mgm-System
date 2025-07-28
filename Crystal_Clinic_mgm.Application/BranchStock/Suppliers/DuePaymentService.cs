@@ -27,11 +27,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     }
     public class CreateDuePaymentCommandValidator : AbstractValidator<CreateDuePaymentCommand>
     {
-        public CreateDuePaymentCommandValidator(ERP_DbContext context)
+        public CreateDuePaymentCommandValidator()
         {
-            RuleFor(x => x.SupplierDueId)
-                .MustAsync(async (id, ct) => await context.SupplierDue.AnyAsync(sd => sd.Id == id && !sd.IsDeleted, ct))
-                .WithMessage("Supplier due not found.");
             RuleFor(x => x.AmountPaid)
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Amount paid cannot be negative.");
@@ -45,7 +42,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     {
         public async Task<int> Handle(CreateDuePaymentCommand request, CancellationToken cancellationToken)
         {
-            var validations = new CreateDuePaymentCommandValidator(context).Validate(request).Errors;
+            var validations = new CreateDuePaymentCommandValidator().Validate(request).Errors;
             if (!validations.Any()) {
                 throw new InvalidOperationException(validations.ToString());
             }
