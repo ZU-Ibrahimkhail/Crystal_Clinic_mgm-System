@@ -28,6 +28,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public int BranchId { get; set; } = 1;
         public int PageSize { get; set; } = 20;
         public int? LastItemId { get; set; }
+        public int? CategoryId { get; set; }
     }
 
     public class GetItemsResponse
@@ -66,6 +67,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             if (request.LastItemId.HasValue)
             {
                 query = query.Where(i => i.ItemId > request.LastItemId.Value);
+            }
+
+            if (request.CategoryId.HasValue)
+            {
+                query = query.Where(i => i.CategoryId > request.CategoryId.Value);
             }
 
             var items = await query

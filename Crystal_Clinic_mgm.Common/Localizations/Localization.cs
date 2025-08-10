@@ -12,7 +12,7 @@ namespace Crystal_Clinic_Mgm.Common.Localizations
         public Localization(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
-            string language = GetMyCookieValue(_httpContextAccessor);
+            language = GetMyCookieValue(_httpContextAccessor);
 
         }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

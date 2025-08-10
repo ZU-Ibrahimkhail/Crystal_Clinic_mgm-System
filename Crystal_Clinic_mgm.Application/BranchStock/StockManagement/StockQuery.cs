@@ -14,6 +14,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         public int BranchId { get; set; } = 1; // Default to branch 1
         public int PageSize { get; set; } = 20; // Default page size
         public int? LastItemId { get; set; } // For pagination based on last item ID
+        public int? CategoryId { get; set; } // For pagination based on last item ID
     }
 
     public class GetStockResponse
@@ -56,6 +57,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
             if (request.LastItemId.HasValue)
             {
                 query = query.Where(s => s.stockId > request.LastItemId.Value);
+            }
+
+            if (request.CategoryId.HasValue)
+            {
+                query = query.Where(s => s.item != null && s.item.CategoryId > request.CategoryId.Value);
             }
 
             var stockItems = await query
