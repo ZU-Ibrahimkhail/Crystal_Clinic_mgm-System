@@ -338,6 +338,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public string? Search { get; set; }
         public int? PatientId { get; set; }
         public int? LastVisitId { get; set; }
+        public VisitStatus? Status { get; set; }
         public int PageSize { get; set; } = 20;
     }
 
@@ -395,6 +396,11 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             if (request.LastVisitId.HasValue)
             {
                 query = query.Where(v => v.visitId > request.LastVisitId.Value);
+            }
+
+            if (request.Status.HasValue)
+            {
+                query = query.Where(v => v.status > request.Status.Value);
             }
 
             query = query.OrderBy(v => v.visitId).Take(request.PageSize);
