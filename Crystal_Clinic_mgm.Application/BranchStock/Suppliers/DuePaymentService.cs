@@ -2,6 +2,7 @@
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
@@ -10,11 +11,13 @@ using FluentValidation;
 using ImageMagick;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
 {
-    public class CreateDuePaymentCommand : IRequest<int>
+    public class CreateDuePaymentCommand : IRequest<JsonResult>
     {
         public int SupplierDueId { get; set; }
         public int? CurrencyTypeId { get; set; }
@@ -37,17 +40,26 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 .WithMessage("Exchange rate must be positive.");
         }
     }
-    public class CreateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
-        : IRequestHandler<CreateDuePaymentCommand, int>
+    public class CreateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser, IMessage message)
+        : IRequestHandler<CreateDuePaymentCommand, JsonResult>
     {
-        public async Task<int> Handle(CreateDuePaymentCommand request, CancellationToken cancellationToken)
+        public async Task<JsonResult> Handle(CreateDuePaymentCommand request, CancellationToken cancellationToken)
         {
             var validations = new CreateDuePaymentCommandValidator().Validate(request).Errors;
-            if (!validations.Any()) {
-                throw new InvalidOperationException(validations.ToString());
+            if (validations.Any())
+            {
+                message.CheckCCValidationError(validations);
             }
-            var due = await context.SupplierDue.FindAsync(request.SupplierDueId, cancellationToken) ?? throw new KeyNotFoundException($"Due not fount with id {request.SupplierDueId}");
-            var mainAccount = context.MainAccount.FirstOrDefault(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id) ?? throw new KeyNotFoundException($"No account with currency Id {request.CurrencyTypeId} found");
+            var due = await context.SupplierDue.FindAsync(request.SupplierDueId, cancellationToken);
+            if (due == null || due.IsDeleted)
+            {
+                return message.RecordNotFound($"Due not fount with id {request.SupplierDueId}");
+            }
+            var mainAccount = context.MainAccount.FirstOrDefault(x => !x.IsDeleted && x.CurrencyTypeId == request.CurrencyTypeId && x.OwnerUserId == loggedInUser.Id);
+            if (mainAccount == null || mainAccount.IsDeleted)
+            {
+                return message.RecordNotFound($"No account with currency Id {request.CurrencyTypeId} found");
+            }
             var entity = new DuePayment
             {
                 SupplierDueId = request.SupplierDueId,
@@ -105,7 +117,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             context.AccountTracking.Add(AccountTracking);
             context.DuePayment.Add(entity);
             await context.SaveChangesAsync(cancellationToken);
-            return entity.DuePaymentId;
+            return message.Saved(entity);
         }
     }
 
@@ -281,7 +293,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             return true;
         }
     }
-    
+
 
     public class GetDuePaymentByIdQuery : IRequest<DuePayment?>
     {
