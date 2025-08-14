@@ -197,7 +197,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 sessionRate = s.sessionRate,
                 CurrencyTypeId = s.CurrencyTypeId,
                 CurrencyTypeName = localize.GetName(s.CurrencyType),
-                ImagePath = s.ImagePath
+                ImagePath = s.ImagePath,
+                BranchId = s.BranchId,  
             }).ToListAsync(cancellationToken);
         }
     }

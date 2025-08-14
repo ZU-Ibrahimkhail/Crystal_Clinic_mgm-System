@@ -7,9 +7,10 @@
         public string? EmployeeName { get; set; }
         public int ContractTypeId { get; set; }
         public string ContractType { get; set; } = string.Empty;
+        public double SalaryAmount { get; set; }
         public int PositionTitleId { get; set; }
         public string PositionTitle { get; set; } = string.Empty;
-        public int Branchid { get; set; }
+        public int BranchId { get; set; }
         public string Branch { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; } = null;

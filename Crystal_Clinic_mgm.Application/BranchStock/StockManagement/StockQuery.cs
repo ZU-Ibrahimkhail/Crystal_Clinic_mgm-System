@@ -79,7 +79,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
                     PurchasePrice = s.purchasePrice,
                     SellPrice = s.sellPrice,
                     PurchaseDate = s.purchaseDate,
-                    ExpiryDate = s.expiryDate
+                    ExpiryDate = s.expiryDate,
+                    BarCode = s.barCode,
+
+                    
                 })
                 .ToListAsync(cancellationToken);
 

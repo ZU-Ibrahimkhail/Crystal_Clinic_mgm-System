@@ -249,6 +249,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 PatientName = visit.Patient?.name ?? "",
                 DoctorId = visit.doctorId,
                 DoctorName = visit.Doctor != null ? $"{visit.Doctor.firstName} {visit.Doctor.lastName}" : null,
+                speciality = visit.Doctor!.specialty,
                 VisitDate = visit.visitDate,
                 Status = visit.status,
                 TotalAmount = visit.totalAmount,

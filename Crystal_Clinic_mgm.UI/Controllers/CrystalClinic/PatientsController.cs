@@ -22,9 +22,9 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPatients()
+        public async Task<IActionResult> GetAllPatients([FromQuery] GetAllPatientsQuery query)
         {
-            var patients = await Mediator.Send(new GetAllPatientsQuery());
+            var patients = await Mediator.Send(query);
             return Ok(patients);
         }
 

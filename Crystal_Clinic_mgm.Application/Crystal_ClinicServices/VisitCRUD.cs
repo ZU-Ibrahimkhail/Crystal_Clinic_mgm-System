@@ -281,6 +281,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 PatientName = visit.Patient!.name,
                 DoctorId = visit.doctorId,
                 DoctorName = visit.Doctor != null ? $"{visit.Doctor.firstName} {visit.Doctor.lastName}" : null,
+                speciality = visit.Doctor!.specialty,
                 VisitDate = visit.visitDate,
                 Status = visit.status,
                 TotalAmount = visit.totalAmount,
@@ -410,9 +411,10 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 {
                     VisitId = v.visitId,
                     PatientId = v.patientId,
-                    PatientName = v.Patient.name,
+                    PatientName = v.Patient!.name,
                     DoctorId = v.doctorId,
                     DoctorName = v.Doctor != null ? $"{v.Doctor.firstName} {v.Doctor.lastName}" : null,
+                    speciality = v.Doctor!.specialty,
                     VisitDate = v.visitDate,
                     Status = v.status,
                     TotalAmount = v.totalAmount,
@@ -977,6 +979,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public string PatientName { get; set; } = string.Empty;
         public int? DoctorId { get; set; }
         public string? DoctorName { get; set; }
+        public string? speciality { get; set; }
         public DateTime VisitDate { get; set; }
         public VisitStatus Status { get; set; }
         public string StatusName { get => this.Status.ToString(); }
