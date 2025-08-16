@@ -21,6 +21,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
         public Guid FromAccountId { get; set; }
         public Guid ToUserId { get; set; }
         public double Amount { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 
     public class InitiateTransferCommandHandler(ERP_DbContext accountService, ILoggedInUser loggedInUser) : IRequestHandler<InitiateTransferCommand, Result>
@@ -45,7 +46,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
                 CurrencyTypeId = fromAccount.CurrencyTypeId,
                 BalanceAmount = fromAccount.BalanceAmount - request.Amount,
                 TransactionDate = DateTime.UtcNow,
-                Description = $"Transfer to {request.ToUserId}",
+                Description = request.Description,
                 trackType = TrackType.TRANSFER,
                 transactionStatus = TransactionStatus.PENDING,
                 toUserId = request.ToUserId,
@@ -311,9 +312,10 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands
                                           b.CurrencyType!.PashtoName.Contains(request.SearchText) ||
                                           b.DebitAmount.ToString() == request.SearchText);
             }
+            var BranchAccounts = context.MainAccount.Where(x => loggedInUser.IsSuperAdmin || (loggedInUser.IsBranchAdmin && x.BranchId == loggedInUser.BranchId)).Select(x => x.ID).ToList();
 
             var query = context.AccountTracking
-                .Where(x => x.toUserId == loggedInUser.Id && x.trackType == TrackType.TRANSFER && x.transactionStatus == TransactionStatus.APPROVED)
+                .Where(x => (x.toUserId == loggedInUser.Id || BranchAccounts.Contains(x.MainAccountId)) && x.trackType == TrackType.TRANSFER && x.transactionStatus == TransactionStatus.APPROVED)
                 .Include(x => x.CurrencyType)
                 .Where(predicate).AsQueryable();
 
