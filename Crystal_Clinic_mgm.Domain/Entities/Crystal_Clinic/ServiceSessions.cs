@@ -7,6 +7,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
     {
         [Key]
         public int Id { get; set; }
+        public int BranchId { get; set; } = 1;
         public int visitServiceId { get; set; }
         public int visitId { get; set; }
         public int serviceId { get; set; }

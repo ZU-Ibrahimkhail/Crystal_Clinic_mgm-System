@@ -14,7 +14,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
         public int BranchId { get; set; } = 1; // Default to branch 1
         public int PageSize { get; set; } = 20; // Default page size
         public int? LastItemId { get; set; } // For pagination based on last item ID
-        public int? CategoryId { get; set; } // For pagination based on last item ID
+        public int? CategoryId { get; set; } // For filtering based on item category ID
     }
 
     public class GetStockResponse
@@ -51,7 +51,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
 
             if (!string.IsNullOrWhiteSpace(request.SearchText))
             {
-                query = query.Where(s => s.item.Name.Contains(request.SearchText));
+                query = query.Where(s => 
+                s.item!.Name.Contains(request.SearchText) ||
+                s.barCode.Contains(request.SearchText) ||
+                s.Supplier!.Name.Contains(request.SearchText)
+                );
             }
 
             if (request.LastItemId.HasValue)
@@ -81,8 +85,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
                     PurchaseDate = s.purchaseDate,
                     ExpiryDate = s.expiryDate,
                     BarCode = s.barCode,
-
-                    
                 })
                 .ToListAsync(cancellationToken);
 

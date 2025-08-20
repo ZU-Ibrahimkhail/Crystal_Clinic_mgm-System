@@ -28,6 +28,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                   .HasColumnName("Email")
                   .HasColumnType("nvarchar(200)")
                   .IsRequired(false); // Optional field for email
+            entity.Property(p => p.gender)
+                  .HasColumnName("gender")
+                  .HasColumnType("nvarchar(20)")
+                  .HasDefaultValue("Unknown")
+                  .IsRequired(false);
+            entity.Property(p => p.age)
+                  .HasColumnName("age")
+                  .HasColumnType("decimal(18, 2)")
+                  .IsRequired(false);
+            // Optional field for email
 
             // Auditable properties (if required, you can configure them as well)
             EntityConfiguration<Patient>.AuditableEntityConfigurations(entity);

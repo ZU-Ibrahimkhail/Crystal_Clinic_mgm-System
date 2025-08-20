@@ -6,5 +6,7 @@
         public string name { get; set; } = string.Empty;
         public string contactInfo { get; set; } = string.Empty;
         public string? email { get; set; }
+        public decimal? age { get; set; }
+        public string? gender { get; set; }
     }
 }

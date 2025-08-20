@@ -1,4 +1,5 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.Localizations;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
@@ -37,14 +38,14 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var executionStrategy = context.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                var visitService = await context.VisitServices.Include(x => x.service).Include(x=>x.sessions)
-                    .FirstOrDefaultAsync(v => v.visitServiceId == request.VisitServiceId , cancellationToken)
+                var visitService = await context.VisitServices.Include(x => x.service).Include(x => x.sessions)
+                    .FirstOrDefaultAsync(v => v.visitServiceId == request.VisitServiceId, cancellationToken)
                     ?? throw new KeyNotFoundException($"Visit Service with ID {request.VisitServiceId} not found.");
 
                 var visit = await context.Visit.Include(x => x.Patient)
                     .FirstOrDefaultAsync(v => v.visitId == visitService.visitId, cancellationToken)
                                        ?? throw new KeyNotFoundException($"Visit with ID {visitService.visitId} not found.");
-                
+
                 if (visitService.sessions.Count >= visitService.totalSessions)
                 {
                     throw new InvalidOperationException("All sessions of the service are added.");
@@ -58,7 +59,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 {
                     visitServiceId = visitService.visitServiceId,
                     visitId = visitService.visitId,
-                    serviceId = visitService.visitId,
+                    serviceId = visitService.serviceId,
                     serviceName = visitService.service!.Name,
                     patientName = visit.Patient!.name,
                     contactInfo = visit.Patient!.contactInfo,
@@ -137,11 +138,12 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int sessionId { get; set; }
     }
 
-    public class GetServiceSessionByIdHandler(ERP_DbContext context) : IRequestHandler<GetServiceSessionByIdQuery, ServiceSessions>
+    public class GetServiceSessionByIdHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetServiceSessionByIdQuery, ServiceSessions>
     {
         public async Task<ServiceSessions> Handle(GetServiceSessionByIdQuery request, CancellationToken cancellationToken)
         {
-            return await context.ServiceSessions.FirstOrDefaultAsync(s => s.Id == request.sessionId, cancellationToken) ?? new ServiceSessions();
+
+            return await context.ServiceSessions.FirstOrDefaultAsync(s => s.Id == request.sessionId && (loggedInUser.IsSuperAdmin || s.BranchId == loggedInUser.BranchId), cancellationToken) ?? new ServiceSessions();
         }
     }
     #endregion
@@ -152,6 +154,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     {
         public string? Search { get; set; }
         public int? LastSessionId { get; set; } // For cursor pagination
+        public int? serviceId { get; set; } // For cursor pagination
         public int PageSize { get; set; } = 20;
     }
 
@@ -172,16 +175,23 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string? ImplementorEmployee { get; set; }
     }
 
-    public class ListAllServicesSessionsHandler(ERP_DbContext context, IHttpContextAccessor httpContextAccessor) : IRequestHandler<ListAllServicesSessionsQuery, List<ServiceSessionDto>>
+    public class ListAllServicesSessionsHandler(ERP_DbContext context, ILoggedInUser loggedInUser, IHttpContextAccessor httpContextAccessor) : IRequestHandler<ListAllServicesSessionsQuery, List<ServiceSessionDto>>
     {
         public async Task<List<ServiceSessionDto>> Handle(ListAllServicesSessionsQuery request, CancellationToken cancellationToken)
         {
-            var query = context.ServiceSessions.AsQueryable();
+            var query = context.ServiceSessions
+                .Where(x => loggedInUser.IsSuperAdmin || x.BranchId == loggedInUser.BranchId)
+                .AsQueryable();
 
             Localization localize = new(httpContextAccessor);
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(s => s.ImplementorEmployee!.EnglishFirstName.Contains(request.Search));
+                query = query.Where(s =>
+                s.visitId.ToString() == (request.Search) ||
+                s.serviceName.Contains(request.Search) ||
+                s.patientName.Contains(request.Search) ||
+                s.contactInfo.Contains(request.Search) ||
+                s.ImplementorEmployee!.EnglishFirstName.Contains(request.Search));
             }
 
             if (request.LastSessionId.HasValue)
@@ -189,6 +199,10 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 query = query.Where(s => s.Id > request.LastSessionId.Value);
             }
 
+            if (request.serviceId.HasValue)
+            {
+                query.Where(x => x.serviceId == request.serviceId);
+            }
             query = query
                 //.Include(x => x.CurrencyType)
                 .OrderByDescending(s => s.ImplementationDate)
@@ -256,6 +270,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public DateTime? EndDate { get; set; }
         public int PageSize { get; set; } = 30;
         public int? LastId { get; set; }
+        public int? BranchId { get; set; }
     }
 
     public class ServiceSessionReportHandler(ERP_DbContext context) : IRequestHandler<ServiceSessionReportQuery, JsonResult>
@@ -271,6 +286,10 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             if (!string.IsNullOrEmpty(request.PatientName))
             {
                 query = query.Where(s => s.patientName.Contains(request.PatientName));
+            }
+            if (request.BranchId.HasValue)
+            {
+                query = query.Where(s => s.BranchId < request.BranchId.Value);
             }
 
             if (request.ServiceName.HasValue)

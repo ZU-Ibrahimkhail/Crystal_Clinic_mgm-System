@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250820180246_addedBranchIdToServiceSession")]
+    partial class addedBranchIdToServiceSession
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1129,10 +1132,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("Remarks");
 
-                    b.Property<decimal?>("age")
-                        .HasColumnType("decimal(18, 2)")
-                        .HasColumnName("age");
-
                     b.Property<string>("contactInfo")
                         .IsRequired()
                         .HasColumnType("nvarchar(255)")
@@ -1141,12 +1140,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<string>("email")
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("Email");
-
-                    b.Property<string>("gender")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(20)")
-                        .HasDefaultValue("Unknown")
-                        .HasColumnName("gender");
 
                     b.Property<string>("name")
                         .IsRequired()

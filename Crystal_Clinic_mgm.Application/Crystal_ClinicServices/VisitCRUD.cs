@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
@@ -21,6 +22,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public string? PatientName { get; set; } // Required if PatientId is null
         public string? PatientContactInfo { get; set; } // Required if PatientId is null
         public string? PatientEmail { get; set; } // Optional
+        public decimal? age { get; set; }
+        public string? gender { get; set; }
         public int? DoctorId { get; set; }
         public DateTime VisitDate { get; set; }
         public VisitStatus Status { get; set; } = VisitStatus.SCHEDULED;
@@ -82,6 +85,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     name = request.PatientName!,
                     contactInfo = request.PatientContactInfo!,
                     email = request.PatientEmail,
+                    age = request.age,
+                    gender = request.gender,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
@@ -108,8 +113,9 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             }
 
             var branchDetails = context.BranchDetails.Where(x => x.BranchId == loggedInUser.BranchId).ToList();
-            int? branchDetailId=null;
-            if (branchDetails.Count > 0) {
+            int? branchDetailId = null;
+            if (branchDetails.Count > 0)
+            {
                 branchDetailId = branchDetails.FirstOrDefault(x => x.IsActive)?.Id ?? branchDetails.First().Id;
             }
 
@@ -252,7 +258,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public int VisitId { get; set; }
     }
 
-    public class GetVisitDetailsHandler(ERP_DbContext context) : IRequestHandler<GetVisitDetailsQuery, VisitDto>
+    public class GetVisitDetailsHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetVisitDetailsQuery, VisitDto>
     {
         public async Task<VisitDto> Handle(GetVisitDetailsQuery request, CancellationToken cancellationToken)
         {
@@ -266,8 +272,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 .Include(v => v.Services)
                 .ThenInclude(vs => vs.service)
                 .Include(v => v.Services)
-                .ThenInclude(vs => vs.sessions)
-                .FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken);
+            .ThenInclude(vs => vs.sessions)
+            .FirstOrDefaultAsync(v => !v.IsDeleted && (loggedInUser.IsSuperAdmin || v.BranchId == loggedInUser.BranchId) && v.visitId == request.VisitId, cancellationToken);
 
             if (visit == null)
             {
@@ -299,7 +305,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 Services = visit.Services.Select(s => new VisitServiceDto
                 {
                     VisitServiceId = s.visitServiceId,
-                    ServiceName = s.service?.Name??"",
+                    ServiceName = s.service?.Name ?? "",
                     TotalSessions = s.totalSessions,
                     CompletedSessions = s.completedSessions,
                     AddedSessions = s.sessions.Count,
@@ -364,21 +370,14 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         }
     }
 
-    public class GetVisitListHandler : IRequestHandler<GetVisitListQuery, VisitListDto>
+    public class GetVisitListHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetVisitListQuery, VisitListDto>
     {
-        private readonly ERP_DbContext _context;
-
-        public GetVisitListHandler(ERP_DbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<VisitListDto> Handle(GetVisitListQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Visit
+            var query = context.Visit
                 .Include(v => v.Patient)
                 .Include(v => v.Doctor)
-                .Where(v => !v.IsDeleted)
+                .Where(v => !v.IsDeleted && (loggedInUser.IsSuperAdmin || v.BranchId == loggedInUser.BranchId))
                 .AsQueryable();
 
             if (request.PatientId.HasValue)
@@ -388,7 +387,10 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(v => v.Patient.name.Contains(request.Search) ||
+                query = query.Where(v =>
+                                    v.visitId.ToString() == (request.Search) ||
+                                    v.Patient.name.Contains(request.Search) ||
+                                    v.Patient.contactInfo.Contains(request.Search) ||
                                          (v.Doctor != null && (v.Doctor.firstName.Contains(request.Search) || v.Doctor.lastName.Contains(request.Search))));
             }
 
@@ -665,9 +667,15 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 var exRate = exchangeRates.First(x => x.Key == svc.CurrencyTypeId).Value;
                 if (svc.startDate.Date == DateTime.Today)
                 {
+                    services.TryGetValue(svc.serviceId, out var service);
                     var serviceSession = new ServiceSessions
                     {
                         visitServiceId = svc.visitServiceId,
+                        visitId = visit.visitId,
+                        serviceId = svc.serviceId,
+                        serviceName = service?.Name ?? "Unknown",
+                        patientName = visit.Patient?.name ?? "Unknown",
+                        contactInfo = visit.Patient?.contactInfo ?? "Unknown",
                         ImplementationDate = svc.startDate,
                         sessionNumber = 1,
                         PriceInAFN = svc.pricePerSession * exRate
@@ -895,7 +903,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                         Description = $"Payment Reversal for Visit Payment ID {payment.visitPaymentId}",
                         UserId = loggedInUser.Id,
                         DebitAmount = Convert.ToDouble(payment.amountPaid), // Reverse payment as debit
-                        CreditAmount = Convert.ToDouble( payment.RefundAmountInAFN / payment.ExchangeRateToAFN), // Reverse refund as credit
+                        CreditAmount = Convert.ToDouble(payment.RefundAmountInAFN / payment.ExchangeRateToAFN), // Reverse refund as credit
                         BalanceAmount = mainAccount.BalanceAmount,
                         MainAccountId = mainAccount.ID,
                         trackType = TrackType.EXPENSE, // Reversal treated as expense
@@ -1019,7 +1027,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public decimal TotalPrice { get; set; }
         public int CurrencyTypeId { get; set; }
         public string? CurrencyCode { get; set; }
-        public int AddedSessions { get;  set; }
+        public int AddedSessions { get; set; }
     }
 
 
@@ -1039,7 +1047,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public decimal AmountInAFN { get; set; }
         public decimal ExchangeRateToAFN { get; set; }
         public decimal RefundAmountInAFN { get; set; }
-        
+
     }
 
     #endregion

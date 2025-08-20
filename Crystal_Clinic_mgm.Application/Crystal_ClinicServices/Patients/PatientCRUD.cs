@@ -13,26 +13,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
         public string Name { get; set; } = string.Empty;
         public string ContactInfo { get; set; } = string.Empty;
         public string? Email { get; set; }
+        public decimal? age { get; set; }
+        public string? gender { get; set; }
     }
-
-    public class DeletePatientCommand : IRequest<bool>
-    {
-        public int PatientId { get; set; }
-    }
-    public class GetPatientByIdQuery : IRequest<Patient?>
-    {
-        public int PatientId { get; set; }
-    }
-
-    public class GetAllPatientsQuery : IRequest<List<Patient>>
-    {
-        public string? searchby { get; set; }
-        public int pageSize { get; set; } = 30;
-        public int? lastId { get; set; }
-    }
-
-
-
     public class UpdatePatientHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdatePatientCommand, bool>
     {
         public async Task<bool> Handle(UpdatePatientCommand request, CancellationToken cancellationToken)
@@ -51,7 +34,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
             return true;
         }
     }
-
+    
+    public class DeletePatientCommand : IRequest<bool>
+    {
+        public int PatientId { get; set; }
+    }
     public class DeletePatientHandler(ERP_DbContext context) : IRequestHandler<DeletePatientCommand, bool>
     {
         public async Task<bool> Handle(DeletePatientCommand request, CancellationToken cancellationToken)
@@ -66,6 +53,12 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
             return true;
         }
     }
+    
+    
+    public class GetPatientByIdQuery : IRequest<Patient?>
+    {
+        public int PatientId { get; set; }
+    }
     public class GetPatientByIdHandler(ERP_DbContext context) : IRequestHandler<GetPatientByIdQuery, Patient?>
     {
         public async Task<Patient?> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
@@ -76,6 +69,13 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
 
     }
 
+
+    public class GetAllPatientsQuery : IRequest<List<Patient>>
+    {
+        public string? searchby { get; set; }
+        public int pageSize { get; set; } = 30;
+        public int? lastId { get; set; }
+    }
     public class GetAllPatientsHandler(ERP_DbContext context) : IRequestHandler<GetAllPatientsQuery, List<Patient>>
     {
         public async Task<List<Patient>> Handle(GetAllPatientsQuery request, CancellationToken cancellationToken)
@@ -85,7 +85,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
                 .AsQueryable();
             if (!string.IsNullOrEmpty(request.searchby))
             {
-                data = data.Where(x => x.name.Contains(request.searchby) || x.contactInfo.Contains(request.searchby) || x.email.Contains(request.searchby));
+                data = data.Where(x => 
+                x.name.Contains(request.searchby) || 
+                x.contactInfo.Contains(request.searchby) || 
+                x.gender.Contains(request.searchby) || 
+                x.email.Contains(request.searchby));
             }
             if (request.lastId.HasValue)
             {
