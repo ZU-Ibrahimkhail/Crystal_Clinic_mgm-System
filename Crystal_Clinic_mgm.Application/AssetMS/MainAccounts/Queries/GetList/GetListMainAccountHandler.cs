@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.MainAccounts.Queries.GetList
             {
 
                 var entity = _GenericRepositoryAsync
-                    .FindByCondition(x => x.IsDeleted == false && ((x.OwnerUserId == _LoggedInUser.Id) || _LoggedInUser.IsSuperAdmin) &&
+                    .FindByCondition(x => x.IsDeleted == false && ((x.OwnerUserId == _LoggedInUser.Id) || _LoggedInUser.IsSuperAdmin || _LoggedInUser.IsBranchAdmin) &&
                     (request.CurrencyTypeId == null || x.CurrencyTypeId == request.CurrencyTypeId) &&
                     (SearchBy == null ||
                     x.BalanceAmount.ToString().Contains(SearchBy, StringComparison.CurrentCultureIgnoreCase) ||
