@@ -325,13 +325,15 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         {
             var data = context.DuePayment
                 .Where(dp => !dp.IsDeleted)
+                .Include(x=>x.SupplierDue)
+                .Include(x=>x.SupplierDue!.Supplier)
                 .OrderByDescending(dp => dp.DuePaymentId)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(request.SearchBy))
             {
-                //data = data.Where(dp => dp.SupplierDue != null && dp.SupplierDue.Supplier != null
-                //&& dp.SupplierDue.Supplier.Name.Contains(request.SearchBy));
+                data = data.Where(dp => dp.SupplierDue != null && dp.SupplierDue.Supplier != null
+                && dp.SupplierDue.Supplier.Name.Contains(request.SearchBy));
             }
 
             if (request.LastId.HasValue)
