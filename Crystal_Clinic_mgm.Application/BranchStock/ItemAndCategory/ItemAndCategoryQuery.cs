@@ -71,7 +71,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
 
             if (request.CategoryId.HasValue)
             {
-                query = query.Where(i => i.CategoryId > request.CategoryId.Value);
+                query = query.Where(i => i.CategoryId == request.CategoryId.Value);
             }
 
             var items = await query
