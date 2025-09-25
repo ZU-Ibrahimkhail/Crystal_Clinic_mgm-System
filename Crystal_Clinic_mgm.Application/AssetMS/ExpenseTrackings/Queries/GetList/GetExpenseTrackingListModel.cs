@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Queries.GetLis
 {
     public class GetExpenseTrackingListModel
     {
-        public int Id { get; set; }
+        public int ID { get; set; }
         public int CurrencyTypeId { get; set; }
         public string? CurrencyType { get; set; }
         public int ExpenseTypeId { get; set; }
@@ -17,6 +17,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Queries.GetLis
         public string Description { get; set; } = string.Empty;
         public int BranchId { get; set; }
         public string Branch { get; set; } = string.Empty;
+        public Guid MainAccountId { get; set; }
         public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public double Amount { get; set; }

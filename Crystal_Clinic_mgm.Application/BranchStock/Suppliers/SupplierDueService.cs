@@ -37,6 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             {
                 SupplierId = request.SupplierId,
                 DueAmount = request.DueAmount,
+                DueDate = request.DueDate,
                 PaidAmount = 0,
                 RemainAmount = request.DueAmount,
                 CurrencyTypeId = request.CurrencyTypeId,
@@ -70,6 +71,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 throw new ArgumentException("Due amount cannot be less than paid amount.");
             supplierDue.SupplierId = request.SupplierId;
             supplierDue.DueAmount = request.DueAmount;
+            supplierDue.DueDate = request.DueDate;
+            supplierDue.RemainAmount = request.DueAmount - supplierDue.PaidAmount;
             supplierDue.ModifiedOn = DateTime.UtcNow;
             supplierDue.ModifiedBy = loggedInUser.Id;
 
@@ -155,7 +158,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
     public class SupplierDueDetailDTO(SupplierDue due)
     {
         public int Id { get; set; } = due.Id;
-        public int SupplierId { get; set; }
+        public int SupplierId { get; set; } = due.SupplierId;
+
+        // i also want to send dueDate in list
+        public DateTime? DueDate { get; set; } = due.DueDate;
         public string SupplierName { get; set; } = due.Supplier?.Name ?? string.Empty;
         public string SupplierPersonName { get; set; } = due.Supplier?.ContactPerson ?? string.Empty;
         public string SupplierContact { get; set; } = due.Supplier?.ContactInfo ?? string.Empty;

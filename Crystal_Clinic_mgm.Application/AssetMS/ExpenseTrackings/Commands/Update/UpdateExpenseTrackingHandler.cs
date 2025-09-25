@@ -78,6 +78,8 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Updat
             entity.UserId = _loggedInUser.Id;
             entity.Amount = request.Amount;
             entity.ModifiedBy = _loggedInUser.Id;
+            entity.InvoiceNumber = request.InvoiceNumber;
+            entity.AttachmentPath = FilePath;
             entity.ModifiedOn = DateTime.Now;
             _GRepoExpenseTracking.EditeAsync(entity, cancellationToken);
             #endregion
