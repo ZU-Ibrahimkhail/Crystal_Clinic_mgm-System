@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
+using Crystal_Clinic_Mgm.Application.Common.SignalR;
+using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
@@ -27,6 +30,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public int? DoctorId { get; set; }
         public DateTime VisitDate { get; set; }
         public VisitStatus Status { get; set; } = VisitStatus.SCHEDULED;
+        public decimal FeeAmount { get; set; } = 0;
     }
 
     public class CreateVisitCommandValidator : AbstractValidator<CreateVisitCommand>
@@ -127,9 +131,10 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 BranchId = loggedInUser.BranchId,
                 BranchDetailsId = branchDetailId,
                 status = request.Status,
-                totalAmount = 0,
+                FeeAmount = request.FeeAmount,
+                totalAmount = request.FeeAmount,
                 paidAmount = 0,
-                remainingAmount = 0,
+                remainingAmount = request.FeeAmount,
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.UtcNow
             };
@@ -151,6 +156,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public int? DoctorId { get; set; }
         public DateTime VisitDate { get; set; }
         public VisitStatus Status { get; set; }
+        public decimal FeeAmount { get; set; } = 0;
     }
 
     public class UpdateVisitCommandValidator : AbstractValidator<UpdateVisitCommand>
@@ -202,7 +208,9 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             visit.status = request.Status;
             visit.ModifiedBy = loggedInUser.Id;
             visit.ModifiedOn = DateTime.UtcNow;
-
+            visit.totalAmount -= visit.FeeAmount;
+            visit.totalAmount += request.FeeAmount;
+            visit.remainingAmount = visit.totalAmount - visit.paidAmount;
             context.Visit.Update(visit);
             await context.SaveChangesAsync(cancellationToken);
 
@@ -290,6 +298,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 speciality = visit.Doctor!.specialty,
                 VisitDate = visit.visitDate,
                 Status = visit.status,
+                FeeAmount = visit.FeeAmount,
                 TotalAmount = visit.totalAmount,
                 PaidAmount = visit.paidAmount,
                 RemainingAmount = visit.remainingAmount,
@@ -419,6 +428,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     speciality = v.Doctor!.specialty,
                     VisitDate = v.visitDate,
                     Status = v.status,
+                    FeeAmount = v.FeeAmount,
                     TotalAmount = v.totalAmount,
                     PaidAmount = v.paidAmount,
                     RemainingAmount = v.remainingAmount
@@ -613,7 +623,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         }
     }
 
-    public class AddVisitServiceHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<AddVisitServiceCommand, bool>
+    public class AddVisitServiceHandler(ERP_DbContext context, UMS_DbContext ums_dbContext, ILoggedInUser loggedInUser, INotificationRepository notificationRepository, IMessageHubClient signal) : IRequestHandler<AddVisitServiceCommand, bool>
     {
         public async Task<bool> Handle(AddVisitServiceCommand request, CancellationToken cancellationToken)
         {
@@ -662,6 +672,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             visit.ModifiedBy = loggedInUser.Id;
             context.VisitServices.AddRange(visitServices);
             context.SaveChanges();
+            List<ServiceSessions> serviceSessions = [];
             foreach (var svc in visitServices)
             {
                 var exRate = exchangeRates.First(x => x.Key == svc.CurrencyTypeId).Value;
@@ -682,12 +693,20 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     };
                     visit.totalAmount += serviceSession.PriceInAFN;
                     context.ServiceSessions.Add(serviceSession);
+                    serviceSessions.Add(serviceSession);
                 }
             }
             visit.remainingAmount = visit.totalAmount - visit.paidAmount;
             context.Visit.Update(visit);
             context.SaveChanges();
+            foreach (var item in serviceSessions)
+            {
+                var employeeId = context.Doctor.Where(x => !x.IsDeleted && x.services.Split(new char[] { ',' }).Contains(item.serviceId.ToString())).FirstOrDefault()?.employeeId;
+                var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
+                notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, item.Id, null);
+                await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);
 
+            }
             return true;
         }
     }
@@ -991,6 +1010,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public DateTime VisitDate { get; set; }
         public VisitStatus Status { get; set; }
         public string StatusName { get => this.Status.ToString(); }
+        public decimal FeeAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal PaidAmount { get; set; }
         public decimal RemainingAmount { get; set; }

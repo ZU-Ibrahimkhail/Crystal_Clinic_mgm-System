@@ -23,6 +23,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public VisitStatus status { get; set; }
 
         // Total amount of the visit (including services, medications, etc.)
+        public decimal FeeAmount { get; set; }
         public decimal totalAmount { get; set; }
 
         // Amount paid by the patient

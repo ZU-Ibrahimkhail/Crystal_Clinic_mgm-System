@@ -1,4 +1,5 @@
 ﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
@@ -12,6 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
     {
         public int EmployeeId { get; set; }  // The Employee ID
         public string Specialty { get; set; } = string.Empty;  // Specialty of the doctor
+        public List<int> services { get; set; } = [];
     }
 
     public class CreateDoctorHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateDoctorCommand, int>
@@ -33,6 +35,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
                 lastName = employee.EnglishSurName,
                 specialty = request.Specialty,
                 contactInfo = employee.PhoneNumber,
+                services = string.Join(",", request.services),
                 isAvailable = true,  // By default, the doctor is available
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.Now,
@@ -54,6 +57,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
     {
         public int DoctorId { get; set; }  // The ID of the doctor
         public string Specialty { get; set; } = string.Empty;  // Specialty of the doctor to update
+        public List<int> services { get; set; } = [];
         public bool isAvailable { get; set; }
     }
 
@@ -72,6 +76,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
             // Update the doctor's specialty
             doctor.specialty = request.Specialty;
             doctor.isAvailable = request.isAvailable;
+            doctor.services = string.Join(",", request.services);
             doctor.ModifiedBy = loggedInUser.Id;
             doctor.ModifiedOn = DateTime.Now;
 
@@ -135,13 +140,17 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
             {
                 throw new KeyNotFoundException($"Doctor with ID {request.DoctorId} not found.");
             }
+            var services = doctor.services.Split(new char[] { ',' }).Select(int.Parse).ToList();
 
+            var serviceNames = context.Services.Where(x => !x.IsDeleted && services.Contains(x.ServiceId)).Select(x => x.Name).ToList();
             // Map the doctor to a DTO
             return new DoctorDto
             {
                 DoctorId = doctor.doctorId,
                 FirstName = doctor.firstName,
                 LastName = doctor.lastName,
+                services = services,
+                serviceNames = serviceNames,
                 Specialty = doctor.specialty,
                 ContactInfo = doctor.contactInfo,
                 IsAvailable = doctor.isAvailable
@@ -164,37 +173,38 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
     {
         public async Task<DoctorListDto> Handle(GetDoctorListQuery request, CancellationToken cancellationToken)
         {
-          return  await Task.Run(() =>
-            {
+            return await Task.Run(() =>
+              {
 
-                var doctor = context.Doctor.Where(d => !d.IsDeleted).AsQueryable();
-                if (!string.IsNullOrWhiteSpace(request.Search))
-                {
-                    doctor = doctor.Where(x => x.firstName.Contains(request.Search) || x.lastName.Contains(request.Search) || x.specialty.Contains(request.Search));
-                }
-                int totalCount = doctor.Count();
-                if (request.LastDoctorId.HasValue)
-                {
-                    doctor = doctor.Where(x => x.doctorId > request.LastDoctorId);
-                }
-                doctor = doctor.OrderBy(x => x.doctorId).Take(request.PageSize);
+                  var doctor = context.Doctor.Where(d => !d.IsDeleted).AsQueryable();
+                  if (!string.IsNullOrWhiteSpace(request.Search))
+                  {
+                      doctor = doctor.Where(x => x.firstName.Contains(request.Search) || x.lastName.Contains(request.Search) || x.specialty.Contains(request.Search));
+                  }
+                  int totalCount = doctor.Count();
+                  if (request.LastDoctorId.HasValue)
+                  {
+                      doctor = doctor.Where(x => x.doctorId > request.LastDoctorId);
+                  }
+                  doctor = doctor.OrderBy(x => x.doctorId).Take(request.PageSize);
 
 
-                return new DoctorListDto
-                {
-                    Data = [.. doctor.Select(doctor =>
+                  return new DoctorListDto
+                  {
+                      Data = [.. doctor.Select(doctor =>
                         new DoctorDto
                         {
                             DoctorId = doctor.doctorId,
                             FirstName = doctor.firstName,
                             LastName = doctor.lastName,
+                            services = doctor.services.Split(new char[] { ',' }).Select(int.Parse).ToList(),
                             Specialty = doctor.specialty,
                             ContactInfo = doctor.contactInfo,
                             IsAvailable = doctor.isAvailable
                         })],
-                    TotalCount = totalCount,
-                };
-            });
+                      TotalCount = totalCount,
+                  };
+              });
         }
     }
 
@@ -210,6 +220,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
         public string LastName { get; set; } = string.Empty;
         public string Specialty { get; set; } = string.Empty;
         public string ContactInfo { get; set; } = string.Empty;
+        public List<int> services { get; set; } = [];
+        public List<string> serviceNames { get; set; } = [];
         public bool IsAvailable { get; set; }
     }
 

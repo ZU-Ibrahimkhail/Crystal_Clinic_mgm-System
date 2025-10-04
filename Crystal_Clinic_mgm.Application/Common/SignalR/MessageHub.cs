@@ -35,76 +35,11 @@ namespace Crystal_Clinic_Mgm.Application.Common.SignalR
             switch (NotificationType)
             {
 
-                #region Reception Signals 
-                case Constants.NotificationMessage.VisitorInOut:
-                    await _hubContext.Clients.Clients(connectionId).VisitorInOut(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.CreatedNewRequest:
-                    await _hubContext.Clients.Clients(connectionId).NewReceptionTrackingRecord(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ClientRequestApproved:
-                    await _hubContext.Clients.Clients(connectionId).ReceptionTrackingRecordApproved(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ClientRequestRejected:
-                    await _hubContext.Clients.Clients(connectionId).ReceptionTrackingRecordRejected(UserName, PhotoPath);
+                #region New Service Session Record Signals 
+                case Constants.NotificationMessage.NewServiceSessionRecord:
+                    await _hubContext.Clients.Clients(connectionId).NewServiceSessionRecord(UserName, PhotoPath);
                     break;
                 #endregion
-
-                #region DMTS Signals
-                #region DMTS Internal Document Signals
-                case Constants.NotificationMessage.NewInternalDocument:
-                    await _hubContext.Clients.Clients(connectionId).NewInternalDocumentTrackingRecord(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.InternalDocumentRejected:
-                    await _hubContext.Clients.Clients(connectionId).InternalDocumentRejected(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.InternalDocumentReceived:
-                    await _hubContext.Clients.Clients(connectionId).InternalDocumentRecieved(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.CreatedDocumentRecivedBack:
-                    await _hubContext.Clients.Clients(connectionId).CreatedDocumentRecivedBack(UserName, PhotoPath);
-                    break;
-                #endregion
-
-                #region DMTS External Document Signals
-                case Constants.NotificationMessage.NewExternalDocument:
-                    await _hubContext.Clients.Clients(connectionId).NewExternalDocumentTrackingRecord(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ExternalDocumentRejected:
-                    await _hubContext.Clients.Clients(connectionId).ExternalDocumentRejected(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ExternalDocumentReceived:
-                    await _hubContext.Clients.Clients(connectionId).ExternalDocumentRecieved(UserName, PhotoPath);
-                    break;
-                #endregion
-                #endregion
-
-                #region ITSMS Signals
-                case Constants.NotificationMessage.ITSMSNewRequest:
-                    await _hubContext.Clients.Clients(connectionId).NewITSMSApplicantRequestRecord(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ITSMSRequestProcessComplete:
-                    await _hubContext.Clients.Clients(connectionId).ITSMSRequestProcessComplete(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ITSMSRequestRejected:
-                    await _hubContext.Clients.Clients(connectionId).ITSMSRequestRejected(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.ITSMSRequestRecived:
-                    await _hubContext.Clients.Clients(connectionId).ITSMSRequestRecived(UserName, PhotoPath);
-                    break;
-                #endregion
-
-                #region PMIS Signals
-                case Constants.NotificationMessage.NewPMISProjectActivityRecieved:
-                    await _hubContext.Clients.Clients(connectionId).NewPMISProjectActivityRecieved(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.PMISActivityCompleted:
-                    await _hubContext.Clients.Clients(connectionId).PMISActivityCompleted(UserName, PhotoPath);
-                    break;
-                case Constants.NotificationMessage.PMISActivityHasRecomendation:
-                    await _hubContext.Clients.Clients(connectionId).PMISActivityHasRecomendation(UserName, PhotoPath);
-                    break;
-                    #endregion
             }
         }
 

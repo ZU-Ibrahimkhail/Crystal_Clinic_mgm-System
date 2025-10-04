@@ -51,7 +51,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasColumnType("int")
                 .IsRequired();
 
-
+            entity.Property(v => v.FeeAmount)
+                .HasColumnName("FeeAmount")
+                .HasColumnType("decimal(18, 2)")
+                .HasDefaultValue(0)
+                .IsRequired();     
+            
             entity.Property(v => v.totalAmount)
                 .HasColumnName("TotalAmount")
                 .HasColumnType("decimal(18, 2)")

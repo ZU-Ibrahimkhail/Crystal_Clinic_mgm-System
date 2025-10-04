@@ -34,6 +34,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                   .HasColumnType("nvarchar(255)")
                   .IsRequired(false); // Optional field
 
+            entity.Property(d => d.services)
+                  .HasColumnName("services")
+                  .HasColumnType("nvarchar(max)")
+                  .IsRequired(false); // Optional field
+
             entity.Property(d => d.isAvailable)
                   .HasColumnName("IsAvailable")
                   .HasColumnType("bit")

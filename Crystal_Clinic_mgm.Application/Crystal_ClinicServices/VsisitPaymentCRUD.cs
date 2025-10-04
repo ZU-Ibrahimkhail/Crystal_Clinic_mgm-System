@@ -252,6 +252,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 speciality = visit.Doctor!.specialty,
                 VisitDate = visit.visitDate,
                 Status = visit.status,
+                FeeAmount = visit.FeeAmount,
                 TotalAmount = visit.totalAmount,
                 PaidAmount = visit.paidAmount,
                 RemainingAmount = visit.remainingAmount,

@@ -80,7 +80,7 @@
         {
             public const int VisitorInOut = 0;
             // ReceptionTrackingRecordApproved
-            public const int ClientRequestApproved = 1;
+            public const int NewServiceSessionRecord = 1;
             // NewReceptionTrackingRecord
             public const int CreatedNewRequest = 2;
             // ReceptionTrackingRecordRejected
@@ -115,6 +115,7 @@
         }
         public static class ApplicationModule
         {
+            public const int Clinic = 2;
             public const int HR = 3;
             public const int UMS = 6;
             public const int Stock = 5;
