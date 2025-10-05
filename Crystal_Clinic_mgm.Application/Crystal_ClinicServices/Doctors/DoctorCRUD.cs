@@ -197,7 +197,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
                             DoctorId = doctor.doctorId,
                             FirstName = doctor.firstName,
                             LastName = doctor.lastName,
-                            services = doctor.services.Split(new char[] { ',' }).Select(int.Parse).ToList(),
+                            services = ParseServices(doctor.services),
                             Specialty = doctor.specialty,
                             ContactInfo = doctor.contactInfo,
                             IsAvailable = doctor.isAvailable
@@ -205,6 +205,19 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
                       TotalCount = totalCount,
                   };
               });
+        }
+        public static List<int> ParseServices(string services)
+        {
+            if (string.IsNullOrWhiteSpace(services))
+            {
+                return new List<int>();
+            }
+
+            return services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                           .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
+                           .Where(id => id.HasValue)
+                           .Select(id => id.Value)
+                           .ToList();
         }
     }
 

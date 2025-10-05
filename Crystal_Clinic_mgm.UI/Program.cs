@@ -45,7 +45,7 @@ app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocal
 //    //--this line is use for Collapes Contoller Name
 //    option.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
 //    option.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
-Constants.CheckPassword = false;
+Constants.CheckPassword = true;
 //});
 //app.UseRouting();
 //app.UseCors("AllowAll");
@@ -109,7 +109,7 @@ try
     //////---Seeding Data-------------------------------
     await Crystal_Clinic_Initializer.InitilizeCrystal_Clinic(context);
     await UMSintializer.InitializeUMS(userManager);
-    //await NotificationInitializer.InitializeNotifications(umscontext);
+    await NotificationInitializer.InitializeNotifications(umscontext);
     await PermissionInitializer.InitializePermissions(umscontext);
 }
 catch (Exception ex)
