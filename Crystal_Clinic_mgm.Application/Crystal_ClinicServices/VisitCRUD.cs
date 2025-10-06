@@ -627,7 +627,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
     {
         public async Task<bool> Handle(AddVisitServiceCommand request, CancellationToken cancellationToken)
         {
-            var visit = await context.Visit.FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken) ?? throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
+            var visit = await context.Visit.Include(x => x.Patient).FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken) ?? throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
             var serviceIds = request.Services.Select(s => s.ServiceId).ToList();
             var services = await context.Services
                 .Where(s => serviceIds.Contains(s.ServiceId))
@@ -701,7 +701,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             context.SaveChanges();
             foreach (var item in serviceSessions)
             {
-                var employeeId = context.Doctor.Where(x => !x.IsDeleted && x.services.Split(new char[] { ',' }).Contains(item.serviceId.ToString())).FirstOrDefault()?.employeeId;
+                var employeeId = context.Doctor.Where(x => !x.IsDeleted && x.services.Contains(item.serviceId.ToString())).FirstOrDefault()?.employeeId;
                 var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
                 notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, item.Id, null);
                 await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);

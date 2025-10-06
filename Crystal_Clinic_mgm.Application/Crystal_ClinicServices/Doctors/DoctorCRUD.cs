@@ -1,4 +1,5 @@
-﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+﻿using Crystal_Clinic_Mgm.Application.Common;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -32,6 +33,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
             var doctor = new Doctor
             {
                 firstName = employee.EnglishFirstName,
+                employeeId = employee.ID,
                 lastName = employee.EnglishSurName,
                 specialty = request.Specialty,
                 contactInfo = employee.PhoneNumber,
@@ -197,7 +199,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
                             DoctorId = doctor.doctorId,
                             FirstName = doctor.firstName,
                             LastName = doctor.lastName,
-                            services = ParseServices(doctor.services),
+                            services = ParseHelper.ParseServices(doctor.services),
                             Specialty = doctor.specialty,
                             ContactInfo = doctor.contactInfo,
                             IsAvailable = doctor.isAvailable
@@ -206,19 +208,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Doctors
                   };
               });
         }
-        public static List<int> ParseServices(string services)
-        {
-            if (string.IsNullOrWhiteSpace(services))
-            {
-                return new List<int>();
-            }
 
-            return services.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                           .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
-                           .Where(id => id.HasValue)
-                           .Select(id => id.Value)
-                           .ToList();
-        }
     }
 
 

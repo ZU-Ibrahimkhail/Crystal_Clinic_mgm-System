@@ -20,7 +20,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Initializers
         {
             var GUID = Guid.NewGuid();
             var Roles = context.NotificationMessages.ToList();
-            if (Roles.Count == 14)
+            if (Roles.Count == 0)
             {
                 try
                 {

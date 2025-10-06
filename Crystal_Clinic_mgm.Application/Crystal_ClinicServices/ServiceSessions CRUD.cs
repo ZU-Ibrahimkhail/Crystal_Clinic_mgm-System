@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Crystal_Clinic_Mgm.Application.Common;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.Localizations;
@@ -204,7 +205,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             {
                 query.Where(x => x.serviceId == request.serviceId);
             }
-            var services = context.Doctor.Where(d=>!d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => doctor.services.Split(new char[] { ',' }).Select(int.Parse).ToList()).FirstOrDefault() ?? [];
+            var services = context.Doctor.Where(d=>!d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => ParseHelper.ParseServices(doctor.services)).FirstOrDefault() ?? [];
             if (services.Count > 0)
             {
                 query = query.Where(x => services.Contains(x.Id));
