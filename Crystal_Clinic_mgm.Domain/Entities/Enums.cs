@@ -28,6 +28,23 @@
         BankTransfer,
         Check
     }
+
+    public enum CallResponseType
+    {
+        Answered,
+        Timeout,
+        Bussy,
+        Off,
+        OutOfCoverageArea
+    }
+    public enum CallingReason
+    {
+        Marketting,
+        Meeting,
+        Procedure_Implementation_Follow_Up,
+        Next_Session_Implementation_Reminder,
+        Other
+    }
     public enum AdjustmentType
     {
         PriceOverride,

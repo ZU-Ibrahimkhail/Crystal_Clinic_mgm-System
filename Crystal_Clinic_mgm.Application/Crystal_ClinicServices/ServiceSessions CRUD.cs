@@ -3,6 +3,7 @@ using Crystal_Clinic_Mgm.Application.Common;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Common.Localizations;
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
@@ -88,6 +89,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     public class ServiceSessionImpCommand : IRequest<bool>
     {
         public int sessionId { get; set; }
+        public DateTime? NextSessionDate { get; set; }
+        public string CommentForNextSession { get; set; } = string.Empty;
     }
 
     public class ServiceSessionCommandImpValidator : AbstractValidator<ServiceSessionImpCommand>
@@ -127,6 +130,19 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 context.VisitServices.Update(visitService);
                 context.ServiceSessions.Update(session);
                 await context.SaveChangesAsync(cancellationToken);
+                if (request.NextSessionDate.HasValue && visitService.completedSessions != visitService.totalSessions)
+                {
+                    CallList notify = new()
+                    {
+                        Name = session.patientName,
+                        PhoneNumber = session.contactInfo,
+                        Description = $"Visit Id: {session.visitId} \n Service: {session.serviceName} \n Date: {request.NextSessionDate} \n{request.CommentForNextSession}",
+                        CallingReason = CallingReason.Next_Session_Implementation_Reminder,
+                        ToBeCalledDate = request.NextSessionDate.Value.AddDays(-1),
+                    };
+                    context.CallList.Add(notify);
+                    context.SaveChanges();
+                }
                 return true;
             });
         }

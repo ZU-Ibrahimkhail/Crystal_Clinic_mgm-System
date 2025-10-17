@@ -79,6 +79,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<Supplier> Supplier { get; set; }
         public DbSet<SupplierDue> SupplierDue { get; set; }
         public DbSet<DuePayment> DuePayment { get; set; }
+        public DbSet<CallList> CallList { get; set; }
 
         public async Task<decimal> GetExchangeRate(int fromCurrencyId, int toCurrencyId, CancellationToken cancellationToken)
         {
@@ -154,6 +155,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new SupplierConfiguration());
             modelBuilder.ApplyConfiguration(new SupplierDueConfiguration());
             modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new CallListConfiguration());
 
 
 
