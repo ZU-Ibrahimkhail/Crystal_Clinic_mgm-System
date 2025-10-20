@@ -1,10 +1,14 @@
-﻿using Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Dashboards;
+﻿using Crystal_Clinic_Mgm.Application.Common.RBAC;
+using Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Dashboards;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
 {
     [ApiController]
+    [Authorize]
+    [RBAC]
     public class DashboardController : BaseController
     {
         private readonly ILogger<DashboardController> _logger;
