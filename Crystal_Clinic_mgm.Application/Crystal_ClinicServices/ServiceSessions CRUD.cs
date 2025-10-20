@@ -130,7 +130,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 context.VisitServices.Update(visitService);
                 context.ServiceSessions.Update(session);
                 await context.SaveChangesAsync(cancellationToken);
-                if (request.NextSessionDate.HasValue && visitService.completedSessions != visitService.totalSessions)
+                if (request.NextSessionDate.HasValue && visitService.completedSessions < visitService.totalSessions)
                 {
                     CallList notify = new()
                     {
@@ -139,6 +139,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         Description = $"Visit Id: {session.visitId} \n Service: {session.serviceName} \n Date: {request.NextSessionDate} \n{request.CommentForNextSession}",
                         CallingReason = CallingReason.Next_Session_Implementation_Reminder,
                         ToBeCalledDate = request.NextSessionDate.Value.AddDays(-1),
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.Now
+
                     };
                     context.CallList.Add(notify);
                     context.SaveChanges();
@@ -221,12 +224,12 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             {
                 query.Where(x => x.serviceId == request.serviceId);
             }
-            var services = context.Doctor.Where(d=>!d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => ParseHelper.ParseServices(doctor.services)).FirstOrDefault() ?? [];
+            var services = context.Doctor.Where(d => !d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => ParseHelper.ParseServices(doctor.services)).FirstOrDefault() ?? [];
             if (services.Count > 0)
             {
                 query = query.Where(x => services.Contains(x.Id));
             }
-            
+
             query = query
                 //.Include(x => x.CurrencyType)
                 .OrderByDescending(s => s.ImplementationDate)
