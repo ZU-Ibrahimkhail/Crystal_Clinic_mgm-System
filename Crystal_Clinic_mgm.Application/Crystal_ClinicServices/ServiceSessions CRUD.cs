@@ -2,6 +2,9 @@
 using Crystal_Clinic_Mgm.Application.Common;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
+using Crystal_Clinic_Mgm.Application.Common.SignalR;
+using Crystal_Clinic_Mgm.Common.Constants;
+using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Common.Localizations;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
@@ -34,7 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         }
     }
 
-    public class AddServiceSessionHandler(ERP_DbContext context) : IRequestHandler<AddServiceSessionCommand, bool>
+    public class AddServiceSessionHandler(ERP_DbContext context, UMS_DbContext ums_dbContext, ILoggedInUser loggedInUser, INotificationRepository notificationRepository, IMessageHubClient signal) : IRequestHandler<AddServiceSessionCommand, bool>
     {
         public async Task<bool> Handle(AddServiceSessionCommand request, CancellationToken cancellationToken)
         {
@@ -77,6 +80,26 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 context.Visit.Update(visit);
                 context.VisitServices.Update(visitService);
                 await context.SaveChangesAsync(cancellationToken);
+
+                var employees = context.Doctor.Where(x => !x.IsDeleted && x.services.Contains(serviceSession.serviceId.ToString())).ToList();
+                int employeeId = 0;
+                foreach (var emp in employees)
+                {
+                    List<string> sids = emp.services.Split(',').ToList();
+                    if (sids.Contains(serviceSession.serviceId.ToString()))
+                    {
+                        employeeId = emp.employeeId;
+                        if (employeeId != null)
+                        {
+                            var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
+                            if (user != null)
+                            {
+                                notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, serviceSession.Id, null);
+                                await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);
+                            }
+                        }
+                    }
+                }
                 return true;
             });
         }

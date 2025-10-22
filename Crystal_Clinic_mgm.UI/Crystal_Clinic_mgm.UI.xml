@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Crystal_Clinic_Mgm.UI</name>
+        <name>Crystal_Clinic_mgm.UI</name>
     </assembly>
     <members>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.AssetMS.DashboardAndReportController.BarChartofAssetByAssetTypesAndUser">

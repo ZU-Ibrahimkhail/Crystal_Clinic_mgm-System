@@ -49,7 +49,12 @@ namespace Crystal_Clinic_Mgm.UI.Providers
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["JWT_Token"];
+                        var accessToken = context.Request.Query["access_token"];
+                        // Fallback to JWT_Token for backward compatibility
+                        if (string.IsNullOrEmpty(accessToken))
+                        {
+                            accessToken = context.Request.Query["JWT_Token"];
+                        }
                         //  var accessToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
                         var path = context.HttpContext.Request.Path;

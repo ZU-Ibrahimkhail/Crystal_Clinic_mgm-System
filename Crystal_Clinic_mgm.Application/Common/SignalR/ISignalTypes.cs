@@ -4,9 +4,6 @@
     {
         #region Reception Signals
         Task NewServiceSessionRecord(string? UserName = null, string? PhotoPath = null);
-        Task NewReceptionTrackingRecord(string? UserName = null, string? PhotoPath = null);
-        Task ReceptionTrackingRecordApproved(string? UserName = null, string? PhotoPath = null);
-        Task ReceptionTrackingRecordRejected(string? UserName = null, string? PhotoPath = null);
         Task VisitorInOut(string? UserName = null, string? PhotoPath = null);
         #endregion
         #region DMTS Internal and external document signals

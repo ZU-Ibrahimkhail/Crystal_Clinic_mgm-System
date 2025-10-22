@@ -10,10 +10,12 @@ using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 {
@@ -623,8 +625,13 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         }
     }
 
-    public class AddVisitServiceHandler(ERP_DbContext context, UMS_DbContext ums_dbContext, ILoggedInUser loggedInUser, INotificationRepository notificationRepository, IMessageHubClient signal) : IRequestHandler<AddVisitServiceCommand, bool>
+    public class AddVisitServiceHandler(ERP_DbContext context, UMS_DbContext ums_dbContext,
+     ILoggedInUser loggedInUser,
+     INotificationRepository notificationRepository,
+     IMessageHubClient signal,
+     ILogger<AddVisitServiceHandler> logger) : IRequestHandler<AddVisitServiceCommand, bool>
     {
+        private ILogger<AddVisitServiceHandler> _logger => logger;
         public async Task<bool> Handle(AddVisitServiceCommand request, CancellationToken cancellationToken)
         {
             var visit = await context.Visit.Include(x => x.Patient).FirstOrDefaultAsync(v => !v.IsDeleted && v.visitId == request.VisitId, cancellationToken) ?? throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
@@ -701,10 +708,28 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
             context.SaveChanges();
             foreach (var item in serviceSessions)
             {
-                var employeeId = context.Doctor.Where(x => !x.IsDeleted && x.services.Contains(item.serviceId.ToString())).FirstOrDefault()?.employeeId;
-                var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
-                notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, item.Id, null);
-                await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);
+                _logger.LogInformation("Preparing to send notification for ServiceSession ID: {serviceId}", item.serviceId);
+                var employees = context.Doctor.Where(x => !x.IsDeleted && x.services.Contains(item.serviceId.ToString())).ToList();
+                int employeeId = 0;
+                foreach (var emp in employees)
+                {
+                    List<string> sids = emp.services.Split(',').ToList();
+                    if (sids.Contains(item.serviceId.ToString()))
+                    {
+                        employeeId = emp.employeeId;
+                        _logger.LogInformation("Found Employee ID: {EmployeeId} for ServiceSession ID: {ServiceSessionId}", employeeId, item.Id);
+                        if (employeeId != null)
+                        {
+                            var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
+                            if (user != null)
+                            { 
+                                notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, item.Id, null);
+                                await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);
+                            }
+                        }
+                    }
+                }
+
 
             }
             return true;
