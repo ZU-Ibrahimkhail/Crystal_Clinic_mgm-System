@@ -250,12 +250,12 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var services = context.Doctor.Where(d => !d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => ParseHelper.ParseServices(doctor.services)).FirstOrDefault() ?? [];
             if (services.Count > 0)
             {
-                query = query.Where(x => services.Contains(x.Id));
+                query = query.Where(x => services.Contains(x.serviceId));
             }
 
             query = query
                 //.Include(x => x.CurrencyType)
-                .OrderByDescending(s => s.ImplementationDate)
+                .OrderByDescending(s => s.Id)
                 .Take(request.PageSize);
 
             return await query.Select(s => new ServiceSessionDto
