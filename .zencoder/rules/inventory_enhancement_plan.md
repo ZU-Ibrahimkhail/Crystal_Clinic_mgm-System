@@ -74,6 +74,13 @@ The central brain for all stock changes.
 - **Financial Hooks**: Every movement publishes to `IValuationService` for moving-average recalculation and to the Sales/Procurement module for PO receipt reconciliation.
 - **Clinic Hooks**: `ServiceInventoryLink` consumers raise `Inventory.KitConsumed` so Clinic discharges can reconcile with actual stock deductions.
 
+#### Reservation & Idempotency Contract
+- **`Clinic.ServiceInventoryRequest` (Sync API)**
+  - **Payload**: `{ "visitId": 501, "serviceId": 12, "items": [{ "itemId": 88, "quantity": 2 }], "idempotencyToken": "VIS-501-SVC-12", "ttlSeconds": 120 }`
+  - **Semantics**: Inventory reserves batches for `ttlSeconds` and returns `{ status: "Reserved", reservationId, expiresAt, reservedLots[] }`. If the same `idempotencyToken` replays, the existing reservation is returned so retries never double-deduct.
+  - **Completion**: Clinic calls `POST /api/Inventory/Reservation/{reservationId}/Commit` (or `.../Release`) once the procedure succeeds/fails. Background sweeper auto-releases expired reservations to avoid leakage.
+  - **Failure Handling**: Network or downstream failures force Clinic to retry with the same token; Inventory responds deterministically. When Inventory cannot honor a request, it returns `409` with shortage details so Clinic can prompt substitution before proceeding.
+
 ---
 
 ### 3. API Payload & Response Definitions

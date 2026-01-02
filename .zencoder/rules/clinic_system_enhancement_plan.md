@@ -108,6 +108,19 @@ Legacy AssetMS features are deprecated; clinic workflows now reference the finan
 - **`Clinic.ServiceInventoryRequest`** → synchronous call to Inventory `ServiceInventoryLink` to reserve kits and emit `Inventory.KitConsumed` upon completion.
 - **`Clinic.LabOrderCreated` / `Clinic.LabResultPosted`** → events that allow external LIS systems or analytics engines to subscribe without touching core tables.
 
+### Event Payloads & Consumers
+- **`Clinic.VisitCompleted`**
+  - **Payload**: `{ "visitId": 9901, "invoiceId": "INV-2026-088", "netAmount": 12500.00, "taxAmount": 625.00, "arBalance": 12500.00, "medicationLines": [{ "itemId": 44, "quantity": 2, "unitCost": 150, "unitPrice": 250 }], "performedServices": [{ "serviceId": 5, "price": 8000 }] }`
+  - **Consumers**: Financial system posts AR/Revenue entries; Inventory cross-checks kit commits to ensure deduction totals match the billed medication lines.
+- **`Clinic.ProcedureLogged`**
+  - **Payload**: `{ "procedureLogId": 3005, "visitId": 9901, "fixedAssetId": 102, "roomId": 1, "start": "2026-02-10T08:00Z", "end": "2026-02-10T09:15Z" }`
+  - **Consumers**: Finance for utilization KPIs and depreciation scheduling; Operations dashboards for room/equipment occupancy.
+- **`Clinic.VisitMedicationScanned`** (raised when `VisitMedication` rows insert)
+  - **Payload**: `{ "visitMedicationId": 7010, "visitId": 9901, "itemId": 44, "quantity": 2, "unitCost": 150, "scanTimestamp": "2026-02-10T07:55Z", "reservationId": "RSV-abc" }`
+  - **Consumers**: Inventory commits reservations and publishes `Inventory.KitConsumed`; Financial uses unit costs for COGS accrual and invoice line enrichment.
+- **`Clinic.VisitCompletedAck`**
+  - Emitted after Finance confirms AR posting; Clinic uses it to mark invoices as “Accounted,” ensuring UI shows consistent accounting status.
+
 ---
 
 ## 3. Phase 3: Data Entry & Automation Logic

@@ -36,7 +36,7 @@ The current HR system is a **basic administrative database** (readiness: ~28%). 
 | `JobGrade` | Add (string) | Links position to a **Salary Category**. |
 
 #### Table: `PayrollContract` (**Evolution of existing `ContractDetails`**)
-*Note: This table replaces `ContractDetails`. Existing data will be migrated.*
+*Note: This table replaces `ContractDetails`, but production data currently lives only in `EmployeeProfile`, so treat the rename as a schema swap with fresh seed data rather than a legacy migration.*
 | Field Name | Change | Purpose |
 | :--- | :--- | :--- |
 | `SalaryAmount` | Rename to `BaseSalary` | Fixed monthly salary (**Salary Details**). |

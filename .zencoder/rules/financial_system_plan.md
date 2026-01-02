@@ -281,6 +281,11 @@ public enum NormalBalanceType
 }
 ```
 
+**Account Ownership Rules:**
+- `IsSystemAccount = true` designates IFRS-mandated ledgers (cash, retained earnings, inventory control). These rows are seeded, immutable from the UI, and only editable through controlled migrations.
+- `IsSystemAccount = false` rows are user-maintained accounts; finance admins can create, edit, deactivate, or re-parent them through the Chart of Accounts management APIs described later.
+- Validation enforces that user accounts inherit type/category from their parent and may not override the normal balance of a system parent.
+
 **Removed:** No separate Account table needed. Journal entries reference ChartOfAccounts directly, with branch and currency handled at transaction level.
 
 ##### AccountTracking Table Modifications
@@ -1022,6 +1027,69 @@ public class GeneralLedgerService : IGeneralLedgerService
 }
 ```
 
+### 4. Application Services & API Surface
+
+#### ChartOfAccountsManagementService
+- `POST /api/Finance/ChartOfAccounts` creates user-owned accounts beneath a selected parent, inheriting type/category automatically.
+- `PUT /api/Finance/ChartOfAccounts/{id}` edits only user accounts; system accounts return `403` and require migration tooling.
+- `POST /api/Finance/ChartOfAccounts/{id}/Deactivate` toggles availability while preventing deactivation of parents that still have active children.
+- `POST /api/Finance/ChartOfAccounts/{id}/Move` re-parents user accounts and recomputes ordering; validation ensures parents share the same normal balance side.
+
+#### TrialBalanceController
+- `GET /api/Finance/Reporting/TrialBalance?asOf=2026-03-31&compareTo=2026-02-29&branchId=&currency=` returns current-period totals plus optional comparison columns.
+- `POST /api/Finance/Reporting/TrialBalance/Export` streams CSV/XLSX with filters applied.
+- Every row links to `GET /api/Finance/GeneralLedger` for drill-down.
+
+#### AccountsReceivableService
+- `GET /api/Finance/AccountsReceivable/Aging?asOf=...&branchId=&customerId=` builds 0-30/30-60/60-90/90+ buckets using `Receipt` aggregates.
+- `POST /api/Finance/AccountsReceivable/{id}/RecordPayment` captures partial or full receipts, automatically generating JE lines and reducing balances.
+- `POST /api/Finance/AccountsReceivable/{id}/ApplyCredit` applies credit notes or write-offs with configurable GL mappings.
+- `POST /api/Finance/AccountsReceivable/{id}/Reminder` triggers outbound communication and logs reminder metadata for the audit trail.
+
+#### AccountsPayableService
+- `GET /api/Finance/AccountsPayable/Aging?asOf=...` mirrors the AR aging buckets for vendor bills.
+- `POST /api/Finance/AccountsPayable/{id}/MarkForPayment` flags a bill for the payment run, storing bank account hints and approver IDs.
+- `POST /api/Finance/Payments/Batch` creates payment batches from approved bills, emitting `Finance.PaymentBatchCreated` events.
+- `POST /api/Finance/Payments/{batchId}/Confirm` finalizes disbursements and posts Debit AP / Credit Cash entries per bill line.
+
+#### GeneralLedgerQueryService
+- `GET /api/Finance/GeneralLedger?accountId=&dateFrom=&dateTo=&branchId=&currency=` streams paginated ledger lines with running balances.
+- `POST /api/Finance/GeneralLedger/Export` supports CSV/XLSX exports for auditors.
+- `GET /api/Finance/GeneralLedger/{entryId}/Source` hyperlinks back to the originating JE, invoice, or bill DTO.
+
+#### BankReconciliationService
+- New tables: `BankStatementImport` (file metadata), `BankStatementLine` (parsed transactions), `BankMatch` (links statement lines to GL entries or adjustment journals).
+- `POST /api/Finance/BankReconciliation/Upload` ingests CSV/OFX statements and normalizes currency/amounts.
+- `POST /api/Finance/BankReconciliation/Match` runs auto-matching based on amount/date tolerance and stores proposals.
+- `POST /api/Finance/BankReconciliation/ManualMatch` accepts user-selected GL entries to pair with statement lines.
+- `POST /api/Finance/BankReconciliation/{periodId}/Close` locks the period, posts outstanding adjustments, and records reconciled balances for audit trail reference.
+
+#### ExpenseWorkflowService
+- `POST /api/Finance/Expense?status=Draft|Submitted` handles employee submissions; attachments stream via `POST /api/Finance/Expense/Attachment` into secure storage.
+- `POST /api/Finance/Expense/{id}/Approve`, `/Reject`, and `/Reassign` manage multi-step approvals with role-based guards.
+- Status transitions emit `Finance.ExpenseSubmitted`, `Finance.ExpenseApproved`, and `Finance.ExpenseRejected` events for HR/Payroll hooks.
+
+#### AuditTrailService
+- `GET /api/Finance/AuditTrail?entityType=&entityId=&dateFrom=&dateTo=&userId=` surfaces immutable event logs captured via outbox pattern.
+- `POST /api/Finance/AuditTrail/Export` provides auditors with signed CSV exports.
+- Stores before/after JSON blobs plus correlation IDs to trace multi-entity transactions.
+
+#### BudgetVarianceService
+- `BudgetHeader`/`BudgetLine` tables store yearly or quarterly plans per cost center/account.
+- `GET /api/Finance/Reporting/BudgetVariance?period=&costCenter=` compares `BudgetLine.Amount` vs aggregated GL actuals.
+- `POST /api/Finance/Reporting/BudgetVariance/Export` generates Excel for CFO reviews.
+
+#### CurrencyRateService
+- `CurrencyExchangeRate` table gains `Status`, `ApprovedBy`, and `EffectiveTo` fields.
+- `POST /api/Finance/Currency/Rates` creates draft rates; `PUT /api/Finance/Currency/Rates/{id}` edits until published.
+- `POST /api/Finance/Currency/Rates/{id}/Publish` locks the rate and notifies downstream caches via `Finance.ExchangeRateUpdated`.
+
+#### ForecastingService
+- Consumes GL, AR, AP, and budget data to build projections stored in `ForecastSnapshot` and `ForecastLine` tables.
+- `GET /api/Finance/Forecasting?horizonMonths=&scenario=` returns base or saved scenarios with projected cash, AR, AP, and net income metrics.
+- `POST /api/Finance/Forecasting/Scenario` saves what-if adjustments (growth %, collection days, FX trends) and regenerates `ForecastLine` data.
+- `POST /api/Finance/Forecasting/Export` shares charts/tables with executives.
+
 ### 5. Migration Strategy
 
 #### Data Migration Plan
@@ -1136,9 +1204,9 @@ public class FinancialSystemMigration
 - Performance optimization
 
 ### UI/UX & Deployment Strategy
-- Rebuild finance-facing forms and dashboards where necessary to expose the new GL/AR/AP capabilities; legacy screens can be discarded instead of retrofitted.
-- Because the platform is being relaunched greenfield, skip legacy data migration and focus on seeding master data (currencies, branches, chart of accounts) plus automated smoke demos.
-- Coordinate UI changes with Inventory, Sales, Clinic, and HR teams so shared components reuse the same financial widgets and avoid duplicated effort.
+- Rebuild finance-facing forms and dashboards where necessary to expose the new GL/AR/AP capabilities; legacy screens can be discarded instead of retrofitted, and every rebuilt grid/form must meet WCAG AA contrast and localization requirements (en, ps-AF, fa-IR).
+- Because the platform is being relaunched greenfield, skip legacy data migration and focus on seeding master data (currencies, branches, chart of accounts) plus automated smoke demos, backed by nightly UI smoke packs for posting, reconciliation, and reporting journeys.
+- Coordinate UI changes with Inventory, Sales, Clinic, and HR teams so shared components reuse the same financial widgets and avoid duplicated effort; publish Figma/component library updates before developers start consuming them.
 
 ### 7. Testing Strategy
 
