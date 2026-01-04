@@ -125,5 +125,117 @@
         Hours,
         Days
     }
+
+    #region Accounting Enums
+    public enum AccountType
+    {
+        Asset = 1,
+        Liability = 2,
+        Equity = 3,
+        Revenue = 4,
+        Expense = 5,
+        ContraAsset = 6,
+        OtherIncome = 7
+    }
+
+    public enum AccountCategory
+    {
+        CurrentAsset = 100,
+        FixedAsset = 101,
+        OtherAsset = 102,
+        CurrentLiability = 200,
+        LongTermLiability = 201,
+        RetainedEarnings = 300,
+        Capital = 301,
+        ServiceRevenue = 400,
+        OtherRevenue = 401,
+        OperatingExpense = 500,
+        AdministrativeExpense = 501,
+        FinancialExpense = 502
+    }
+
+    public enum NormalBalanceType
+    {
+        Debit,
+        Credit
+    }
+
+    public enum JournalEntryStatus
+    {
+        Draft,
+        Unposted,
+        Posted,
+        Voided
+    }
+
+    public enum ARStatus
+    {
+        Open,
+        PartiallyPaid,
+        Paid,
+        Overdue,
+        WrittenOff
+    }
+
+    public enum APStatus
+    {
+        Open,
+        PartiallyPaid,
+        Paid,
+        Overdue
+    }
+
+    public enum SalesStatus
+    {
+        Draft,
+        Issued,
+        Paid,
+        Partial,
+        Void,
+        Refunded
+    }
+
+    public enum POStatus
+    {
+        Open,
+        Received,
+        Cancelled,
+        Closed
+    }
+
+    public enum BillStatus
+    {
+        Unpaid,
+        Partial,
+        Paid,
+        Overdue
+    }
+
+    public enum EquityTransactionType
+    {
+        Investment,
+        Drawing,
+        Dividend,
+        ProfitShare
+    }
+
+    public enum BudgetStatus
+    {
+        Draft,
+        Submitted,
+        Approved,
+        Active,
+        Closed
+    }
+
+    public enum RecurringFrequency
+    {
+        Weekly,
+        Monthly,
+        Quarterly,
+        Yearly
+    }
+    #endregion
+
     #endregion
 }

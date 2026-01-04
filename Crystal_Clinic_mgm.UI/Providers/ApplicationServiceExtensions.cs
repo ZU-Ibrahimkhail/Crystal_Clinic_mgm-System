@@ -4,6 +4,8 @@ using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Crystal_Clinic_Mgm.Application.Accounting.Services;
+using Crystal_Clinic_Mgm.Application.Common.Configuration;
 using Crystal_Clinic_Mgm.Application.Common.Identity;
 using Crystal_Clinic_Mgm.Application.Common.MappingProfiles;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
@@ -19,6 +21,9 @@ namespace Crystal_Clinic_Mgm.UI.Providers
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
         {
+            //----Configuration Settings
+            services.Configure<FinancialSettings>(config.GetSection("FinancialSettings"));
+            
             //----Database Connections     
             //----ERP
             services.AddDbContext<ERP_DbContext>(options =>
@@ -87,6 +92,14 @@ namespace Crystal_Clinic_Mgm.UI.Providers
             services.AddTransient(typeof(IGeneralHelperRepositoryAsync<>), typeof(GeneralHelperRepositoryAsync<>));
             services.AddTransient(typeof(IGeneralHelperRepositoryAsync), typeof(GeneralHelperRepositoryAsync));
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IFinancialConfigurationService, FinancialConfigurationService>();
+            services.AddScoped<ISalesInvoiceService, SalesInvoiceService>();
+            services.AddScoped<IProcurementService, ProcurementService>();
+            services.AddScoped<IBankReconciliationService, BankReconciliationService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IAuditTrailService, AuditTrailService>();
+            services.AddScoped<IForecastingService, ForecastingService>();
+            services.AddScoped<IChartOfAccountsService, ChartOfAccountsService>();
             //--For Email-----
             services.AddTransient<IMailRepositoy, MailRepositoy>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

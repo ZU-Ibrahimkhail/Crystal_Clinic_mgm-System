@@ -1,4 +1,5 @@
 ﻿using Crystal_Clinic_Mgm.Common.AppConfig;
+using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
@@ -7,6 +8,7 @@ using Crystal_Clinic_Mgm.Domain.Entities.General;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
+using Crystal_Clinic_Mgm.Persistence.Configuration.Accounting;
 using Crystal_Clinic_Mgm.Persistence.Configuration.AssetMS;
 using Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look;
@@ -80,6 +82,41 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<SupplierDue> SupplierDue { get; set; }
         public DbSet<DuePayment> DuePayment { get; set; }
         public DbSet<CallList> CallList { get; set; }
+
+        #region Accounting
+        public DbSet<ChartOfAccounts> ChartOfAccounts { get; set; }
+        public DbSet<JournalEntry> JournalEntries { get; set; }
+        public DbSet<JournalEntryLine> JournalEntryLines { get; set; }
+        public DbSet<GeneralLedger> GeneralLedgers { get; set; }
+        public DbSet<RecurringJournalTemplate> RecurringJournalTemplates { get; set; }
+        public DbSet<RecurringJournalLine> RecurringJournalLines { get; set; }
+        public DbSet<AccountsReceivable> AccountsReceivables { get; set; }
+        public DbSet<Receipt> Receipts { get; set; }
+        public DbSet<AccountsPayable> AccountsPayables { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<VendorBill> VendorBills { get; set; }
+        public DbSet<SalesInvoice> SalesInvoices { get; set; }
+        public DbSet<SalesInvoiceLine> SalesInvoiceLines { get; set; }
+        public DbSet<SalesReceipt> SalesReceipts { get; set; }
+        public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
+        public DbSet<POLine> POLines { get; set; }
+        public DbSet<FixedAsset> FixedAssets { get; set; }
+        public DbSet<Shareholder> Shareholders { get; set; }
+        public DbSet<EquityTransaction> EquityTransactions { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
+        public DbSet<BudgetLine> BudgetLines { get; set; }
+        public DbSet<BankStatementImport> BankStatementImports { get; set; }
+        public DbSet<BankStatementLine> BankStatementLines { get; set; }
+        public DbSet<BankMatch> BankMatches { get; set; }
+        public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<ForecastSnapshot> ForecastSnapshots { get; set; }
+        public DbSet<ForecastLine> ForecastLines { get; set; }
+        public DbSet<ServiceInventoryLink> ServiceInventoryLinks { get; set; }
+        public DbSet<ProcedureLog> ProcedureLogs { get; set; }
+        public DbSet<LabTestTemplate> LabTestTemplates { get; set; }
+        public DbSet<LabOrderLine> LabOrderLines { get; set; }
+        #endregion
 
         public async Task<decimal> GetExchangeRate(int fromCurrencyId, int toCurrencyId, CancellationToken cancellationToken)
         {
@@ -157,7 +194,40 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
             modelBuilder.ApplyConfiguration(new CallListConfiguration());
 
-
+            #region Accounting Configuration
+            modelBuilder.ApplyConfiguration(new ChartOfAccountsConfiguration());
+            modelBuilder.ApplyConfiguration(new JournalEntryConfiguration());
+            modelBuilder.ApplyConfiguration(new JournalEntryLineConfiguration());
+            modelBuilder.ApplyConfiguration(new GeneralLedgerConfiguration());
+            modelBuilder.ApplyConfiguration(new RecurringJournalTemplateConfiguration());
+            modelBuilder.ApplyConfiguration(new RecurringJournalLineConfiguration());
+            modelBuilder.ApplyConfiguration(new AccountsReceivableConfiguration());
+            modelBuilder.ApplyConfiguration(new ReceiptConfiguration());
+            modelBuilder.ApplyConfiguration(new AccountsPayableConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new VendorBillConfiguration());
+            modelBuilder.ApplyConfiguration(new SalesInvoiceConfiguration());
+            modelBuilder.ApplyConfiguration(new SalesInvoiceLineConfiguration());
+            modelBuilder.ApplyConfiguration(new SalesReceiptConfiguration());
+            modelBuilder.ApplyConfiguration(new PurchaseOrderConfiguration());
+            modelBuilder.ApplyConfiguration(new POLineConfiguration());
+            modelBuilder.ApplyConfiguration(new FixedAssetConfiguration());
+            modelBuilder.ApplyConfiguration(new ShareholderConfiguration());
+            modelBuilder.ApplyConfiguration(new EquityTransactionConfiguration());
+            modelBuilder.ApplyConfiguration(new ExpenseConfiguration());
+            modelBuilder.ApplyConfiguration(new BudgetConfiguration());
+            modelBuilder.ApplyConfiguration(new BudgetLineConfiguration());
+            modelBuilder.ApplyConfiguration(new BankStatementImportConfiguration());
+            modelBuilder.ApplyConfiguration(new BankStatementLineConfiguration());
+            modelBuilder.ApplyConfiguration(new BankMatchConfiguration());
+            modelBuilder.ApplyConfiguration(new AuditTrailConfiguration());
+            modelBuilder.ApplyConfiguration(new ForecastSnapshotConfiguration());
+            modelBuilder.ApplyConfiguration(new ForecastLineConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceInventoryLinkConfiguration());
+            modelBuilder.ApplyConfiguration(new ProcedureLogConfiguration());
+            modelBuilder.ApplyConfiguration(new LabTestTemplateConfiguration());
+            modelBuilder.ApplyConfiguration(new LabOrderLineConfiguration());
+            #endregion
 
         }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
