@@ -14,6 +14,7 @@ using Crystal_Clinic_Mgm.Application.Common.SignalR;
 using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Newtonsoft.Json;
+using Crystal_Clinic_Mgm.Application.Accounting.Repositories;
 
 namespace Crystal_Clinic_Mgm.UI.Providers
 {
@@ -92,6 +93,7 @@ namespace Crystal_Clinic_Mgm.UI.Providers
             services.AddTransient(typeof(IGeneralHelperRepositoryAsync<>), typeof(GeneralHelperRepositoryAsync<>));
             services.AddTransient(typeof(IGeneralHelperRepositoryAsync), typeof(GeneralHelperRepositoryAsync));
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAccountingRepository, AccountingRepository>();
             services.AddScoped<IFinancialConfigurationService, FinancialConfigurationService>();
             services.AddScoped<ISalesInvoiceService, SalesInvoiceService>();
             services.AddScoped<IProcurementService, ProcurementService>();

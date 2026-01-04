@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using Crystal_Clinic_Mgm.Domain;
 
 namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
 {
@@ -47,7 +48,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("Status")
                 .HasColumnType("int")
                 .IsRequired()
-                .HasDefaultValue(0);
+                .HasDefaultValue(BillStatus.Unpaid);
 
             entity.Property(v => v.BranchId)
                 .HasColumnName("BranchId")

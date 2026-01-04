@@ -94,13 +94,14 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             return result.IsSuccess ? Ok(result) : NotFound(result);
         }
 
-        [HttpPost("{id}/Attachment")]
-        public async Task<IActionResult> AttachDocument(int id, [FromForm] IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file provided");
+        //[HttpPost("{id}/Attachment")]
+        //[Consumes("multipart/form-data")] 
+        //public async Task<IActionResult> AttachDocument(int id, [FromForm] IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //        return BadRequest("No file provided");
 
-            return Ok(new { message = "Document attached successfully", accountsReceivableId = id });
-        }
+        //    return Ok(new { message = "Document attached successfully", accountsReceivableId = id });
+        //}
     }
 }
