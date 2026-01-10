@@ -95,6 +95,8 @@ namespace Crystal_Clinic_Mgm.UI.Providers
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAccountingRepository, AccountingRepository>();
             services.AddScoped<IFinancialConfigurationService, FinancialConfigurationService>();
+            services.AddScoped<IEquityService, EquityService>();
+            services.AddScoped<IBudgetService, BudgetService>();
             services.AddScoped<ISalesInvoiceService, SalesInvoiceService>();
             services.AddScoped<IProcurementService, ProcurementService>();
             services.AddScoped<IBankReconciliationService, BankReconciliationService>();

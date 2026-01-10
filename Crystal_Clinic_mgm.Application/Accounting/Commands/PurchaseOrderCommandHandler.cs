@@ -39,6 +39,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
+                context.PurchaseOrders.Add(po);
+                await context.SaveChangesAsync(cancellationToken);
 
                 if (request.Dto.Lines.Any())
                 {
@@ -46,6 +48,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     {
                         var line = new POLine
                         {
+                            PurchaseOrderId = po.Id,
                             ItemId = lineDto.ItemId,
                             ItemDescription = lineDto.Description,
                             Quantity = lineDto.Quantity,
@@ -58,8 +61,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     po.TotalAmount = po.Lines.Sum(l => l.LineTotal);
                 }
 
-                context.PurchaseOrders.Add(po);
-                await context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success(po.Id, $"Purchase Order {poNumber} created successfully.");
             }

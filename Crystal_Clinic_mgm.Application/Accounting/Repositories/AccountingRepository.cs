@@ -78,6 +78,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Repositories
         public async Task<IEnumerable<GeneralLedger>> GetAccountLedgerAsync(int chartOfAccountId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
         {
             return await _context.GeneralLedgers
+                .Include(g => g.ChartOfAccount)
                 .Where(g => g.ChartOfAccountId == chartOfAccountId && g.TransactionDate >= fromDate && g.TransactionDate <= toDate && !g.IsDeleted)
                 .OrderBy(g => g.TransactionDate)
                 .ToListAsync(cancellationToken);

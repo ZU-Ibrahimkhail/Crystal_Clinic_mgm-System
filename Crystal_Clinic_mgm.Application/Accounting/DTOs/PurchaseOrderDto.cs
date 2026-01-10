@@ -35,7 +35,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 
     public class POLineDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public int ItemId { get; set; }
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }

@@ -37,7 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 
     public class SalesInvoiceLineDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; } The Id should be created automatically
         public int? ServiceId { get; set; }
         public int? InventoryItemId { get; set; }
         public string Description { get; set; } = string.Empty;

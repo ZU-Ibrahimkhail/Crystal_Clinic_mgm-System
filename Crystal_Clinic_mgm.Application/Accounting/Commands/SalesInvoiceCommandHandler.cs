@@ -41,12 +41,15 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreatedOn = DateTime.UtcNow
                 };
 
+                context.SalesInvoices.Add(invoice);
+                await context.SaveChangesAsync(cancellationToken);
                 if (request.Dto.Lines.Any())
                 {
                     foreach (var lineDto in request.Dto.Lines)
                     {
                         var line = new SalesInvoiceLine
                         {
+                            SalesInvoiceId = invoice.Id,
                             ServiceId = lineDto.ServiceId,
                             InventoryItemId = lineDto.InventoryItemId,
                             Description = lineDto.Description,
@@ -65,8 +68,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     invoice.NetAmount = invoice.TotalAmount - invoice.DiscountAmount + invoice.TaxAmount;
                 }
 
-                context.SalesInvoices.Add(invoice);
-                await context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success(invoice.Id, $"Sales Invoice {invoiceNumber} created successfully.");
             }
