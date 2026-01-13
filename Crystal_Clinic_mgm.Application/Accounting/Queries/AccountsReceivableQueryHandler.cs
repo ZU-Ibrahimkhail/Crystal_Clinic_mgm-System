@@ -88,6 +88,25 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (receivable == null)
                     return Result.Fail("Accounts Receivable not found.");
 
+                // Get associated receipts
+                var receipts = await context.Receipts
+                    .Where(r => r.AccountsReceivableId == request.Id && !r.IsDeleted)
+                    .Include(r => r.OriginalReceipt)
+                    .OrderByDescending(r => r.ReceiptDate)
+                    .Select(r => new ReceiptDto
+                    {
+                        Id = r.Id,
+                        AccountsReceivableId = r.AccountsReceivableId,
+                        ReceiptNumber = r.ReceiptNumber,
+                        ReceiptDate = r.ReceiptDate,
+                        TransactionType = r.TransactionType,
+                        Amount = r.Amount,
+                        PaymentMethodId = r.PaymentMethodId,
+                        Reference = r.Reference,
+                        OriginalReceiptId = r.OriginalReceiptId
+                    })
+                    .ToListAsync(cancellationToken);
+
                 var dto = new AccountsReceivableDto
                 {
                     Id = receivable.Id,
@@ -99,7 +118,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     PaidAmount = receivable.PaidAmount,
                     BalanceAmount = receivable.BalanceAmount,
                     Status = receivable.Status,
-                    BranchId = receivable.BranchId
+                    BranchId = receivable.BranchId,
+                    Receipts = receipts
                 };
 
                 return Result.Success(dto);
@@ -107,6 +127,46 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             catch (Exception ex)
             {
                 return Result.Fail($"Error retrieving Accounts Receivable: {ex.Message}");
+            }
+        }
+    }
+    #endregion
+
+    #region Get Receipts by AR
+    public class GetReceiptsByARQuery : IRequest<Result>
+    {
+        public int AccountsReceivableId { get; set; }
+    }
+
+    public class GetReceiptsByARQueryHandler(ERP_DbContext context) : IRequestHandler<GetReceiptsByARQuery, Result>
+    {
+        public async Task<Result> Handle(GetReceiptsByARQuery request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var receipts = await context.Receipts
+                    .Where(r => r.AccountsReceivableId == request.AccountsReceivableId && !r.IsDeleted)
+                    .Include(r => r.OriginalReceipt)
+                    .OrderByDescending(r => r.ReceiptDate)
+                    .Select(r => new ReceiptDto
+                    {
+                        Id = r.Id,
+                        AccountsReceivableId = r.AccountsReceivableId,
+                        ReceiptNumber = r.ReceiptNumber,
+                        ReceiptDate = r.ReceiptDate,
+                        TransactionType = r.TransactionType,
+                        Amount = r.Amount,
+                        PaymentMethodId = r.PaymentMethodId,
+                        Reference = r.Reference,
+                        OriginalReceiptId = r.OriginalReceiptId
+                    })
+                    .ToListAsync(cancellationToken);
+
+                return Result.Success(receipts);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error retrieving receipts: {ex.Message}");
             }
         }
     }

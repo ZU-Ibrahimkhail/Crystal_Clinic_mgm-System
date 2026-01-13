@@ -28,8 +28,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("datetime")
                 .IsRequired();
 
-            entity.Property(r => r.AmountReceived)
-                .HasColumnName("AmountReceived")
+            entity.Property(r => r.Amount)
+                .HasColumnName("Amount")
                 .HasColumnType("decimal(18, 2)")
                 .IsRequired();
 

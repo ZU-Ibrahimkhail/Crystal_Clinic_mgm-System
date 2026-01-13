@@ -175,20 +175,19 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     };
                     journalEntry.JournalEntryLines.Add(debitLine);
 
-                    var cashAccount = await context.ChartOfAccounts
-                        .FirstOrDefaultAsync(c => c.AccountType == AccountType.Asset && c.AccountCode == "1010", cancellationToken);
+                    // Get cash account from company profile
+                    var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                    if (companyProfile == null)
+                        return Result.Fail("Company profile not found. Please initialize the company profile first.");
 
-                    if (cashAccount != null)
+                    var creditLine = new JournalEntryLine
                     {
-                        var creditLine = new JournalEntryLine
-                        {
-                            ChartOfAccountId = cashAccount.Id,
-                            DebitAmount = 0,
-                            CreditAmount = expense.Amount,
-                            Description = expense.Description
-                        };
-                        journalEntry.JournalEntryLines.Add(creditLine);
-                    }
+                        ChartOfAccountId = companyProfile.CashAccountId,
+                        DebitAmount = 0,
+                        CreditAmount = expense.Amount,
+                        Description = expense.Description
+                    };
+                    journalEntry.JournalEntryLines.Add(creditLine);
 
                     context.JournalEntries.Add(journalEntry);
                 }

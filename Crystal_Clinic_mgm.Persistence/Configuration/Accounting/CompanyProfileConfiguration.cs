@@ -9,7 +9,7 @@ public class CompanyProfileConfiguration : IEntityTypeConfiguration<CompanyProfi
 {
     public void Configure(EntityTypeBuilder<CompanyProfile> entity)
     {
-        entity.ToTable(nameof(ChartOfAccounts), "Accounting");
+        entity.ToTable("CompanyProfile", "Accounting");
 
         entity.HasKey(c => c.Id);
 

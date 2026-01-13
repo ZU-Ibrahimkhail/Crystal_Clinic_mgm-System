@@ -12,7 +12,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance;
 public class CompanyProfileController : BaseController
 {
     [HttpPost]
-    public async Task<IActionResult> Create([System.Web.Http.FromBody] CompanyProfileDto dto)
+    public async Task<IActionResult> Create([FromBody] CompanyProfileDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -23,8 +23,17 @@ public class CompanyProfileController : BaseController
         return Ok("Company profile created successfully.");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var query = new GetCompanyProfileQuery();
+        var result = await Mediator.Send(query);
+
+        return result.IsSuccess ? Ok(result) : NotFound(result);
+    }
+
     [HttpPut]
-    public async Task<IActionResult> Update([System.Web.Http.FromBody] CompanyProfileDto dto)
+    public async Task<IActionResult> Update([FromBody] CompanyProfileDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

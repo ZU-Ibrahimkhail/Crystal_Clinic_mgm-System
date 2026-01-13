@@ -235,6 +235,12 @@
         Quarterly,
         Yearly
     }
+
+    public enum TransactionType
+    {
+        Receipt = 1,    // Money received from customer
+        Refund = 2,     // Change given back to customer
+    }
     #endregion
 
     #endregion

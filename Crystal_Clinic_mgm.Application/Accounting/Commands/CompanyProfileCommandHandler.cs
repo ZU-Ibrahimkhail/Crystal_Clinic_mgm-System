@@ -179,4 +179,54 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         }
     }
     #endregion
+
+    #region Get Company Profile
+    public class GetCompanyProfileQuery : IRequest<Result> { }
+
+    public class GetCompanyProfileQueryHandler(ERP_DbContext context) : IRequestHandler<GetCompanyProfileQuery, Result>
+    {
+        public async Task<Result> Handle(GetCompanyProfileQuery request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var profile = await context.CompanyProfile
+                    .Include(c => c.CurrencyType)
+                    .Include(c => c.CashAccount)
+                    .Include(c => c.BankAccount)
+                    .Include(c => c.AccountsReceivableAccount)
+                    .Include(c => c.AccountsPayableAccount)
+                    .Include(c => c.SalesRevenueAccount)
+                    .Include(c => c.InventoryAccount)
+                    .Include(c => c.PurchaseExpenseAccount)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (profile == null)
+                    return Result.Fail("Company profile not found. Please initialize it first.");
+
+                var dto = new CompanyProfileDto
+                {
+                    Name = profile.Name,
+                    Email = profile.Email,
+                    PhoneNumber = profile.PhoneNumber,
+                    WhatsappNumber = profile.WhatsappNumber,
+                    Description = profile.Description,
+                    BaseCurrencyId = profile.BaseCurrencyId,
+                    CashAccountId = profile.CashAccountId,
+                    BankAccountId = profile.BankAccountId,
+                    AccountsReceivableAccountId = profile.AccountsReceivableAccountId,
+                    AccountsPayableAccountId = profile.AccountsPayableAccountId,
+                    SalesRevenueAccountId = profile.SalesRevenueAccountId,
+                    InventoryAccountId = profile.InventoryAccountId,
+                    PurchaseExpenseAccountId = profile.PurchaseExpenseAccountId
+                };
+
+                return Result.Success(dto);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error retrieving company profile: {ex.Message}");
+            }
+        }
+    }
+    #endregion
 }

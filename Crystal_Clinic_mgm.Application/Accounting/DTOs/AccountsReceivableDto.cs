@@ -15,6 +15,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal BalanceAmount { get; set; }
         public ARStatus Status { get; set; }
         public int? BranchId { get; set; }
+        public List<ReceiptDto> Receipts { get; set; } = new();
     }
 
     public class CreateAccountsReceivableDto
@@ -35,16 +36,18 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int AccountsReceivableId { get; set; }
         public string ReceiptNumber { get; set; } = string.Empty;
         public DateTime ReceiptDate { get; set; }
-        public decimal AmountReceived { get; set; }
+        public TransactionType TransactionType { get; set; }
+        public decimal Amount { get; set; }
         public int PaymentMethodId { get; set; }
         public string Reference { get; set; } = string.Empty;
+        public int? OriginalReceiptId { get; set; }
     }
 
     public class CreateReceiptDto
     {
         public int AccountsReceivableId { get; set; }
         public DateTime ReceiptDate { get; set; }
-        public decimal AmountReceived { get; set; }
+        public decimal Amount { get; set; }  // Amount received (can trigger overpayment processing)
         public int PaymentMethodId { get; set; }
         public string? Reference { get; set; }
         public int? CurrencyId { get; set; }
