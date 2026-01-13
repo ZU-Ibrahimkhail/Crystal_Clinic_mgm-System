@@ -84,6 +84,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<CallList> CallList { get; set; }
 
         #region Accounting
+        public DbSet<CompanyProfile> CompanyProfile { get; set; }
         public DbSet<ChartOfAccounts> ChartOfAccounts { get; set; }
         public DbSet<JournalEntry> JournalEntries { get; set; }
         public DbSet<JournalEntryLine> JournalEntryLines { get; set; }
@@ -195,6 +196,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new CallListConfiguration());
 
             #region Accounting Configuration
+            modelBuilder.ApplyConfiguration(new CompanyProfileConfiguration());
             modelBuilder.ApplyConfiguration(new ChartOfAccountsConfiguration());
             modelBuilder.ApplyConfiguration(new JournalEntryConfiguration());
             modelBuilder.ApplyConfiguration(new JournalEntryLineConfiguration());
