@@ -166,6 +166,10 @@ namespace Crystal_Clinic_Mgm.Common.AppConfig
         {
             get { return AppSettings["AttachmentFilesPath:GeneralForm:AdministrativeFormsAttachments"]!; }
         }
+        public static string ClinicAttachment
+        {
+            get { return AppSettings["AttachmentFilesPath:ClinicAttachments"]!; }
+        }
         public static string MailHost
         {
             get { return AppSettings["MailSettings:Host"]!; }

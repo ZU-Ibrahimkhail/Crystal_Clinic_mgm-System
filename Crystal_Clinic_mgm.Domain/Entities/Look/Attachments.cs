@@ -8,6 +8,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Look
         public int Id { get; set; }
         public string FilePath { get; set; } = string.Empty;
         public string FileExtention { get; set; } = string.Empty;
+        public AttachmentType AttachmentType { get; set; }
         public string AttachmentDescription { get; set; } = string.Empty;
     }
 }
