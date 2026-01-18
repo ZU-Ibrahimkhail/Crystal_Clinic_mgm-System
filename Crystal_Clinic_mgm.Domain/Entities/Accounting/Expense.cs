@@ -20,11 +20,11 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public Branch? Branch { get; set; }
         public string AttachmentPath { get; set; } = string.Empty;
         public ExpenseStatus Status { get; set; } = ExpenseStatus.Draft;
-        public int? SubmittedBy { get; set; }
+        public Guid? SubmittedBy { get; set; }
         public DateTime? SubmittedDate { get; set; }
-        public int? ApprovedBy { get; set; }
+        public Guid? ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
-        public int? RejectedBy { get; set; }
+        public Guid? RejectedBy { get; set; }
         public DateTime? RejectedDate { get; set; }
         public string? RejectionReason { get; set; }
     }

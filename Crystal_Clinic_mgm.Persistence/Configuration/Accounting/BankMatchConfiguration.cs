@@ -19,22 +19,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             builder.HasOne(m => m.BankStatementImport)
                 .WithMany(b => b.Matches)
                 .HasForeignKey(m => m.BankStatementImportId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(m => m.BankStatementLine)
                 .WithMany(l => l.Matches)
                 .HasForeignKey(m => m.BankStatementLineId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(m => m.GeneralLedger)
                 .WithMany()
                 .HasForeignKey(m => m.GeneralLedgerId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(m => m.JournalEntry)
                 .WithMany()
                 .HasForeignKey(m => m.JournalEntryId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasIndex(m => m.BankStatementImportId);
             builder.HasIndex(m => m.BankStatementLineId);

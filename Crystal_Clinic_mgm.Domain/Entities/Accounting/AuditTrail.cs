@@ -7,7 +7,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int EntityId { get; set; }
         public string Action { get; set; } = string.Empty;
         public DateTime AuditDate { get; set; }
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string? UserName { get; set; }
         public string? BeforeValues { get; set; }
         public string? AfterValues { get; set; }

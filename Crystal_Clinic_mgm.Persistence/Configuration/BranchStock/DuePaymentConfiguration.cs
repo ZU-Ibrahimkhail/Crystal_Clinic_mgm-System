@@ -20,6 +20,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
                 .HasForeignKey(dp => dp.CurrencyTypeId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deleting CurrencyType if DuePayment exists
 
+            // Foreign Key relationships
+            entity.HasOne(dp => dp.SupplierDue)
+                .WithMany(sd => sd.Payments)
+                .HasForeignKey(dp => dp.SupplierDueId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Properties configurations
             entity.Property(dp => dp.SupplierDueId)
                 .HasColumnName("SupplierDueId")

@@ -58,6 +58,7 @@
         // Inventory adjustments
         PurchaseReceipt,    // New stock received
         ManualAdjustment,   // Physical count correction
+        Adjustment,         // General stock adjustment
 
         // Order-related
         SaleDeduction,      // Item sold
@@ -74,6 +75,15 @@
         ExpiredStock,        // Discarded perishables
         OrderUpdate
     }
+
+    public enum ValuationMethod
+    {
+        FIFO,               // First In, First Out
+        WeightedAverage,    // Moving Average Cost
+        SpecificIdentification, // Specific lot identification
+        LIFO                // Last In, First Out (not IFRS compliant)
+    }
+
     public enum ServiceStatus
     {
         Pending,        // Created but not scheduled
@@ -117,7 +127,8 @@
     public enum MovementType
     {
         In,
-        Out
+        Out,
+        Adjustment
     }
 
     public enum DurationType

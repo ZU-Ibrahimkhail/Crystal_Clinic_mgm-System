@@ -39,7 +39,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             builder.HasMany(l => l.Matches)
                 .WithOne(m => m.BankStatementLine)
                 .HasForeignKey(m => m.BankStatementLineId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasIndex(l => l.BankStatementImportId);
             builder.HasIndex(l => l.TransactionDate);

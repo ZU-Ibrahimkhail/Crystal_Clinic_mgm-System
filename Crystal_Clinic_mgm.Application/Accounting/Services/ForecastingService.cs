@@ -9,7 +9,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
 {
     public class ForecastingService(IMediator mediator) : IForecastingService
     {
-        public async Task<Result> CreateForecastAsync(CreateForecastSnapshotDto dto, int userId)
+        public async Task<Result> CreateForecastAsync(CreateForecastSnapshotDto dto, Guid userId)
         {
             var command = new CreateForecastCommand { Dto = dto, CreatedByUserId = userId };
             return await mediator.Send(command);
@@ -27,7 +27,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(command);
         }
 
-        public async Task<Result> ApproveForecastAsync(int forecastId, int userId)
+        public async Task<Result> ApproveForecastAsync(int forecastId, Guid userId)
         {
             var command = new ApproveForecastCommand { ForecastId = forecastId, ApprovedByUserId = userId };
             return await mediator.Send(command);

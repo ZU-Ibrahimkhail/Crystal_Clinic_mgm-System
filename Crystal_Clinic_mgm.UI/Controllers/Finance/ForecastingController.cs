@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Accounting.Services;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
 {
@@ -11,13 +12,14 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
     public class ForecastingController : BaseController
     {
         private readonly IForecastingService _forecastingService;
+        private readonly ILoggedInUser _loggedInUser;
 
-        public ForecastingController(IForecastingService forecastingService)
+        public ForecastingController(IForecastingService forecastingService, ILoggedInUser loggedInUser)
         {
             _forecastingService = forecastingService;
+            _loggedInUser = loggedInUser;
         }
 
-        private int GetUserId() => int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var id) ? id : 0;
 
         [HttpPost]
         public async Task<IActionResult> CreateForecast([FromBody] CreateForecastSnapshotDto dto)
@@ -25,7 +27,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _forecastingService.CreateForecastAsync(dto, GetUserId());
+            var result = await _forecastingService.CreateForecastAsync(dto, _loggedInUser.Id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
@@ -74,7 +76,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
         [HttpPost("{id}/Approve")]
         public async Task<IActionResult> ApproveForecast(int id)
         {
-            var result = await _forecastingService.ApproveForecastAsync(id, GetUserId());
+            var result = await _forecastingService.ApproveForecastAsync(id, _loggedInUser.Id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 

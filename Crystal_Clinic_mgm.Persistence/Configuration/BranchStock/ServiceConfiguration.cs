@@ -27,8 +27,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic
 
             entity.Property(s => s.sessionRate)
                 .HasColumnName("SessionRate")
-                .HasColumnType("decimal(18,2)")
+                .HasPrecision(18, 4)
                 .IsRequired();
+
+            entity.Property(s => s.FeeAmount)
+                .HasColumnName("FeeAmount")
+                .HasPrecision(18, 4)
+                .IsRequired()
+                .HasDefaultValue(0m);
 
             entity.Property(s => s.ImagePath)
                 .HasColumnName("ImagePath")

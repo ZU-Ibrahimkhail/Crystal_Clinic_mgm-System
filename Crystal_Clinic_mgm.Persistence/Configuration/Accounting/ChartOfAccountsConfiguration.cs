@@ -64,7 +64,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.HasOne(c => c.ParentAccount)
                 .WithMany(c => c.ChildAccounts)
                 .HasForeignKey(c => c.ParentAccountId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.NoAction);
 
             entity.HasMany(c => c.JournalEntryLines)
                 .WithOne(j => j.ChartOfAccount)

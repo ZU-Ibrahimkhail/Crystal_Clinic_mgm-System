@@ -10,7 +10,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
 {
     public class ExpenseService(IMediator mediator) : IExpenseService
     {
-        public async Task<Result> CreateExpenseAsync(CreateExpenseDto dto, int userId)
+        public async Task<Result> CreateExpenseAsync(CreateExpenseDto dto, Guid userId)
         {
             var command = new CreateExpenseCommand { Dto = dto, UserId = userId };
             return await mediator.Send(command);
@@ -22,19 +22,19 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(command);
         }
 
-        public async Task<Result> SubmitExpenseAsync(int expenseId, int userId)
+        public async Task<Result> SubmitExpenseAsync(int expenseId, Guid userId)
         {
             var command = new SubmitExpenseCommand { ExpenseId = expenseId, SubmittedBy = userId };
             return await mediator.Send(command);
         }
 
-        public async Task<Result> ApproveExpenseAsync(int expenseId, int approverId)
+        public async Task<Result> ApproveExpenseAsync(int expenseId, Guid approverId)
         {
             var command = new ApproveExpenseCommand { ExpenseId = expenseId, ApprovedBy = approverId };
             return await mediator.Send(command);
         }
 
-        public async Task<Result> RejectExpenseAsync(int expenseId, int rejectedBy, string reason)
+        public async Task<Result> RejectExpenseAsync(int expenseId, Guid rejectedBy, string reason)
         {
             var command = new RejectExpenseCommand { ExpenseId = expenseId, RejectedBy = rejectedBy, RejectionReason = reason };
             return await mediator.Send(command);

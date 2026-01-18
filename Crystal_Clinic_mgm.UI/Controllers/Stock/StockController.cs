@@ -1,4 +1,4 @@
-﻿using Crystal_Clinic_Mgm.Application.BranchStock.Stock;
+﻿using Crystal_Clinic_Mgm.Application.BranchStock._Stock;
 using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Crystal_Clinic_Mgm.Application.StockManagement;
 using MediatR;

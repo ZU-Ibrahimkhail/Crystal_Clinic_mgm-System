@@ -7,7 +7,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int EntityId { get; set; }
         public string Action { get; set; } = string.Empty;
         public DateTime AuditDate { get; set; }
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string? UserName { get; set; }
         public string? BeforeValues { get; set; }
         public string? AfterValues { get; set; }
@@ -23,7 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string EntityType { get; set; } = string.Empty;
         public int EntityId { get; set; }
         public string Action { get; set; } = string.Empty;
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string? UserName { get; set; }
         public string? BeforeValues { get; set; }
         public string? AfterValues { get; set; }
@@ -39,7 +39,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? EntityType { get; set; }
         public int? EntityId { get; set; }
         public string? Action { get; set; }
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public int Page { get; set; } = 1;

@@ -12,7 +12,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class CreateExpenseCommand : IRequest<Result>
     {
         public CreateExpenseDto Dto { get; set; } = null!;
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
     }
 
     public class CreateExpenseCommandHandler(ERP_DbContext context) : IRequestHandler<CreateExpenseCommand, Result>
@@ -33,7 +33,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ChartOfAccountId = request.Dto.ChartOfAccountId,
                     BranchId = request.Dto.BranchId,
                     AttachmentPath = request.Dto.AttachmentPath,
-                    Status = ExpenseStatus.Draft
+                    Status = ExpenseStatus.Draft,
+                    CreatedBy = request.UserId
                 };
 
                 context.Expenses.Add(expense);
@@ -97,7 +98,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class SubmitExpenseCommand : IRequest<Result>
     {
         public int ExpenseId { get; set; }
-        public int SubmittedBy { get; set; }
+        public Guid SubmittedBy { get; set; }
     }
 
     public class SubmitExpenseCommandHandler(ERP_DbContext context) : IRequestHandler<SubmitExpenseCommand, Result>
@@ -135,7 +136,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class ApproveExpenseCommand : IRequest<Result>
     {
         public int ExpenseId { get; set; }
-        public int ApprovedBy { get; set; }
+        public Guid ApprovedBy { get; set; }
     }
 
     public class ApproveExpenseCommandHandler(ERP_DbContext context) : IRequestHandler<ApproveExpenseCommand, Result>
@@ -208,7 +209,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class RejectExpenseCommand : IRequest<Result>
     {
         public int ExpenseId { get; set; }
-        public int RejectedBy { get; set; }
+        public Guid RejectedBy { get; set; }
         public string RejectionReason { get; set; } = string.Empty;
     }
 

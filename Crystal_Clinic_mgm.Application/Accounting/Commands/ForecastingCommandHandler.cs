@@ -12,7 +12,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class CreateForecastCommand : IRequest<Result>
     {
         public CreateForecastSnapshotDto Dto { get; set; } = null!;
-        public int CreatedByUserId { get; set; }
+        public Guid CreatedByUserId { get; set; }
     }
 
     public class CreateForecastCommandHandler(ERP_DbContext context) : IRequestHandler<CreateForecastCommand, Result>
@@ -184,7 +184,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     public class ApproveForecastCommand : IRequest<Result>
     {
         public int ForecastId { get; set; }
-        public int ApprovedByUserId { get; set; }
+        public Guid ApprovedByUserId { get; set; }
     }
 
     public class ApproveForecastCommandHandler(ERP_DbContext context) : IRequestHandler<ApproveForecastCommand, Result>

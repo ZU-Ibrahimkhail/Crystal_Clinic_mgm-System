@@ -295,8 +295,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(255)
@@ -956,8 +956,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18, 2)")
                         .HasColumnName("Amount");
 
-                    b.Property<int?>("ApprovedBy")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ApprovedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("ApprovedDate")
                         .HasColumnType("datetime2");
@@ -1022,8 +1022,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("DateTime")
                         .HasColumnName("ModifiedOn");
 
-                    b.Property<int?>("RejectedBy")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RejectedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("RejectedDate")
                         .HasColumnType("datetime2");
@@ -1039,8 +1039,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SubmittedBy")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("SubmittedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("SubmittedDate")
                         .HasColumnType("datetime2");
@@ -1234,8 +1234,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ApprovedByUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ApprovedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("ApprovedDate")
                         .HasColumnType("datetime2");
@@ -1243,8 +1243,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -2276,6 +2276,180 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("RecurringJournalTemplate", "Accounting");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int")
+                        .HasColumnName("BranchId");
+
+                    b.Property<int?>("ConvertedToInvoiceId")
+                        .HasColumnType("int")
+                        .HasColumnName("ConvertedToInvoiceId");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("DiscountAmount");
+
+                    b.Property<DateTime>("EstimateDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("EstimateDate");
+
+                    b.Property<string>("EstimateNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("EstimateNumber");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Notes");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int")
+                        .HasColumnName("PatientId");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int")
+                        .HasColumnName("Status");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("Subtotal");
+
+                    b.Property<decimal>("TaxAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("TaxAmount");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("TotalAmount");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ValidUntil");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConvertedToInvoiceId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("SalesEstimate", "Accounting");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimateLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("Quantity");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("SalesEstimateId")
+                        .HasColumnType("int")
+                        .HasColumnName("SalesEstimateId");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int")
+                        .HasColumnName("ServiceId");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("TotalPrice");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("UnitPrice");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("SalesEstimateId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("SalesEstimateLine", "Accounting");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesInvoice", b =>
                 {
                     b.Property<int>("Id")
@@ -3180,6 +3354,123 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("WithdrawalTracking", "AssetMS");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.AdjustmentCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AffectsFinancials")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ApprovalLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RequiresApproval")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdjustmentCategories");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BrandCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactInfo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryOfOrigin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ManufacturerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.DuePayment", b =>
                 {
                     b.Property<int>("DuePaymentId")
@@ -3239,9 +3530,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("SupplierDueId");
 
-                    b.Property<int?>("SupplierDueId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("paymentDate")
                         .HasColumnType("datetime")
                         .HasColumnName("PaymentDate");
@@ -3252,9 +3540,233 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasIndex("SupplierDueId");
 
-                    b.HasIndex("SupplierDueId1");
-
                     b.ToTable("DuePayment", "BranchStock");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFreeForPatient")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("KitName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InventoryKits");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKitLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
+
+                    b.Property<int>("KitId")
+                        .HasColumnType("int")
+                        .HasColumnName("KitId");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("Quantity");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("KitId");
+
+                    b.ToTable("InventoryKitLine", "BranchStock");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IdempotencyToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RequestedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VisitId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InventoryReservations");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventorySite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContactPerson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SiteCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SiteName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("InventorySites");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", b =>
@@ -3265,6 +3777,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
 
+                    b.Property<string>("Barcode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Barcode");
+
                     b.Property<string>("BaseUnit")
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
@@ -3273,8 +3790,17 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int")
+                        .HasColumnName("BrandId");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("CostComponents")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CostComponents");
 
                     b.Property<Guid>("CreatedBy")
                         .HasMaxLength(50)
@@ -3298,12 +3824,33 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("ImagePath");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsInventoryItem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsInventoryItem");
+
                     b.Property<int?>("ItemCategorycategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ItemCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("ItemCode");
+
+                    b.Property<DateTime?>("LastNRVAssessment")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastNRVAssessment");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasMaxLength(50)
@@ -3313,6 +3860,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<DateTime?>("ModifiedOn")
                         .HasColumnType("DateTime")
                         .HasColumnName("ModifiedOn");
+
+                    b.Property<decimal>("NRVAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("NRVAmount");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -3328,11 +3881,35 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("ReorderLevel");
 
+                    b.Property<bool>("RequiresExpiration")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("RequiresExpiration");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("UnitCost");
+
                     b.Property<decimal?>("UseableStock")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("UseableStock");
 
+                    b.Property<int>("ValuationMethod")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("ValuationMethod");
+
+                    b.Property<decimal>("WriteDownAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("WriteDownAmount");
+
                     b.HasKey("ItemId");
+
+                    b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
 
@@ -3402,26 +3979,100 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("unitId"));
 
                     b.Property<decimal>("ConversionFactor")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("ConversionFactor");
 
                     b.Property<int?>("DailyRentalPrice")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("DailyRentalPrice");
 
                     b.Property<int>("ItemId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
 
                     b.Property<int>("SellingPrice")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("SellingPrice");
 
                     b.Property<string>("UnitName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("UnitName");
 
                     b.HasKey("unitId");
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("ItemUnits");
+                    b.ToTable("ItemUnit", "Stock");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservedItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("int")
+                        .HasColumnName("ReservationId");
+
+                    b.Property<decimal>("ReservedQuantity")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("ReservedQuantity");
+
+                    b.Property<int>("StockId")
+                        .HasColumnType("int")
+                        .HasColumnName("StockId");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("UnitCost");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("ReservedItem", "BranchStock");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Service", b =>
@@ -3458,6 +4109,13 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Description");
 
+                    b.Property<decimal>("FeeAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("FeeAmount");
+
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(255)")
                         .HasColumnName("ImagePath");
@@ -3486,7 +4144,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnName("Remarks");
 
                     b.Property<decimal>("sessionRate")
-                        .HasColumnType("decimal(18,2)")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
                         .HasColumnName("SessionRate");
 
                     b.HasKey("ServiceId");
@@ -3520,9 +4179,46 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("DateTime")
                         .HasColumnName("CreatedOn");
 
+                    b.Property<decimal>("FreightCost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("FreightCost");
+
+                    b.Property<decimal>("ImportDuty")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("ImportDuty");
+
+                    b.Property<decimal>("InsuranceCost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("InsuranceCost");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int")
+                        .HasColumnName("InvoiceId");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsExpired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsExpired");
+
+                    b.Property<string>("LotNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("LotNumber");
+
+                    b.Property<DateTime?>("ManufactureDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ManufactureDate");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasMaxLength(50)
@@ -3533,10 +4229,28 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("DateTime")
                         .HasColumnName("ModifiedOn");
 
+                    b.Property<decimal>("OtherLandingCosts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,4)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("OtherLandingCosts");
+
+                    b.Property<int?>("PurchaseOrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("PurchaseOrderId");
+
+                    b.Property<decimal>("QuantityRemaining")
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("QuantityRemaining");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar")
                         .HasColumnName("Remarks");
+
+                    b.Property<int?>("SiteId")
+                        .HasColumnType("int")
+                        .HasColumnName("SiteId");
 
                     b.Property<int?>("SupplierId")
                         .HasColumnType("int")
@@ -3578,6 +4292,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasKey("stockId");
 
+                    b.HasIndex("SiteId");
+
                     b.HasIndex("SupplierId");
 
                     b.HasIndex("itemId");
@@ -3593,40 +4309,93 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockMovementId"));
 
-                    b.Property<DateTime>("Date")
+                    b.Property<int?>("AdjustmentCategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("AdjustmentCategoryId");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Date");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MovementType")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MovementType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("MovementType");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("Notes");
 
                     b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("ProcessedBy")
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ProcessedBy");
+
                     b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("Quantity");
 
                     b.Property<int>("Reason")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Reason");
 
                     b.Property<string>("ReferenceId")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("ReferenceId");
+
+                    b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SourceBranchId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("SourceBranchId");
+
+                    b.Property<int?>("StockId")
+                        .HasColumnType("int")
+                        .HasColumnName("StockId");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("TotalCost");
+
+                    b.Property<decimal>("UnitCost")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("UnitCost");
 
                     b.HasKey("StockMovementId");
 
+                    b.HasIndex("AdjustmentCategoryId");
+
                     b.HasIndex("ItemId");
 
-                    b.ToTable("StockMovements");
+                    b.HasIndex("StockId");
+
+                    b.ToTable("StockMovement", "Stock");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Supplier", b =>
@@ -3984,43 +4753,57 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BranchId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("BranchId");
 
                     b.Property<DateTime?>("ImplementationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("ImplementationDate");
 
                     b.Property<int?>("ImplementorEmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ImplementorEmployeeId");
 
                     b.Property<bool>("IsImplemented")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsImplemented");
 
                     b.Property<decimal>("PriceInAFN")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)")
+                        .HasColumnName("PriceInAFN");
 
                     b.Property<string>("contactInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("ContactInfo");
 
                     b.Property<string>("patientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("PatientName");
 
                     b.Property<int>("serviceId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("ServiceId");
 
                     b.Property<string>("serviceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("ServiceName");
 
                     b.Property<int>("sessionNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("SessionNumber");
 
                     b.Property<int>("visitId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("VisitId");
 
                     b.Property<int>("visitServiceId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("VisitServiceId");
 
                     b.HasKey("Id");
 
@@ -4028,7 +4811,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasIndex("visitServiceId");
 
-                    b.ToTable("ServiceSessions");
+                    b.ToTable("ServiceSessions", "CrystalClinic");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", b =>
@@ -5830,24 +6613,24 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.BankStatementImport", "BankStatementImport")
                         .WithMany("Matches")
                         .HasForeignKey("BankStatementImportId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.BankStatementLine", "BankStatementLine")
                         .WithMany("Matches")
                         .HasForeignKey("BankStatementLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.GeneralLedger", "GeneralLedger")
                         .WithMany()
                         .HasForeignKey("GeneralLedgerId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.JournalEntry", "JournalEntry")
                         .WithMany()
                         .HasForeignKey("JournalEntryId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("BankStatementImport");
 
@@ -5910,7 +6693,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "ParentAccount")
                         .WithMany("ChildAccounts")
                         .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ParentAccount");
                 });
@@ -6230,6 +7013,50 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("RecurringJournalTemplate");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimate", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesInvoice", "ConvertedToInvoice")
+                        .WithMany()
+                        .HasForeignKey("ConvertedToInvoiceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ConvertedToInvoice");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimateLine", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimate", "SalesEstimate")
+                        .WithMany("EstimateLines")
+                        .HasForeignKey("SalesEstimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SalesEstimate");
+
+                    b.Navigation("Service");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesInvoice", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
@@ -6443,23 +7270,53 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasForeignKey("CurrencyTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.SupplierDue", null)
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.SupplierDue", "SupplierDue")
                         .WithMany("Payments")
                         .HasForeignKey("SupplierDueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.SupplierDue", "SupplierDue")
-                        .WithMany()
-                        .HasForeignKey("SupplierDueId1");
 
                     b.Navigation("CurrencyType");
 
                     b.Navigation("SupplierDue");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKitLine", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKit", "Kit")
+                        .WithMany("KitLines")
+                        .HasForeignKey("KitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Kit");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventorySite", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", b =>
                 {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Brand", "Brand")
+                        .WithMany("Items")
+                        .HasForeignKey("BrandId");
+
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
@@ -6470,6 +7327,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .WithMany("Items")
                         .HasForeignKey("ItemCategorycategoryId");
 
+                    b.Navigation("Brand");
+
                     b.Navigation("Category");
                 });
 
@@ -6478,10 +7337,37 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservedItem", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryReservation", "Reservation")
+                        .WithMany("ReservedItems")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Reservation");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Service", b =>
@@ -6497,6 +7383,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Stock", b =>
                 {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventorySite", "Site")
+                        .WithMany("Stocks")
+                        .HasForeignKey("SiteId");
+
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId")
@@ -6508,6 +7398,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Site");
+
                     b.Navigation("Supplier");
 
                     b.Navigation("item");
@@ -6515,13 +7407,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.StockMovement", b =>
                 {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.AdjustmentCategory", "AdjustmentCategory")
+                        .WithMany("StockMovements")
+                        .HasForeignKey("AdjustmentCategoryId");
+
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId");
+
+                    b.Navigation("AdjustmentCategory");
+
                     b.Navigation("Item");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.SupplierDue", b =>
@@ -6557,7 +7461,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "ImplementorEmployee")
                         .WithMany()
-                        .HasForeignKey("ImplementorEmployeeId");
+                        .HasForeignKey("ImplementorEmployeeId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", null)
                         .WithMany("sessions")
@@ -6925,6 +7830,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("Lines");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesEstimate", b =>
+                {
+                    b.Navigation("EstimateLines");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesInvoice", b =>
                 {
                     b.Navigation("Lines");
@@ -6935,6 +7845,31 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.Shareholder", b =>
                 {
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.AdjustmentCategory", b =>
+                {
+                    b.Navigation("StockMovements");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Brand", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKit", b =>
+                {
+                    b.Navigation("KitLines");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryReservation", b =>
+                {
+                    b.Navigation("ReservedItems");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventorySite", b =>
+                {
+                    b.Navigation("Stocks");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCategory", b =>

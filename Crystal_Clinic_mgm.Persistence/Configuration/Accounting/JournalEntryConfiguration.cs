@@ -33,7 +33,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("Status")
                 .HasColumnType("int")
                 .IsRequired()
-                .HasDefaultValue(JournalEntryStatus.Unposted);
+                .HasDefaultValue(JournalEntryStatus.Unposted)
+                .HasSentinel(JournalEntryStatus.Unposted);
 
             entity.Property(j => j.ApprovedBy)
                 .HasColumnName("ApprovedBy")

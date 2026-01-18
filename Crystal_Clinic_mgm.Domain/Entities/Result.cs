@@ -3,8 +3,10 @@ namespace Crystal_Clinic_Mgm.Domain.Entities
     public class Result
     {
         public bool IsSuccess { get; }
+        public bool Succeeded => IsSuccess;
         public string? Error { get; }
         public object? Value { get; }
+        public object? Data => Value;
 
         protected Result(bool isSuccess, string? error, object? value)
         {

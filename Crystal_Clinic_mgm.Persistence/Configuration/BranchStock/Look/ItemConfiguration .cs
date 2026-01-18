@@ -1,4 +1,5 @@
-﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+﻿using Crystal_Clinic_Mgm.Domain;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -49,6 +50,72 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look
                     .HasColumnName("ImagePath")
                     .HasColumnType("nvarchar(255)")
                     .IsRequired(false); // Nullable
+
+                entity.Property(i => i.ItemCode)
+                    .HasColumnName("ItemCode")
+                    .HasColumnType("nvarchar(100)")
+                    .IsRequired();
+
+                entity.Property(i => i.Barcode)
+                    .HasColumnName("Barcode")
+                    .HasColumnType("nvarchar(255)")
+                    .IsRequired();
+
+                entity.Property(i => i.RequiresExpiration)
+                    .HasColumnName("RequiresExpiration")
+                    .HasColumnType("bit")
+                    .IsRequired()
+                    .HasDefaultValue(false);
+
+                entity.Property(i => i.UnitCost)
+                    .HasColumnName("UnitCost")
+                    .HasColumnType("decimal(18,4)")
+                    .IsRequired();
+
+                entity.Property(i => i.IsActive)
+                    .HasColumnName("IsActive")
+                    .HasColumnType("bit")
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(i => i.BrandId)
+                    .HasColumnName("BrandId")
+                    .HasColumnType("int")
+                    .IsRequired(false);
+
+                entity.Property(i => i.IsInventoryItem)
+                    .HasColumnName("IsInventoryItem")
+                    .HasColumnType("bit")
+                    .IsRequired()
+                    .HasDefaultValue(true);
+
+                entity.Property(i => i.ValuationMethod)
+                    .HasColumnName("ValuationMethod")
+                    .HasColumnType("int")
+                    .IsRequired()
+                    .HasDefaultValue(ValuationMethod.FIFO);
+
+                entity.Property(i => i.CostComponents)
+                    .HasColumnName("CostComponents")
+                    .HasColumnType("nvarchar(max)")
+                    .IsRequired();
+
+                entity.Property(i => i.LastNRVAssessment)
+                    .HasColumnName("LastNRVAssessment")
+                    .HasColumnType("datetime2")
+                    .IsRequired(false);
+
+                entity.Property(i => i.NRVAmount)
+                    .HasColumnName("NRVAmount")
+                    .HasColumnType("decimal(18,4)")
+                    .IsRequired()
+                    .HasDefaultValue(0m);
+
+                entity.Property(i => i.WriteDownAmount)
+                    .HasColumnName("WriteDownAmount")
+                    .HasColumnType("decimal(18,4)")
+                    .IsRequired()
+                    .HasDefaultValue(0m);
 
                 // Foreign Keys Configuration
                 entity.HasOne(i => i.Category)

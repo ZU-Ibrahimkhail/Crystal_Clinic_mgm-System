@@ -14,8 +14,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public decimal ProjectedAccountsPayable { get; set; }
         public decimal ProjectedNetIncome { get; set; }
         public ForecastStatus Status { get; set; } = ForecastStatus.Draft;
-        public int? CreatedByUserId { get; set; }
-        public int? ApprovedByUserId { get; set; }
+        public Guid? CreatedByUserId { get; set; }
+        public Guid? ApprovedByUserId { get; set; }
         public DateTime? ApprovedDate { get; set; }
         public string? Notes { get; set; }
 

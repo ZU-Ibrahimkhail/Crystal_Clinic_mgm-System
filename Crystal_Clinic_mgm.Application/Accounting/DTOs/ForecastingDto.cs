@@ -16,8 +16,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal ProjectedAccountsPayable { get; set; }
         public decimal ProjectedNetIncome { get; set; }
         public ForecastStatus Status { get; set; }
-        public int? CreatedByUserId { get; set; }
-        public int? ApprovedByUserId { get; set; }
+        public Guid? CreatedByUserId { get; set; }
+        public Guid? ApprovedByUserId { get; set; }
         public DateTime? ApprovedDate { get; set; }
         public string? Notes { get; set; }
         public List<ForecastLineDto> Lines { get; set; } = new();

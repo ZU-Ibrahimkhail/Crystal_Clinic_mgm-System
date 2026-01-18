@@ -1,6 +1,7 @@
 ﻿
 using Crystal_Clinic_Mgm.Application.Accounting.Services;
 using Crystal_Clinic_Mgm.Application.Common.Jobs;
+using Crystal_Clinic_Mgm.Application.BranchStock;
 using Crystal_Clinic_Mgm.Application.Common.SignalR;
 using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain.Entities.UMS;
@@ -35,6 +36,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     //.AddSupportedCultures(supportedCultures)//---For Converting Date and Number
 });
 builder.Services.AddHostedService<DailyJob>();
+builder.Services.AddHostedService<ExpiryMonitoringJob>();
 var app = builder.Build();
 //--For Localization string--2
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);

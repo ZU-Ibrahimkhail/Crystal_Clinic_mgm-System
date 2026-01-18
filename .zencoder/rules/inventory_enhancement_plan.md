@@ -206,6 +206,110 @@ erDiagram
     }
 ```
 
+## Detailed Implementation Roadmap
+
+### Phase 1: Database Schema Enhancement (Week 1-2)
+1. **Create Missing Entities**
+   - Implement `InventorySite` entity with full CRUD operations
+   - Implement `Brand` entity with manufacturer details
+   - Implement `AdjustmentCategory` entity with approval workflows
+
+2. **Enhance Existing Entities**
+   - Add `BrandId`, `IsInventoryItem`, `ValuationMethod`, `CostComponents`, `LastNRVAssessment`, `NRVAmount`, `WriteDownAmount` to `Item`
+   - Add `SiteId`, `PurchaseOrderId`, `InvoiceId`, `FreightCost`, `InsuranceCost`, `ImportDuty`, `OtherLandingCosts` to `Stock`
+   - Update `StockMovement` to reference `AdjustmentCategory`
+
+3. **Database Migrations**
+   - Generate EF Core migrations for all schema changes
+   - Create seed data for default brands, sites, and adjustment categories
+   - Update existing data with default values
+
+### Phase 2: IFRS/IAS Valuation Engine (Week 3-4)
+1. **Extend Valuation Service**
+   - Add `ValuationMethod` enum (FIFO, WeightedAverage, SpecificIdentification)
+   - Implement FIFO cost layer tracking
+   - Add NRV calculation methods
+   - Create write-down detection and processing
+
+2. **Cost Component Management**
+   - Implement cost component storage and calculation
+   - Add landing cost allocation logic
+   - Create cost variance reporting
+
+3. **Inventory Valuation Reports**
+   - IFRS-compliant inventory valuation reports
+   - NRV assessment reports
+   - Cost analysis and breakdown reports
+
+### Phase 3: Service Layer Enhancements (Week 5-6)
+1. **Update Inventory Service**
+   - Add site-based inventory operations
+   - Implement brand-based filtering and reporting
+   - Add adjustment category validation
+   - Enhance reservation system with site awareness
+
+2. **Financial Bridge Improvements**
+   - Add NRV write-down journal entries
+   - Implement IFRS-compliant COGS recognition
+   - Add multi-currency inventory valuation
+   - Create inventory revaluation entries
+
+3. **New Service Interfaces**
+   - `IInventorySiteService` for warehouse management
+   - `IBrandService` for manufacturer management
+   - `IAdjustmentCategoryService` for adjustment workflows
+
+### Phase 4: API and Integration Layer (Week 7-8)
+1. **REST API Endpoints**
+   - CRUD operations for InventorySite, Brand, AdjustmentCategory
+   - Enhanced inventory queries with site/brand filtering
+   - IFRS valuation and reporting endpoints
+   - Cost component management APIs
+
+2. **Event System Enhancement**
+   - New domain events for NRV changes, write-downs
+   - Enhanced inventory adjustment events with categories
+   - Site-based inventory movement events
+
+3. **Integration Testing**
+   - End-to-end testing of IFRS valuation flows
+   - Financial integration testing for journal entries
+   - Multi-site inventory transfer testing
+
+### Phase 5: UI/UX and Testing (Week 9-10)
+1. **Frontend Updates**
+   - Inventory site management screens
+   - Brand management interface
+   - Adjustment category configuration
+   - IFRS valuation dashboards
+
+2. **Reporting Enhancements**
+   - IFRS-compliant inventory reports
+   - Cost analysis and variance reports
+   - Multi-site inventory visibility
+
+3. **Comprehensive Testing**
+   - Unit tests for all new services
+   - Integration tests for IFRS compliance
+   - Performance testing for valuation calculations
+   - User acceptance testing with sample data
+
+### Phase 6: Production Readiness (Week 11-12)
+1. **Performance Optimization**
+   - Database indexing for new fields
+   - Caching strategies for valuation calculations
+   - Background job optimization
+
+2. **Security and Compliance**
+   - Role-based access for new entities
+   - Audit logging for IFRS-sensitive operations
+   - Data validation for financial compliance
+
+3. **Documentation and Training**
+   - Update API documentation
+   - Create IFRS compliance guides
+   - User training materials
+
 ## UI/UX & Deployment Strategy
 - Rebuild stock, kit, and stock-take screens where necessary; new UI components can replace legacy grids outright.
 - Coordinate form changes with Clinic and Sales teams so shared `ServiceInventoryLink` selectors remain consistent.
@@ -226,3 +330,124 @@ erDiagram
 - Cypress/Playwright flows for stock intake, kit issuance, and stock-take adjustments
 - Accessibility and localization checks for new forms
 - Usability dry-runs with pharmacists and storekeepers to validate redesigned layouts
+
+---
+
+## IFRS/IAS Standards Compliance Requirements
+
+### IAS 2 Inventories Compliance
+**Key Requirements:**
+- **Measurement Principle**: Inventories measured at lower of cost and net realizable value (NRV)
+- **Cost Components**: Include purchase price, import duties, transport, handling, and other costs to bring to present location/condition
+- **Cost Formulas**: Support FIFO and weighted average cost formulas (LIFO prohibited under IFRS)
+- **Net Realizable Value**: Estimated selling price less completion/selling costs
+- **Write-downs**: Recognize losses when NRV < cost; reverse when circumstances change
+- **Disclosure**: Carrying amounts, write-down amounts, reversals, and circumstances
+
+**Implementation Requirements:**
+- Multiple valuation methods (FIFO, Weighted Average Cost)
+- NRV calculation engine with market price monitoring
+- Inventory write-down journal entries
+- Cost component tracking (purchase, freight, insurance, etc.)
+- Valuation method selection per item category
+- Automated NRV assessments and alerts
+
+### Missing Database Entities for Full Feature Alignment
+
+#### Table: `InventorySite`
+*Purpose: Warehouse locations within branches for multi-site inventory management*
+- `Id` (int PK)
+- `SiteName` (string)
+- `SiteCode` (string)
+- `BranchId` (int FK)
+- `IsActive` (bool)
+- `Address` (string)
+- `ContactPerson` (string)
+- `Phone` (string)
+
+#### Table: `Brand`
+*Purpose: Manufacturer brands for product categorization and supplier management*
+- `Id` (int PK)
+- `BrandName` (string)
+- `BrandCode` (string)
+- `ManufacturerName` (string)
+- `CountryOfOrigin` (string)
+- `IsActive` (bool)
+
+#### Table: `AdjustmentCategory`
+*Purpose: Categorized reasons for inventory adjustments with IFRS disclosure requirements*
+- `Id` (int PK)
+- `CategoryName` (string)
+- `CategoryCode` (string)
+- `Description` (string)
+- `AffectsFinancials` (bool) // Whether adjustment creates journal entries
+- `RequiresApproval` (bool)
+- `IsActive` (bool)
+
+#### Enhanced Item Table Fields
+- `BrandId` (int FK) // Links to Brand table
+- `IsInventoryItem` (bool) // False for service items without inventory tracking
+- `ValuationMethod` (enum) // FIFO, WeightedAverage, SpecificIdentification
+- `CostComponents` (JSON) // Store detailed cost breakdown
+- `LastNRVAssessment` (DateTime)
+- `NRVAmount` (decimal)
+- `WriteDownAmount` (decimal)
+
+#### Enhanced Stock Table Fields
+- `SiteId` (int FK) // Links to InventorySite
+- `PurchaseOrderId` (int FK)
+- `InvoiceId` (int FK)
+- `FreightCost` (decimal)
+- `InsuranceCost` (decimal)
+- `ImportDuty` (decimal)
+- `OtherLandingCosts` (decimal)
+
+## Required Enhancements for Production Readiness
+
+### 1. Enhanced Error Handling & Resilience
+**Current Gap:** Basic validation in services
+**Enhancement Needed:**
+- Circuit breaker pattern for external service calls
+- Retry policies with exponential backoff
+- Comprehensive error logging with correlation IDs
+- Graceful degradation when financial system is unavailable
+
+### 2. Advanced Reservation Conflict Resolution
+**Current Gap:** Simple TTL-based release
+**Enhancement Needed:**
+- Priority-based reservations (emergency procedures get precedence)
+- Partial fulfillment with substitution suggestions
+- Reservation transfer between visits
+- Real-time inventory alerts when reservations are at risk
+
+### 3. Multi-Currency Inventory Valuation
+**Current Gap:** Single currency assumption
+**Enhancement Needed:**
+- Currency-specific unit costs
+- Exchange rate handling for international suppliers
+- Multi-currency reporting for global operations
+
+### 4. Advanced Kit Management
+**Current Gap:** Basic kit templates
+**Enhancement Needed:**
+- Dynamic kit composition based on patient profile
+- Kit versioning for protocol changes
+- Kit usage analytics and optimization
+- Integration with clinical protocols
+
+### 5. Audit Trail Enhancements
+**Current Gap:** Basic movement logging
+**Enhancement Needed:**
+- Immutable audit logs with blockchain-style hashing
+- Regulatory compliance reporting (FDA, WHO, IFRS standards)
+- Advanced analytics on inventory turnover and waste
+- Cost variance analysis and reporting
+
+### 6. IFRS/IAS Valuation Engine
+**New Enhancement Needed:**
+- FIFO cost layer tracking with automatic cost assignment
+- NRV monitoring system with market data integration
+- Automated write-down calculations and journal entries
+- Cost component allocation (direct, indirect, overhead)
+- Inventory aging reports for obsolescence assessment
+- Periodic inventory valuation reviews and adjustments

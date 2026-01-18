@@ -75,6 +75,66 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
                   .HasColumnType("datetime")
                   .IsRequired();
 
+            entity.Property(s => s.LotNumber)
+                  .HasColumnName("LotNumber")
+                  .HasColumnType("nvarchar(100)")
+                  .IsRequired();
+
+            entity.Property(s => s.ManufactureDate)
+                  .HasColumnName("ManufactureDate")
+                  .HasColumnType("datetime2")
+                  .IsRequired(false);
+
+            entity.Property(s => s.IsExpired)
+                  .HasColumnName("IsExpired")
+                  .HasColumnType("bit")
+                  .IsRequired()
+                  .HasDefaultValue(false);
+
+            entity.Property(s => s.QuantityRemaining)
+                  .HasColumnName("QuantityRemaining")
+                  .HasColumnType("decimal(18,4)")
+                  .IsRequired();
+
+            entity.Property(s => s.SiteId)
+                  .HasColumnName("SiteId")
+                  .HasColumnType("int")
+                  .IsRequired(false);
+
+            entity.Property(s => s.PurchaseOrderId)
+                  .HasColumnName("PurchaseOrderId")
+                  .HasColumnType("int")
+                  .IsRequired(false);
+
+            entity.Property(s => s.InvoiceId)
+                  .HasColumnName("InvoiceId")
+                  .HasColumnType("int")
+                  .IsRequired(false);
+
+            entity.Property(s => s.FreightCost)
+                  .HasColumnName("FreightCost")
+                  .HasColumnType("decimal(18,4)")
+                  .IsRequired()
+                  .HasDefaultValue(0m);
+
+            entity.Property(s => s.InsuranceCost)
+                  .HasColumnName("InsuranceCost")
+                  .HasColumnType("decimal(18,4)")
+                  .IsRequired()
+                  .HasDefaultValue(0m);
+
+            entity.Property(s => s.ImportDuty)
+                  .HasColumnName("ImportDuty")
+                  .HasColumnType("decimal(18,4)")
+                  .IsRequired()
+                  .HasDefaultValue(0m);
+
+            entity.Property(s => s.OtherLandingCosts)
+                  .HasColumnName("OtherLandingCosts")
+                  .HasColumnType("decimal(18,4)")
+                  .IsRequired()
+                  .HasDefaultValue(0m);
+
             // Auditable properties
             EntityConfiguration<Stock>.AuditableEntityConfigurations((EntityTypeBuilder<Stock>)entity);
         }

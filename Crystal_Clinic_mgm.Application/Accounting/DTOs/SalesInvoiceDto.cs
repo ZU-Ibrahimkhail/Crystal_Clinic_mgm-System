@@ -21,9 +21,14 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class CreateSalesInvoiceDto
     {
         public int CustomerId { get; set; }
+        public int? PatientId { get; set; }
         public DateTime InvoiceDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public string SalesArea { get; set; } = string.Empty;
         public int? BranchId { get; set; }
+        public decimal TaxAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public string? Notes { get; set; }
         public List<SalesInvoiceLineDto> Lines { get; set; } = new();
     }
 
@@ -38,6 +43,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class SalesInvoiceLineDto
     {
         //public int Id { get; set; } The Id should be created automatically
+        public int? ItemId { get; set; }
         public int? ServiceId { get; set; }
         public int? InventoryItemId { get; set; }
         public string Description { get; set; } = string.Empty;

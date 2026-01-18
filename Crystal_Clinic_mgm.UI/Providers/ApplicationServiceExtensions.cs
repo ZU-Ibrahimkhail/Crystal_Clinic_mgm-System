@@ -15,6 +15,7 @@ using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Newtonsoft.Json;
 using Crystal_Clinic_Mgm.Application.Accounting.Repositories;
+using Crystal_Clinic_Mgm.Application.BranchStock;
 
 namespace Crystal_Clinic_Mgm.UI.Providers
 {
@@ -104,6 +105,8 @@ namespace Crystal_Clinic_Mgm.UI.Providers
             services.AddScoped<IAuditTrailService, AuditTrailService>();
             services.AddScoped<IForecastingService, ForecastingService>();
             services.AddScoped<IChartOfAccountsService, ChartOfAccountsService>();
+            services.AddScoped<IFinancialService, FinancialService>();
+            services.AddScoped<IValuationService, ValuationService>();
             //--For Email-----
             services.AddTransient<IMailRepositoy, MailRepositoy>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

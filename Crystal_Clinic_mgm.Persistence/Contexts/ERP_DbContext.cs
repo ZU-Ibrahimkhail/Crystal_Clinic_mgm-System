@@ -63,12 +63,21 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
 
 
         public DbSet<StockMovement> StockMovements { get; set; }
-        //public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; } 
+        //public DbSet<ItemCleaningJob> ItemCleaningJob { get; set; }
         public DbSet<ItemUnit> ItemUnits { get; set; }
         public DbSet<ItemCategory> ItemCategories { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<Stock> Stocks { get; set; } 
+        public DbSet<Stock> Stocks { get; set; }
+
+        // New inventory enhancement entities
+        public DbSet<InventorySite> InventorySites { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<AdjustmentCategory> AdjustmentCategories { get; set; }
+        public DbSet<InventoryKit> InventoryKits { get; set; }
+        public DbSet<InventoryKitLine> InventoryKitLines { get; set; }
+        public DbSet<InventoryReservation> InventoryReservations { get; set; }
+        public DbSet<ReservedItem> ReservedItems { get; set; } 
         public DbSet<Doctor> Doctor { get; set; } 
         public DbSet<Patient> Patient { get; set; } 
         public DbSet<Visit> Visit { get; set; } 
@@ -99,6 +108,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<SalesInvoice> SalesInvoices { get; set; }
         public DbSet<SalesInvoiceLine> SalesInvoiceLines { get; set; }
         public DbSet<SalesReceipt> SalesReceipts { get; set; }
+        public DbSet<SalesEstimate> SalesEstimates { get; set; }
+        public DbSet<SalesEstimateLine> SalesEstimateLines { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
         public DbSet<POLine> POLines { get; set; }
         public DbSet<FixedAsset> FixedAssets { get; set; }
@@ -179,10 +190,20 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new WithdrawalTrackingConfiguration());
             #endregion
 
+            #region Inventory Configuration
             modelBuilder.ApplyConfiguration(new ItemConfiguration());
             modelBuilder.ApplyConfiguration(new ItemCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new ItemUnitConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new StockConfiguration());
+            modelBuilder.ApplyConfiguration(new StockMovementConfiguration());
+            modelBuilder.ApplyConfiguration(new SupplierConfiguration());
+            modelBuilder.ApplyConfiguration(new SupplierDueConfiguration());
+            modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new ReservedItemConfiguration());
+            modelBuilder.ApplyConfiguration(new InventoryKitLineConfiguration());
+            #endregion
+
             modelBuilder.ApplyConfiguration(new DoctorConfiguration());
             modelBuilder.ApplyConfiguration(new PatientConfiguration());
             modelBuilder.ApplyConfiguration(new VisitConfiguration());
@@ -190,10 +211,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new VisitServicesConfiguration());
             modelBuilder.ApplyConfiguration(new VisitPaymentConfiguration());
             modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
-            modelBuilder.ApplyConfiguration(new SupplierConfiguration());
-            modelBuilder.ApplyConfiguration(new SupplierDueConfiguration());
-            modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
             modelBuilder.ApplyConfiguration(new CallListConfiguration());
+            modelBuilder.ApplyConfiguration(new ServiceSessionsConfiguration());
 
             #region Accounting Configuration
             modelBuilder.ApplyConfiguration(new CompanyProfileConfiguration());
@@ -211,6 +230,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new SalesInvoiceConfiguration());
             modelBuilder.ApplyConfiguration(new SalesInvoiceLineConfiguration());
             modelBuilder.ApplyConfiguration(new SalesReceiptConfiguration());
+            modelBuilder.ApplyConfiguration(new SalesEstimateConfiguration());
+            modelBuilder.ApplyConfiguration(new SalesEstimateLineConfiguration());
             modelBuilder.ApplyConfiguration(new PurchaseOrderConfiguration());
             modelBuilder.ApplyConfiguration(new POLineConfiguration());
             modelBuilder.ApplyConfiguration(new FixedAssetConfiguration());

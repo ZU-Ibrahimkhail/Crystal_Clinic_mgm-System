@@ -4,7 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Crystal_Clinic_Mgm.Application.BranchStock.Stock
+namespace Crystal_Clinic_Mgm.Application.BranchStock._Stock
 {
     #region Get Stock List with Pagination & Search
     public class GetStockQuery : IRequest<GetStockResponse>

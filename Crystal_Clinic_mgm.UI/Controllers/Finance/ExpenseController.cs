@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Accounting.Services;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
 {
@@ -12,13 +13,13 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
     public class ExpenseController : BaseController
     {
         private readonly IExpenseService _expenseService;
-
-        public ExpenseController(IExpenseService expenseService)
+        private readonly ILoggedInUser _loggedInUser;
+        public ExpenseController(IExpenseService expenseService, ILoggedInUser loggedInUser)
         {
             _expenseService = expenseService;
+            _loggedInUser = loggedInUser;
         }
 
-        private int GetUserId() => int.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var id) ? id : 0;
 
         [HttpPost]
         public async Task<IActionResult> CreateExpense([FromBody] CreateExpenseDto dto)
@@ -26,7 +27,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _expenseService.CreateExpenseAsync(dto, GetUserId());
+            var result = await _expenseService.CreateExpenseAsync(dto, _loggedInUser.Id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
@@ -66,14 +67,14 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
         [HttpPost("{id}/Submit")]
         public async Task<IActionResult> SubmitExpense(int id)
         {
-            var result = await _expenseService.SubmitExpenseAsync(id, GetUserId());
+            var result = await _expenseService.SubmitExpenseAsync(id, _loggedInUser.Id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("{id}/Approve")]
         public async Task<IActionResult> ApproveExpense(int id)
         {
-            var result = await _expenseService.ApproveExpenseAsync(id, GetUserId());
+            var result = await _expenseService.ApproveExpenseAsync(id, _loggedInUser.Id);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
@@ -83,7 +84,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _expenseService.RejectExpenseAsync(id, GetUserId(), dto.RejectionReason);
+            var result = await _expenseService.RejectExpenseAsync(id, _loggedInUser.Id, dto.RejectionReason);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
