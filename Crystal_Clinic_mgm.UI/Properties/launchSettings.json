@@ -11,13 +11,13 @@
   "profiles": {
     "Crystal_Clinic_Mgm.UI": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:9090;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -25,26 +25,6 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "profiles": {
-        "Crystal_Clinic_Mgm.UI": {
-          "commandName": "Project",
-          "dotnetRunMessages": true,
-          "launchBrowser": true,
-          "launchUrl": "swagger",
-          "applicationUrl": "http://127.0.0.1:9090;",
-          "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Publish"
-          }
-        },
-        "IIS Express": {
-          "commandName": "IISExpress",
-          "launchBrowser": true,
-          "launchUrl": "swagger",
-          "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Publish"
-          }
-        }
       }
     }
   }

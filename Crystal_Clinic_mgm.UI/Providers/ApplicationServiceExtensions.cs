@@ -107,6 +107,7 @@ namespace Crystal_Clinic_Mgm.UI.Providers
             services.AddScoped<IChartOfAccountsService, ChartOfAccountsService>();
             services.AddScoped<IFinancialService, FinancialService>();
             services.AddScoped<IValuationService, ValuationService>();
+            services.AddScoped<IFixedAssetService, FixedAssetService>();
             //--For Email-----
             services.AddTransient<IMailRepositoy, MailRepositoy>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

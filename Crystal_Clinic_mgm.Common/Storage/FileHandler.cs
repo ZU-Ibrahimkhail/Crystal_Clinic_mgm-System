@@ -28,7 +28,7 @@ namespace Crystal_Clinic_Mgm.Common.Storage
             try
             {
 
-                var additional = DateTime.Now.ToString("yyyy/MMM", CultureInfo.InvariantCulture) + "/";
+                var additional = DateTime.Now.ToString("/yyyy/MMM", CultureInfo.InvariantCulture) + "/";
                 var filename = GenerateFileName(fileextension);
                 if (AdditionalName != null)
                 {

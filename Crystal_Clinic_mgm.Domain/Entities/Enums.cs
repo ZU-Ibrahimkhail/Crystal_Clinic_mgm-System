@@ -7,6 +7,14 @@
         Rental,
         Mixed
     }
+
+    public enum AttachmentType
+    {
+        PatientDocument,
+        Invoice,
+        VendorBill
+    }
+
     public enum ReturnStatus
     {
         Pending,
