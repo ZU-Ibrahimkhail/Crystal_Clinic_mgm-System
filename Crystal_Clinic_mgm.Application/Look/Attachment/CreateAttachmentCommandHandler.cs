@@ -1,28 +1,27 @@
 ﻿using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
-using Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
-using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
-public class CreateAttachmentCommand : IRequest<Result>
+public class CreateAttachmentCommand : IRequest<JsonResult>
 {
     public CreateAttachmentDto Dto { get; set; }
 }
 
 
-public class CreateAttachmentCommandHandler(
-    IGenericRepositoryAsync<ERP_DbContext, Attachments> genericRepository,
-    ILoggedInUser _loggedInUser)
-    : IRequestHandler<CreateAttachmentCommand, Result>
+public class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, JsonResult>
 {
+    private readonly IGenericRepositoryAsync<ERP_DbContext, JsonResult> _genericRepository;
+
+    public CreateAttachmentCommandHandler(IGenericRepositoryAsync<ERP_DbContext, JsonResult> genericRepository)
+    {
+        _genericRepository = genericRepository;
+    }
    
-   
-    public async Task<Result> Handle(
-        CreateAttachmentCommand request,
-        CancellationToken cancellationToken)
+    public async Task<JsonResult> Handle(CreateAttachmentCommand request, CancellationToken cancellationToken)
     {
         string filePath = string.Empty;
         string fileExtension = string.Empty;
@@ -31,7 +30,6 @@ public class CreateAttachmentCommandHandler(
         {
             var storage = new FileHandler();
             fileExtension = Path.GetExtension(request.Dto.File.FileName);
-
             filePath = await storage.CreateAsync(
                 request.Dto.File.OpenReadStream(),
                 fileExtension,
@@ -40,18 +38,6 @@ public class CreateAttachmentCommandHandler(
             );
         }
 
-        var attachment = new Attachments
-        {
-            FilePath = filePath,
-            FileExtention = fileExtension,
-            AttachmentType = request.Dto.AttachmentType,
-            AttachmentDescription = request.Dto.AttachmentDescription,
-            CreatedBy = _loggedInUser.Id,
-            CreatedOn = DateTime.UtcNow
-        };
-
-        await genericRepository.AddAsync(attachment, cancellationToken);
-
-        return Result.Success(attachment.Id);
+        return new JsonResult(filePath);
     }
 }
