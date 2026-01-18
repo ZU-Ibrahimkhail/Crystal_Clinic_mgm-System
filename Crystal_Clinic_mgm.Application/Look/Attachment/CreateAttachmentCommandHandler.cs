@@ -1,43 +1,56 @@
 ﻿using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
-using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
-using Crystal_Clinic_Mgm.Persistence.Contexts;
+using Crystal_Clinic_Mgm.Domain;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static QRCoder.PayloadGenerator;
 
 public class CreateAttachmentCommand : IRequest<JsonResult>
 {
-    public CreateAttachmentDto Dto { get; set; }
+    public AttachmentType AttachmentType { get; set; }
+    public IFormFile File { get; set; } = null!;
 }
 
 
 public class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCommand, JsonResult>
 {
-    private readonly IGenericRepositoryAsync<ERP_DbContext, JsonResult> _genericRepository;
-
-    public CreateAttachmentCommandHandler(IGenericRepositoryAsync<ERP_DbContext, JsonResult> genericRepository)
+    private static class AttachmentPathResolver
     {
-        _genericRepository = genericRepository;
+        public static string ResolveFolder(AttachmentType type)
+        {
+            var year = DateTime.Now.Year.ToString();
+            return type switch
+            {
+                AttachmentType.PatientDocument => "PatientDocuments",
+                AttachmentType.Invoice => "Invoices",
+                AttachmentType.VendorBill => "VendorBills",
+                _ => "Others"
+            };
+        }
     }
-   
+
+
     public async Task<JsonResult> Handle(CreateAttachmentCommand request, CancellationToken cancellationToken)
     {
-        string filePath = string.Empty;
-        string fileExtension = string.Empty;
+        if (request.File == null || string.IsNullOrWhiteSpace(request.File.FileName))
+            return new JsonResult(string.Empty);
 
-        if (request.Dto.File != null && !string.IsNullOrWhiteSpace(request.Dto.File.FileName))
-        {
-            var storage = new FileHandler();
-            fileExtension = Path.GetExtension(request.Dto.File.FileName);
-            filePath = await storage.CreateAsync(
-                request.Dto.File.OpenReadStream(),
-                fileExtension,
-                "wwwroot",
-                AppConfig.ClinicAttachment
-            );
-        }
+        var fileExtension = Path.GetExtension(request.File.FileName);
+        var subFolder = AttachmentPathResolver.ResolveFolder(request.AttachmentType);
 
-        return new JsonResult(filePath);
+        var storage = new FileHandler();
+
+        var savedPath = await storage.CreateAsync(
+            request.File.OpenReadStream(),
+            fileExtension,
+            "wwwroot",
+            Path.Combine(AppConfig.ClinicAttachment, subFolder)
+        );
+
+        var urlPath = "/" + savedPath.Replace("\\", "/").TrimStart('/');
+
+        return new JsonResult(new { attachment = urlPath });
     }
 }

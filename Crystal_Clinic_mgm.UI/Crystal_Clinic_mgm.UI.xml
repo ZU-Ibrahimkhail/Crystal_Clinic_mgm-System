@@ -381,6 +381,13 @@
             </summary>
             <returns></returns> 
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AttachmentController.Create(CreateAttachmentCommand)">
+            <summary>
+            Create Attachment
+            </summary>
+            <param name="command"></param>
+            <returns>Json Record</returns>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.BranchController.Create(Crystal_Clinic_Mgm.Application.Look.Branchs.Commands.Create.CreateBranchCommand)">
             <summary>
             Create Branch
