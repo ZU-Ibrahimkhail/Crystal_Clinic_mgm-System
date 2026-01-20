@@ -7,45 +7,112 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting;
 
 public class CompanyProfileConfiguration : IEntityTypeConfiguration<CompanyProfile>
 {
-    public void Configure(EntityTypeBuilder<CompanyProfile> entity)
+    public void Configure(EntityTypeBuilder<CompanyProfile> builder)
     {
-        entity.ToTable("CompanyProfile", "Accounting");
+        builder.ToTable(nameof(CompanyProfile), "Accounting");
 
-        entity.HasKey(c => c.Id);
+        builder.HasKey(c => c.Id);
 
-        entity.HasOne(x => x.CashAccount)
-            .WithMany()
-            .HasForeignKey(x => x.CashAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.Id)
+               .HasColumnName("Id")
+               .ValueGeneratedNever();
 
-        entity.HasOne(x => x.BankAccount)
-            .WithMany()
-            .HasForeignKey(x => x.BankAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.Name)
+               .HasColumnName("Name")
+               .HasColumnType("nvarchar(200)")
+               .IsRequired();
 
-        entity.HasOne(x => x.SalesRevenueAccount)
-            .WithMany()
-            .HasForeignKey(x => x.SalesRevenueAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.Email)
+               .HasColumnName("Email")
+               .HasColumnType("nvarchar(150)")
+               .IsRequired(false);
 
-        entity.HasOne(x => x.InventoryAccount)
-            .WithMany()
-            .HasForeignKey(x => x.InventoryAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.PhoneNumber)
+               .HasColumnName("PhoneNumber")
+               .HasColumnType("nvarchar(50)")
+               .IsRequired(false);
 
-        entity.HasOne(x => x.PurchaseExpenseAccount)
-            .WithMany()
-            .HasForeignKey(x => x.PurchaseExpenseAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.WhatsappNumber)
+               .HasColumnName("WhatsappNumber")
+               .HasColumnType("nvarchar(50)")
+               .IsRequired(false);
 
-        entity.HasOne(x => x.AccountsReceivableAccount)
-            .WithMany()
-            .HasForeignKey(x => x.AccountsReceivableAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.Description)
+               .HasColumnName("Description")
+               .HasColumnType("nvarchar(max)")
+               .IsRequired(false);
 
-        entity.HasOne(x => x.AccountsPayableAccount)
-            .WithMany()
-            .HasForeignKey(x => x.AccountsPayableAccountId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(c => c.BaseCurrencyId)
+               .HasColumnName("BaseCurrencyId")
+               .IsRequired(true);
+
+        builder.Property(c => c.CashAccountId)
+               .HasColumnName("CashAccountId");
+
+        builder.Property(c => c.BankAccountId)
+               .HasColumnName("BankAccountId");
+
+        builder.Property(c => c.AccountsReceivableAccountId)
+               .HasColumnName("AccountsReceivableAccountId");
+
+        builder.Property(c => c.AccountsPayableAccountId)
+               .HasColumnName("AccountsPayableAccountId");
+
+        builder.Property(c => c.SalesRevenueAccountId)
+               .HasColumnName("SalesRevenueAccountId");
+
+        builder.Property(c => c.InventoryAccountId)
+               .HasColumnName("InventoryAccountId");
+
+        builder.Property(c => c.PurchaseExpenseAccountId)
+               .HasColumnName("PurchaseExpenseAccountId");
+
+        builder.Property(c => c.IsInitialized)
+               .HasColumnName("IsInitialized")
+               .HasColumnType("bit")
+               .HasDefaultValue(false);
+
+        builder.HasOne(c => c.CurrencyType)
+               .WithMany()
+               .HasForeignKey(c => c.BaseCurrencyId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        // Chart of Accounts
+        builder.HasOne(c => c.CashAccount)
+               .WithMany()
+               .HasForeignKey(c => c.CashAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.BankAccount)
+               .WithMany()
+               .HasForeignKey(c => c.BankAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.AccountsReceivableAccount)
+               .WithMany()
+               .HasForeignKey(c => c.AccountsReceivableAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.AccountsPayableAccount)
+               .WithMany()
+               .HasForeignKey(c => c.AccountsPayableAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.SalesRevenueAccount)
+               .WithMany()
+               .HasForeignKey(c => c.SalesRevenueAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.InventoryAccount)
+               .WithMany()
+               .HasForeignKey(c => c.InventoryAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(c => c.PurchaseExpenseAccount)
+               .WithMany()
+               .HasForeignKey(c => c.PurchaseExpenseAccountId)
+               .OnDelete(DeleteBehavior.NoAction);
+
+        EntityConfiguration<CompanyProfile>.AuditableEntityConfigurations(builder);
     }
 }

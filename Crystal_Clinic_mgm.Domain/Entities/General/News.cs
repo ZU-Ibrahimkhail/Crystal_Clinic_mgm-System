@@ -12,7 +12,7 @@
         public string? Speaker { get; set; }
         public string? Location { get; set; }
         public bool? ShowNotification { get; set; }
-        public string? AttachmentPath { get; set; }
+        public List<string>? AttachmentPath { get; set; }
 
 
 

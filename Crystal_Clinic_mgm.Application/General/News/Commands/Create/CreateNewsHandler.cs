@@ -55,13 +55,7 @@ namespace Crystal_Clinic_Mgm.Application.General.News.Commands.Create
                 return _message.CheckCCValidationError(validator);
             }
             #region Create News
-            string FilePath = "";
-            if (request.Attachment != null && request.Attachment.FileName.Length > 0)
-            {
-                FilePath = await new FileHandler().CreateAsync(request.Attachment!.OpenReadStream(),
-                                  Path.GetExtension(request.Attachment.FileName), "wwwroot", AppConfig.NewsAttachments);
-
-            }
+           
 
             var entity = new Crystal_Clinic_Mgm.Domain.Entities.General.News
             {
@@ -73,7 +67,7 @@ namespace Crystal_Clinic_Mgm.Application.General.News.Commands.Create
                 Speaker = request.Speaker,
                 Location = request.Location,
                 ShowNotification = request.ShowNotification,
-                AttachmentPath = FilePath,
+                AttachmentPath = request.Attachment,
                 CreatedBy = _loggedInUser.Id,
                 CreatedOn = DateTime.Now,
                 ModifiedOn = DateTime.Now

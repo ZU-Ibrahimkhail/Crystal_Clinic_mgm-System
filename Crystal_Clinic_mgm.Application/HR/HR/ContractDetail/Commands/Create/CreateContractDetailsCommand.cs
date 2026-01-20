@@ -16,7 +16,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
         public DateTime? EndDate { get; set; } = null;
         public bool IsActive { get; set; } = false;
         public string Remarks { get; set; } = string.Empty;
-        public IFormFile? Attachment { get; set; }
+        public List<string>? Attachment { get; set; }
 
     }
 }

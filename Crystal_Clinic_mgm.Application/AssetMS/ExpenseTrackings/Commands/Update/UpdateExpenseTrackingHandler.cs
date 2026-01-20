@@ -58,18 +58,6 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Updat
             #endregion
 
             #region Update Expense Tracking Record
-            string FilePath = "";
-            if (request.Attachment != null)
-            {
-                var attachment = request.Attachment;
-                FileHandler _sotrage = new();
-                if (attachment.FileName.Length > 0)
-                {
-                    await _sotrage.RemoveFile("wwwroot", entity.AttachmentPath);
-                    string ext = Path.GetExtension(attachment.FileName);
-                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
-                }
-            }
             entity.CurrencyTypeId = mainAccount.CurrencyTypeId;
             entity.ExpenseTypeId = request.ExpenseTypeId;
             entity.Date = request.Date;
@@ -79,7 +67,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Updat
             entity.Amount = request.Amount;
             entity.ModifiedBy = _loggedInUser.Id;
             entity.InvoiceNumber = request.InvoiceNumber;
-            entity.AttachmentPath = FilePath;
+            entity.AttachmentPath = request.Attachment;
             entity.ModifiedOn = DateTime.Now;
             _GRepoExpenseTracking.EditeAsync(entity, cancellationToken);
             #endregion

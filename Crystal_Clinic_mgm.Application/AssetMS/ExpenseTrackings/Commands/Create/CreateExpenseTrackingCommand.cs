@@ -12,6 +12,6 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
         public DateTime Date { get; set; }
         public string Description { get; set; } = string.Empty;
         public string InvoiceNumber { get; set; } = string.Empty;
-        public IFormFile? Attachment { get; set; }
+        public List<string>? Attachments { get; set; }
     }
 }

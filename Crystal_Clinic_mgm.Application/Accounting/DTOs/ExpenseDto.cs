@@ -16,7 +16,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int? ChartOfAccountId { get; set; }
         public string? ChartOfAccountName { get; set; }
         public int? BranchId { get; set; }
-        public string AttachmentPath { get; set; } = string.Empty;
+        public List<string>? AttachmentPath { get; set; } 
         public ExpenseStatus Status { get; set; }
         public Guid? SubmittedBy { get; set; }
         public DateTime? SubmittedDate { get; set; }
@@ -38,7 +38,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public bool IsReimbursable { get; set; } = false;
         public int? ChartOfAccountId { get; set; }
         public int? BranchId { get; set; }
-        public string AttachmentPath { get; set; } = string.Empty;
+        public List<string>? AttachmentPath { get; set; } 
     }
 
     public class UpdateExpenseDto
@@ -54,7 +54,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public bool IsReimbursable { get; set; }
         public int? ChartOfAccountId { get; set; }
         public int? BranchId { get; set; }
-        public string AttachmentPath { get; set; } = string.Empty;
+        public List<string>? AttachmentPath { get; set; }
     }
 
     public class SubmitExpenseDto

@@ -18,7 +18,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public ChartOfAccounts? ChartOfAccount { get; set; }
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
-        public string AttachmentPath { get; set; } = string.Empty;
+        public List<string>? AttachmentPath { get; set; }
         public ExpenseStatus Status { get; set; } = ExpenseStatus.Draft;
         public Guid? SubmittedBy { get; set; }
         public DateTime? SubmittedDate { get; set; }

@@ -15,7 +15,7 @@ namespace Crystal_Clinic_Mgm.Application.General.News.Commands.Update
         public DateTime NewsDate { get; set; }
         public string? Speaker { get; set; }
         public string? Location { get; set; }
-        public IFormFile? Attachment { get; set; }
+        public List<string>? Attachment { get; set; }
 
 
     }

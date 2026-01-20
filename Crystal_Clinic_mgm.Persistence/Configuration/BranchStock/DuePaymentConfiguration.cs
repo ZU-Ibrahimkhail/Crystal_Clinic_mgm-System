@@ -1,6 +1,7 @@
 ﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 
 namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
 {
@@ -54,10 +55,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
                 .HasColumnType("datetime")
                 .IsRequired();
 
-            entity.Property(dp => dp.AttachmentPath)
-                .HasColumnName("AttachmentPath")
-                .HasColumnType("nvarchar(max)")
-                .IsRequired(false);
+            entity.Property(c => c.AttachmentPath)
+                    .HasColumnName("AttachmentPath")
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
+                        )
+                    .HasColumnType("nvarchar(max)")
+                    .IsRequired(false);
 
             // Auditable entity fields configuration
             EntityConfiguration<DuePayment>.AuditableEntityConfigurations(entity);

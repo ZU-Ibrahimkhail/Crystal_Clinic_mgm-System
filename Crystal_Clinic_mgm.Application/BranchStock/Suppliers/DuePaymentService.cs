@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
-        public IFormFile? Attachment { get; set; }
+        public List<string>? Attachment { get; set; }
     }
     public class CreateDuePaymentCommandValidator : AbstractValidator<CreateDuePaymentCommand>
     {
@@ -97,19 +97,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
                 ModifiedOn = DateTime.Now
             };
             #endregion
-            string FilePath = "";
-
-            if (request.Attachment != null)
-            {
-                var attachment = request.Attachment;
-                FileHandler _sotrage = new();
-                if (attachment.FileName.Length > 0)
-                {
-                    string ext = Path.GetExtension(attachment.FileName);
-                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
-                }
-            }
-            entity.AttachmentPath = FilePath;
+            
+            entity.AttachmentPath = request.Attachment;
             entity.Remarks = request.Remarks;
             due.PaidAmount += request.AmountInDueCurrency;
             due.RemainAmount = due.DueAmount - due.PaidAmount;
@@ -132,7 +121,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
-        public IFormFile? Attachment { get; set; }
+        public List<string>? Attachment { get; set; }
     }
     public class UpdateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<UpdateDuePaymentCommand, bool>
@@ -196,18 +185,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
             string FilePath = "";
             entity.Remarks = request.Remarks;
 
-            if (request.Attachment != null)
-            {
-                var attachment = request.Attachment;
-                FileHandler _sotrage = new();
-                if (attachment.FileName.Length > 0)
-                {
-                    await _sotrage.RemoveFile("wwwroot", entity.AttachmentPath);
-                    string ext = Path.GetExtension(attachment.FileName);
-                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
-                }
-            }
-            entity.AttachmentPath = FilePath;
+            entity.AttachmentPath = request.Attachment;
 
             due.PaidAmount += request.AmountInDueCurrency;
             due.RemainAmount = due.DueAmount - due.PaidAmount;

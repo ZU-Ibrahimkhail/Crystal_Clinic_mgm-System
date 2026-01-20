@@ -1,6 +1,7 @@
 ﻿using Crystal_Clinic_Mgm.Domain.Entities.General;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 
 namespace Crystal_Clinic_Mgm.Persistence.Configuration.General
 {
@@ -18,7 +19,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.General
             entity.Property(c => c.StartTime).HasColumnName("StartTime").HasColumnType("DateTime").IsRequired(false);
             entity.Property(c => c.EndTime).HasColumnName("EndTime").HasColumnType("DateTime").IsRequired(false);
             entity.Property(c => c.NewsDate).HasColumnName("NewsDate").HasColumnType("DateTime").IsRequired(true);
-            entity.Property(c => c.AttachmentPath).HasColumnName("AttachmentPath").HasColumnType("nvarchar").HasMaxLength(700).IsRequired(false);
+
+            entity.Property(c => c.AttachmentPath)
+                    .HasColumnName("AttachmentPath")
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
+                        )
+                    .HasColumnType("nvarchar(max)")
+                    .IsRequired(false);
+
             entity.Property(c => c.CreatedBy).HasColumnName("CreatedBy").HasMaxLength(50).IsRequired(true).HasColumnType("UNIQUEIDENTIFIER");
             entity.Property(c => c.CreatedOn).HasColumnName("CreatedOn").IsRequired(true).HasColumnType("DateTime");
             entity.Property(c => c.ModifiedBy).HasColumnName("ModifiedBy").HasMaxLength(50).IsRequired(false).HasColumnType("UNIQUEIDENTIFIER");

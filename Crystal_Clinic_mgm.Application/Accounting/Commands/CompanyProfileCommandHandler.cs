@@ -19,44 +19,61 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(SetupCompanyCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            var strategy = context.Database.CreateExecutionStrategy();
+
             try
             {
-                var existingProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                if (existingProfile != null && existingProfile.IsInitialized)
-                    return Result.Fail("Company profile is already initialized.");
-
-                var profile = new CompanyProfile
+                await strategy.ExecuteAsync(async () =>
                 {
-                    Name = request.Dto.Name,
-                    PhoneNumber = request.Dto.PhoneNumber,
-                    Email = request.Dto.Email,
-                    BaseCurrencyId = request.Dto.BaseCurrencyId,
-                    IsInitialized = true,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-                context.CompanyProfile.Add(profile);
-                await context.SaveChangesAsync(cancellationToken);
+                    await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-                var systemAccounts = await SeedChartOfAccounts(context, cancellationToken);
+                    try
+                    {
+                        var existingProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
 
-                profile.CashAccountId = systemAccounts.CashId;
-                profile.AccountsReceivableAccountId = systemAccounts.ARId;
-                profile.AccountsPayableAccountId = systemAccounts.APId;
-                profile.SalesRevenueAccountId = systemAccounts.RevenueId;
-                profile.InventoryAccountId = systemAccounts.InventoryId;
-                profile.PurchaseExpenseAccountId = systemAccounts.ExpenseId;
+                        if (existingProfile != null && existingProfile.IsInitialized)
+                            throw new Exception("Company profile is already initialized.");
 
-                await context.SaveChangesAsync(cancellationToken);
+                        var profile = new CompanyProfile
+                        {
+                            Name = request.Dto.Name,
+                            PhoneNumber = request.Dto.PhoneNumber,
+                            WhatsappNumber = request.Dto.WhatsappNumber,
+                            Description = request.Dto.Description,
+                            Email = request.Dto.Email,
+                            BaseCurrencyId = request.Dto.BaseCurrencyId,
+                            IsInitialized = true,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
 
-                await transaction.CommitAsync(cancellationToken);
-                return Result.Success(profile.Id, "Company profile initialized and Chart of Accounts seeded successfully.");
+                        context.CompanyProfile.Add(profile);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var systemAccounts = await SeedChartOfAccounts(context, cancellationToken);
+                        profile.CashAccountId = systemAccounts.CashId;
+                        profile.AccountsReceivableAccountId = systemAccounts.ARId;
+                        profile.AccountsPayableAccountId = systemAccounts.APId;
+                        profile.SalesRevenueAccountId = systemAccounts.RevenueId;
+                        profile.InventoryAccountId = systemAccounts.InventoryId;
+                        profile.PurchaseExpenseAccountId = systemAccounts.ExpenseId;
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        throw; // rethrow to let EF Core log/handle it
+                    }
+                });
+
+                return Result.Success("Company profile initialized successfully.");
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
-                return Result.Fail($"Error setting up company profile: {ex.Message}");
+                return Result.Fail($"Error initializing company profile: {ex.Message}");
             }
         }
 

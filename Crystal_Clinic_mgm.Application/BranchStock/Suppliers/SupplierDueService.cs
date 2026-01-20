@@ -183,7 +183,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; } = payment.AmountInDueCurrency;
         public DateTime paymentDate { get; set; } = payment.paymentDate;
         public string? Remarks { get; set; } = payment.Remarks;
-        public string? AttachmentPath { get; set; } = payment.AttachmentPath;
+        public List<string>? AttachmentPath { get; set; } = payment.AttachmentPath;
     }
 
 }

@@ -55,14 +55,7 @@ namespace Crystal_Clinic_Mgm.Application.General.News.Commands.Update
                 return new JsonResult(_Localizer["NewsExpired"].Value);
             }
 
-            if (request.Attachment != null && request.Attachment.FileName.Length > 0)
-            {
-                FileHandler fileHandler = new();
-                await fileHandler.RemoveFile("wwwroot", entity.AttachmentPath!);
-                string FilePath = await fileHandler.CreateAsync(request.Attachment!.OpenReadStream(),
-                                  Path.GetExtension(request.Attachment.FileName), "wwwroot", AppConfig.NewsAttachments);
-                entity.AttachmentPath = FilePath;
-            }
+            
             entity.Title = request.Title;
             entity.Description = request.Description;
             entity.StartTime = request.StartTime;
@@ -72,6 +65,7 @@ namespace Crystal_Clinic_Mgm.Application.General.News.Commands.Update
             entity.Location = request.Location;
             entity.ModifiedOn = DateTime.Now;
             entity.ModifiedBy = _loggedInUser.Id;
+            entity.AttachmentPath = request.Attachment;
 
             _genericRepositoryAsync.EditeAsync(entity, cancellationToken);
             #endregion

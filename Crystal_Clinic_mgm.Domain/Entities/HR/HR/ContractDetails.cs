@@ -21,6 +21,6 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HR
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool IsActive { get; set; }
-        public string AttachmentPath { get; set; } = string.Empty;
+        public List<string>? AttachmentPath { get; set; }
     }
 }

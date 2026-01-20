@@ -50,17 +50,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
 
             #region Add Expense Tracking Record
             
-            string FilePath = "";
-            if (request.Attachment != null)
-            {
-                var attachment = request.Attachment;
-                FileHandler _sotrage = new();
-                if (attachment.FileName.Length > 0)
-                {
-                    string ext = Path.GetExtension(attachment.FileName);
-                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
-                }
-            }
+           
             var entity = new ExpenseTracking
             {
                 CurrencyTypeId = mainAccount.CurrencyTypeId,
@@ -71,7 +61,7 @@ namespace Crystal_Clinic_Mgm.Application.AssetMS.ExpenseTrackings.Commands.Creat
                 Description = request.Description,
                 InvoiceNumber = request.InvoiceNumber,
                 BranchId = _loggedInUser.BranchId,
-                AttachmentPath = FilePath,
+                AttachmentPath = request.Attachments,
                 UserId = _loggedInUser.Id,
                 CreatedBy = _loggedInUser.Id,
                 CreatedOn = DateTime.Now,

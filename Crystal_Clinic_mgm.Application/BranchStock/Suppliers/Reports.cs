@@ -136,7 +136,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; } = payment.AmountInDueCurrency;
         public DateTime PaymentDate { get; set; } = payment.paymentDate;
         public string? Remarks { get; set; } = payment.Remarks;
-        public string? AttachmentPath { get; set; } = payment.AttachmentPath;
+        public List<string>? AttachmentPath { get; set; } = payment.AttachmentPath;
         public DateTime CreatedOn { get; set; } = payment.CreatedOn;
         public Guid CreatedBy { get; set; } = payment.CreatedBy;
     }

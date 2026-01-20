@@ -1,6 +1,7 @@
+using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using System.Text.Json;
 
 namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
 {
@@ -58,10 +59,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("int")
                 .IsRequired(false);
 
-            entity.Property(e => e.AttachmentPath)
-                .HasColumnName("AttachmentPath")
-                .HasColumnType("nvarchar(max)")
-                .IsRequired(false);
+            entity.Property(c => c.AttachmentPath)
+                    .HasColumnName("AttachmentPath")
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new()
+                        )
+                    .HasColumnType("nvarchar(max)")
+                    .IsRequired(false);
 
             entity.HasOne(e => e.Customer)
                 .WithMany()

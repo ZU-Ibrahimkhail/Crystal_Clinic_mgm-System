@@ -13,7 +13,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
         public decimal AmountPaid { get; set; }
         public decimal AmountInDueCurrency { get; set; }
         public DateTime paymentDate { get; set; }
-        public string? AttachmentPath { get; set; }
+        public List<string>? AttachmentPath { get; set; }
         public SupplierDue? SupplierDue { get; set; }
     }
 }

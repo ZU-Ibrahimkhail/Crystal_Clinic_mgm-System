@@ -62,17 +62,6 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
                 return _message.CheckCCValidationError(validator);
             }
 
-            string FilePath = "";
-            if (request.Attachment != null)
-            {
-                var attachment = request.Attachment;
-                FileHandler _sotrage = new();
-                if (attachment.FileName.Length > 0)
-                {
-                    string ext = Path.GetExtension(attachment.FileName);
-                    FilePath = await _sotrage.CreateAsync(attachment.OpenReadStream(), ext, "wwwroot", AppConfig.Archive_ArchivedDocuments);
-                }
-            }
             var entity = new ContractDetails
             {
                 EmployeeProfileId = request.EmployeeProfileId,
@@ -83,7 +72,7 @@ namespace Crystal_Clinic_Mgm.Application.HR.HR.ContractDetail.Commands.Create
                 BranchId = request.BranchId,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate ?? null,
-                AttachmentPath = FilePath,
+                AttachmentPath = request.Attachment,
                 IsActive = request.IsActive,
                 Remarks = request.Remarks,
                 CreatedBy = _loggedInUser.Id,
