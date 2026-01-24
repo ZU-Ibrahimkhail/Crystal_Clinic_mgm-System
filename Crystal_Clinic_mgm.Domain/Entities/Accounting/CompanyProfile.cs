@@ -4,14 +4,14 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting;
 
 public class CompanyProfile : AuditableEntity
 {
-    public int Id { get; set; } = 1;
+    public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public string WhatsappNumber { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int BaseCurrencyId { get; set; }
-    public CurrencyType? CurrencyType { get; set; }
+    public CurrencyType? BaseCurrency { get; set; }
     public int CashAccountId { get; set; }
     public int BankAccountId { get; set; }
     public int AccountsReceivableAccountId { get; set; }
