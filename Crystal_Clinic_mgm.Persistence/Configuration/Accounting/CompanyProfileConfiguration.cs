@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using ImageMagick;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,9 +14,6 @@ public class CompanyProfileConfiguration : IEntityTypeConfiguration<CompanyProfi
 
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.Id)
-               .HasColumnName("Id")
-               .ValueGeneratedNever();
 
         builder.Property(c => c.Name)
                .HasColumnName("Name")
@@ -41,10 +39,6 @@ public class CompanyProfileConfiguration : IEntityTypeConfiguration<CompanyProfi
                .HasColumnName("Description")
                .HasColumnType("nvarchar(max)")
                .IsRequired(false);
-
-        builder.Property(c => c.BaseCurrencyId)
-               .HasColumnName("BaseCurrencyId")
-               .IsRequired(true);
 
         builder.Property(c => c.CashAccountId)
                .HasColumnName("CashAccountId");
@@ -72,7 +66,11 @@ public class CompanyProfileConfiguration : IEntityTypeConfiguration<CompanyProfi
                .HasColumnType("bit")
                .HasDefaultValue(false);
 
-        builder.HasOne(c => c.CurrencyType)
+        builder.Property(c => c.BaseCurrencyId)
+                .HasColumnName("BaseCurrencyId")
+                .IsRequired(false);
+
+        builder.HasOne<CurrencyType>("CurrencyType")
                .WithMany()
                .HasForeignKey(c => c.BaseCurrencyId)
                .OnDelete(DeleteBehavior.NoAction);

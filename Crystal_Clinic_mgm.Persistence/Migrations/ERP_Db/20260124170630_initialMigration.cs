@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     /// <inheritdoc />
-    public partial class allData : Migration
+    public partial class initialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -95,6 +95,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FilePath = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Comments = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AttachmentType = table.Column<int>(type: "int", nullable: false),
                     AttachmentDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
@@ -523,7 +524,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     Speaker = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ShowNotification = table.Column<bool>(type: "bit", nullable: true, defaultValue: false),
-                    AttachmentPath = table.Column<string>(type: "nvarchar(700)", maxLength: 700, nullable: true),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -965,13 +966,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WhatsappNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BaseCurrencyId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyTypeID = table.Column<int>(type: "int", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(200)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(150)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    WhatsappNumber = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BaseCurrencyId = table.Column<int>(type: "int", nullable: true),
                     CashAccountId = table.Column<int>(type: "int", nullable: false),
                     BankAccountId = table.Column<int>(type: "int", nullable: false),
                     AccountsReceivableAccountId = table.Column<int>(type: "int", nullable: false),
@@ -979,13 +979,13 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SalesRevenueAccountId = table.Column<int>(type: "int", nullable: false),
                     InventoryAccountId = table.Column<int>(type: "int", nullable: false),
                     PurchaseExpenseAccountId = table.Column<int>(type: "int", nullable: false),
-                    IsInitialized = table.Column<bool>(type: "bit", nullable: false),
+                    IsInitialized = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -995,53 +995,46 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         column: x => x.AccountsPayableAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_AccountsReceivableAccountId",
                         column: x => x.AccountsReceivableAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_BankAccountId",
                         column: x => x.BankAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_CashAccountId",
                         column: x => x.CashAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_InventoryAccountId",
                         column: x => x.InventoryAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_PurchaseExpenseAccountId",
                         column: x => x.PurchaseExpenseAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyProfile_ChartOfAccounts_SalesRevenueAccountId",
                         column: x => x.SalesRevenueAccountId,
                         principalSchema: "Accounting",
                         principalTable: "ChartOfAccounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CompanyProfile_CurrencyType_CurrencyTypeID",
-                        column: x => x.CurrencyTypeID,
+                        name: "FK_CompanyProfile_CurrencyType_BaseCurrencyId",
+                        column: x => x.BaseCurrencyId,
                         principalSchema: "Look",
                         principalTable: "CurrencyType",
                         principalColumn: "ID");
@@ -1901,7 +1894,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     StartDate = table.Column<DateTime>(type: "DateTime", nullable: false),
                     EndDate = table.Column<DateTime>(type: "DateTime", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -3479,16 +3472,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "BankAccountId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompanyProfile_BaseCurrencyId",
+                schema: "Accounting",
+                table: "CompanyProfile",
+                column: "BaseCurrencyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CompanyProfile_CashAccountId",
                 schema: "Accounting",
                 table: "CompanyProfile",
                 column: "CashAccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CompanyProfile_CurrencyTypeID",
-                schema: "Accounting",
-                table: "CompanyProfile",
-                column: "CurrencyTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyProfile_InventoryAccountId",

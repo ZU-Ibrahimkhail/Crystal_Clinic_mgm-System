@@ -783,8 +783,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.CompanyProfile", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("Id");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccountsPayableAccountId")
                         .HasColumnType("int")
@@ -798,7 +800,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("BankAccountId");
 
-                    b.Property<int>("BaseCurrencyId")
+                    b.Property<int?>("BaseCurrencyId")
                         .HasColumnType("int")
                         .HasColumnName("BaseCurrencyId");
 
@@ -6739,8 +6741,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.CurrencyType", "CurrencyType")
                         .WithMany()
                         .HasForeignKey("BaseCurrencyId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "CashAccount")
                         .WithMany()

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    [Migration("20260120065752_UpdateAttachemtInExpenseTranchking")]
-    partial class UpdateAttachemtInExpenseTranchking
+    [Migration("20260124170630_initialMigration")]
+    partial class initialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -792,72 +792,90 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccountsPayableAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("AccountsPayableAccountId");
 
                     b.Property<int>("AccountsReceivableAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("AccountsReceivableAccountId");
 
                     b.Property<int>("BankAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("BankAccountId");
 
-                    b.Property<int>("BaseCurrencyId")
-                        .HasColumnType("int");
+                    b.Property<int?>("BaseCurrencyId")
+                        .HasColumnType("int")
+                        .HasColumnName("BaseCurrencyId");
 
                     b.Property<int>("CashAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CashAccountId");
 
                     b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
 
                     b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CurrencyTypeID")
-                        .HasColumnType("int");
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(150)")
+                        .HasColumnName("Email");
 
                     b.Property<int>("InventoryAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("InventoryAccountId");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
 
                     b.Property<bool>("IsInitialized")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsInitialized");
 
                     b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
 
                     b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("Name");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("PhoneNumber");
 
                     b.Property<int>("PurchaseExpenseAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("PurchaseExpenseAccountId");
 
                     b.Property<string>("Remarks")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
 
                     b.Property<int>("SalesRevenueAccountId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("SalesRevenueAccountId");
 
                     b.Property<string>("WhatsappNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("WhatsappNumber");
 
                     b.HasKey("Id");
 
@@ -867,9 +885,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasIndex("BankAccountId");
 
-                    b.HasIndex("CashAccountId");
+                    b.HasIndex("BaseCurrencyId");
 
-                    b.HasIndex("CurrencyTypeID");
+                    b.HasIndex("CashAccountId");
 
                     b.HasIndex("InventoryAccountId");
 
@@ -5125,8 +5143,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("AttachmentPath")
-                        .HasMaxLength(700)
-                        .HasColumnType("nvarchar")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("AttachmentPath");
 
                     b.Property<Guid>("CreatedBy")
@@ -5422,8 +5439,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("AttachmentPath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AttachmentPath");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int")
@@ -6709,47 +6726,48 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "AccountsPayableAccount")
                         .WithMany()
                         .HasForeignKey("AccountsPayableAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "AccountsReceivableAccount")
                         .WithMany()
                         .HasForeignKey("AccountsReceivableAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "BankAccount")
                         .WithMany()
                         .HasForeignKey("BankAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "CashAccount")
-                        .WithMany()
-                        .HasForeignKey("CashAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.CurrencyType", "CurrencyType")
                         .WithMany()
-                        .HasForeignKey("CurrencyTypeID");
+                        .HasForeignKey("BaseCurrencyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "CashAccount")
+                        .WithMany()
+                        .HasForeignKey("CashAccountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "InventoryAccount")
                         .WithMany()
                         .HasForeignKey("InventoryAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "PurchaseExpenseAccount")
                         .WithMany()
                         .HasForeignKey("PurchaseExpenseAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ChartOfAccounts", "SalesRevenueAccount")
                         .WithMany()
                         .HasForeignKey("SalesRevenueAccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AccountsPayableAccount");

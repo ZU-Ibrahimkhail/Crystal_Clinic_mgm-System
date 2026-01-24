@@ -47,8 +47,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             CreatedOn = DateTime.UtcNow
                         };
 
-                        context.CompanyProfile.Add(profile);
-                        await context.SaveChangesAsync(cancellationToken);
 
                         var systemAccounts = await SeedChartOfAccounts(context, cancellationToken);
                         profile.CashAccountId = systemAccounts.CashId;
@@ -57,7 +55,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         profile.SalesRevenueAccountId = systemAccounts.RevenueId;
                         profile.InventoryAccountId = systemAccounts.InventoryId;
                         profile.PurchaseExpenseAccountId = systemAccounts.ExpenseId;
+                        profile.BankAccountId = systemAccounts.BankAcountId;
 
+                        context.CompanyProfile.Add(profile);
                         await context.SaveChangesAsync(cancellationToken);
 
                         await transaction.CommitAsync(cancellationToken);
@@ -85,58 +85,61 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             public int RevenueId { get; set; }
             public int InventoryId { get; set; }
             public int ExpenseId { get; set; }
+            public int BankAcountId { get; set; }
         }
 
         private async Task<SystemAccountsResult> SeedChartOfAccounts(ERP_DbContext context, CancellationToken ct)
         {
-            var accounts = new List<ChartOfAccounts>();
-
-            var assets = AddAccount(accounts, "1000", "Assets", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, null);
-            var currentAssets = AddAccount(accounts, "1100", "Current Assets", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, assets);
-
-            var cashAccount = AddAccount(accounts, "1101", "Cash and Cash Equivalents", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
-            var aRAccount = AddAccount(accounts, "1102", "Accounts Receivable", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
-            var inventoryAccount = AddAccount(accounts, "1103", "Inventory", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
-            AddAccount(accounts, "1104", "Prepaid Expenses", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
-
-            var fixedAssets = AddAccount(accounts, "1200", "Fixed Assets", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, assets);
-            AddAccount(accounts, "1201", "Property, Plant & Equipment", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, fixedAssets);
-            AddAccount(accounts, "1202", "Accumulated Depreciation", AccountType.ContraAsset, AccountCategory.FixedAsset, NormalBalanceType.Credit, fixedAssets);
-
-            var liabilities = AddAccount(accounts, "2000", "Liabilities", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, null);
-            var currentLiabilities = AddAccount(accounts, "2100", "Current Liabilities", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, liabilities);
-            var aPAccount = AddAccount(accounts, "2101", "Accounts Payable", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
-            AddAccount(accounts, "2102", "Employee Advances", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
-            AddAccount(accounts, "2103", "Taxes Payable", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
-
-            var equity = AddAccount(accounts, "3000", "Equity", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, null);
-            AddAccount(accounts, "3100", "Capital", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, equity);
-            AddAccount(accounts, "3200", "Retained Earnings", AccountType.Equity, AccountCategory.RetainedEarnings, NormalBalanceType.Credit, equity);
-
-            var revenueGroup = AddAccount(accounts, "4000", "Revenue", AccountType.Revenue, AccountCategory.ServiceRevenue, NormalBalanceType.Credit, null);
-            var revenueAccount = AddAccount(accounts, "4100", "Service Revenue", AccountType.Revenue, AccountCategory.ServiceRevenue, NormalBalanceType.Credit, revenueGroup);
-            AddAccount(accounts, "4200", "Other Revenue", AccountType.Revenue, AccountCategory.OtherRevenue, NormalBalanceType.Credit, revenueGroup);
-
-            var expensesGroup = AddAccount(accounts, "5000", "Expenses", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, null);
-            var expenseAccount = AddAccount(accounts, "5100", "Operating Expenses", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expensesGroup);
-            AddAccount(accounts, "5101", "Salaries & Wages", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
-            AddAccount(accounts, "5102", "Medical Supplies", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
-            AddAccount(accounts, "5103", "Utilities", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
-            AddAccount(accounts, "5200", "Administrative Expenses", AccountType.Expense, AccountCategory.AdministrativeExpense, NormalBalanceType.Debit, expensesGroup);
-            AddAccount(accounts, "5300", "Financial Expenses", AccountType.Expense, AccountCategory.FinancialExpense, NormalBalanceType.Debit, expensesGroup);
-
-            context.ChartOfAccounts.AddRange(accounts);
-            await context.SaveChangesAsync(ct);
-
-            return new SystemAccountsResult
+            return await Task.Run(() =>
             {
-                CashId = cashAccount.Id,
-                ARId = aRAccount.Id,
-                InventoryId = inventoryAccount.Id,
-                APId = aPAccount.Id,
-                RevenueId = revenueAccount.Id,
-                ExpenseId = expenseAccount.Id
-            };
+                var accounts = new List<ChartOfAccounts>();
+
+                var assets = AddAccount(accounts, "1000", "Assets", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, null);
+                var currentAssets = AddAccount(accounts, "1100", "Current Assets", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, assets);
+
+                var cashAccount = AddAccount(accounts, "1101", "Cash and Cash Equivalents", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+                var aRAccount = AddAccount(accounts, "1102", "Accounts Receivable", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+                var inventoryAccount = AddAccount(accounts, "1103", "Inventory", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+                AddAccount(accounts, "1104", "Prepaid Expenses", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+
+                var fixedAssets = AddAccount(accounts, "1200", "Fixed Assets", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, assets);
+                AddAccount(accounts, "1201", "Property, Plant & Equipment", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, fixedAssets);
+                AddAccount(accounts, "1202", "Accumulated Depreciation", AccountType.ContraAsset, AccountCategory.FixedAsset, NormalBalanceType.Credit, fixedAssets);
+
+                var liabilities = AddAccount(accounts, "2000", "Liabilities", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, null);
+                var currentLiabilities = AddAccount(accounts, "2100", "Current Liabilities", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, liabilities);
+                var aPAccount = AddAccount(accounts, "2101", "Accounts Payable", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
+                AddAccount(accounts, "2102", "Employee Advances", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
+                AddAccount(accounts, "2103", "Taxes Payable", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, currentLiabilities);
+
+                var equity = AddAccount(accounts, "3000", "Equity", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, null);
+                AddAccount(accounts, "3100", "Capital", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, equity);
+                AddAccount(accounts, "3200", "Retained Earnings", AccountType.Equity, AccountCategory.RetainedEarnings, NormalBalanceType.Credit, equity);
+
+                var revenueGroup = AddAccount(accounts, "4000", "Revenue", AccountType.Revenue, AccountCategory.ServiceRevenue, NormalBalanceType.Credit, null);
+                var revenueAccount = AddAccount(accounts, "4100", "Service Revenue", AccountType.Revenue, AccountCategory.ServiceRevenue, NormalBalanceType.Credit, revenueGroup);
+                AddAccount(accounts, "4200", "Other Revenue", AccountType.Revenue, AccountCategory.OtherRevenue, NormalBalanceType.Credit, revenueGroup);
+
+                var expensesGroup = AddAccount(accounts, "5000", "Expenses", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, null);
+                var expenseAccount = AddAccount(accounts, "5100", "Operating Expenses", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expensesGroup);
+                AddAccount(accounts, "5101", "Salaries & Wages", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
+                AddAccount(accounts, "5102", "Medical Supplies", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
+                AddAccount(accounts, "5103", "Utilities", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
+                AddAccount(accounts, "5200", "Administrative Expenses", AccountType.Expense, AccountCategory.AdministrativeExpense, NormalBalanceType.Debit, expensesGroup);
+                AddAccount(accounts, "5300", "Financial Expenses", AccountType.Expense, AccountCategory.FinancialExpense, NormalBalanceType.Debit, expensesGroup);
+                var bankAccount = AddAccount(accounts, "1105", "Bank Account", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+
+                return new SystemAccountsResult
+                {
+                    CashId = cashAccount.Id,
+                    ARId = aRAccount.Id,
+                    InventoryId = inventoryAccount.Id,
+                    APId = aPAccount.Id,
+                    RevenueId = revenueAccount.Id,
+                    ExpenseId = expenseAccount.Id,
+                    BankAcountId = bankAccount.Id
+                };
+            });
         }
 
 
@@ -155,6 +158,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.UtcNow
             };
+            context.ChartOfAccounts.Add(account);
+            context.SaveChanges();
             list.Add(account);
             return account;
         }
@@ -227,7 +232,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     PhoneNumber = profile.PhoneNumber,
                     WhatsappNumber = profile.WhatsappNumber,
                     Description = profile.Description,
-                    BaseCurrencyId = profile.BaseCurrencyId,
+                    BaseCurrencyId = profile.BaseCurrencyId ?? 0,
                     CashAccountId = profile.CashAccountId,
                     BankAccountId = profile.BankAccountId,
                     AccountsReceivableAccountId = profile.AccountsReceivableAccountId,
