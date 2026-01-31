@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1265,16 +1265,15 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     RequiresExpiration = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     UnitCost = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    BrandId = table.Column<int>(type: "int", nullable: true),
                     IsInventoryItem = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    ValuationMethod = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ValuationMethod = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     CostComponents = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastNRVAssessment = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NRVAmount = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
                     WriteDownAmount = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    ItemCategorycategoryId = table.Column<int>(type: "int", nullable: true),
+                    BranchId = table.Column<int>(type: "int", nullable: true),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    BrandId = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -1286,6 +1285,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 {
                     table.PrimaryKey("PK_Item", x => x.ItemId);
                     table.ForeignKey(
+                        name: "FK_Item_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "Look",
+                        principalTable: "Branch",
+                        principalColumn: "ID");
+                    table.ForeignKey(
                         name: "FK_Item_Brands_BrandId",
                         column: x => x.BrandId,
                         principalTable: "Brands",
@@ -1293,12 +1298,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     table.ForeignKey(
                         name: "FK_Item_ItemCategory_CategoryId",
                         column: x => x.CategoryId,
-                        principalSchema: "Stock",
-                        principalTable: "ItemCategory",
-                        principalColumn: "categoryId");
-                    table.ForeignKey(
-                        name: "FK_Item_ItemCategory_ItemCategorycategoryId",
-                        column: x => x.ItemCategorycategoryId,
                         principalSchema: "Stock",
                         principalTable: "ItemCategory",
                         principalColumn: "categoryId");
@@ -3692,6 +3691,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "BranchId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Item_BranchId",
+                schema: "Stock",
+                table: "Item",
+                column: "BranchId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_BrandId",
                 schema: "Stock",
                 table: "Item",
@@ -3702,12 +3707,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Stock",
                 table: "Item",
                 column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Item_ItemCategorycategoryId",
-                schema: "Stock",
-                table: "Item",
-                column: "ItemCategorycategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Item_Name",

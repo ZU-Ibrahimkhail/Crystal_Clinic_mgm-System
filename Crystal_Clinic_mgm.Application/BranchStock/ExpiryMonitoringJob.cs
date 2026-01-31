@@ -57,9 +57,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             var newlyExpiredStock = await context.Set<Stock>()
                 .Where(s => !s.IsDeleted &&
                            !s.IsExpired &&
-                           s.expiryDate < now &&
+                           s.ExpiryDate < now &&
                            s.QuantityRemaining > 0)
-                .Include(s => s.item)
+                .Include(s => s.Item)
                 .ToListAsync(cancellationToken);
 
             if (!newlyExpiredStock.Any())
@@ -81,25 +81,25 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     // Publish expiry event
                     var expiryEvent = new InventoryStockExpiredEvent
                     {
-                        StockId = stock.stockId,
-                        ItemId = stock.itemId,
-                        ItemName = stock.item?.Name ?? "Unknown",
+                        StockId = stock.StockId,
+                        ItemId = stock.ItemId ?? 0,
+                        ItemName = stock.Item?.Name ?? "Unknown",
                         LotNumber = stock.LotNumber,
                         ExpiredQuantity = stock.QuantityRemaining,
-                        UnitCost = stock.purchasePrice,
-                        TotalValue = stock.QuantityRemaining * stock.purchasePrice,
-                        ExpiryDate = stock.expiryDate
+                        UnitCost = stock.PurchasePrice,
+                        TotalValue = stock.QuantityRemaining * stock.PurchasePrice,
+                        ExpiryDate = stock.ExpiryDate
                     };
 
                     await mediator.Publish(expiryEvent, cancellationToken);
                     await context.SaveChangesAsync(cancellationToken);
 
                     _logger.LogWarning("Marked stock {StockId} as expired: {ItemName}, Lot: {LotNumber}",
-                        stock.stockId, stock.item?.Name, stock.LotNumber);
+                        stock.StockId, stock.Item?.Name, stock.LotNumber);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing expired stock {StockId}", stock.stockId);
+                    _logger.LogError(ex, "Error processing expired stock {StockId}", stock.StockId);
                 }
             }
 
@@ -107,10 +107,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             var soonToExpireStock = await context.Set<Stock>()
                 .Where(s => !s.IsDeleted &&
                            !s.IsExpired &&
-                           s.expiryDate >= now &&
-                           s.expiryDate <= now.AddDays(30) &&
+                           s.ExpiryDate >= now &&
+                           s.ExpiryDate <= now.AddDays(30) &&
                            s.QuantityRemaining > 0)
-                .Include(s => s.item)
+                .Include(s => s.Item)
                 .ToListAsync(cancellationToken);
 
             if (soonToExpireStock.Any())
@@ -121,9 +121,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 // For now, just log them
                 foreach (var stock in soonToExpireStock)
                 {
-                    var daysUntilExpiry = (stock.expiryDate - now).TotalDays;
+                    var daysUntilExpiry = (stock.ExpiryDate - now).TotalDays;
                     _logger.LogWarning("Stock expiring soon: {ItemName}, Lot: {LotNumber}, Days left: {Days:F1}",
-                        stock.item?.Name, stock.LotNumber, daysUntilExpiry);
+                        stock.Item?.Name, stock.LotNumber, daysUntilExpiry);
                 }
             }
         }

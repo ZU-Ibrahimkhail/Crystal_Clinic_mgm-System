@@ -276,7 +276,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 .Include(v => v.Doctor)
                 .Include(v => v.Payments).Include(x => x.Services)
                 .Include(v => v.Medications)
-                .ThenInclude(vm => vm.stock).ThenInclude(s => s.item)
+                .ThenInclude(vm => vm.stock).ThenInclude(s => s.Item)
                 .Include(v => v.Services).ThenInclude(x => x.CurrencyType)
                 .Include(v => v.Services)
                 .ThenInclude(vs => vs.service)
@@ -306,11 +306,11 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 Medications = visit.Medications.Select(m => new VisitMedicationDto
                 {
                     MedicationId = m.medicationId,
-                    Name = m.stock.item.Name,
+                    Name = m.stock.Item.Name,
                     Dosage = m.dosage,
                     Quantity = m.quantity,
                     Price = m.price,
-                    BatchNumber = m.stock.batchNumber
+                    BatchNumber = m.stock.BatchNumber
                 }).ToList(),
                 Services = visit.Services.Select(s => new VisitServiceDto
                 {
@@ -517,18 +517,18 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 
             var stockIds = request.Medications.Select(m => m.StockId).ToList();
             var stocks = await context.Stocks
-                .Include(s => s.item)
-                .Where(s => stockIds.Contains(s.stockId))
-                .ToDictionaryAsync(s => s.stockId, s => s, cancellationToken);
+                .Include(s => s.Item)
+                .Where(s => stockIds.Contains(s.StockId))
+                .ToDictionaryAsync(s => s.StockId, s => s, cancellationToken);
 
             foreach (var med in request.Medications)
             {
-                if (!stocks.TryGetValue(med.StockId, out var stock) || stock.quantity < med.Quantity)
+                if (!stocks.TryGetValue(med.StockId, out var stock) || stock.Quantity < med.Quantity)
                 {
                     throw new InvalidOperationException($"Stock with ID {med.StockId} not found or insufficient quantity.");
                 }
 
-                if (stock.batchNumber != med.BatchNumber)
+                if (stock.BatchNumber != med.BatchNumber)
                 {
                     throw new InvalidOperationException($"Batch number does not match for stock ID {med.StockId}.");
                 }
@@ -537,7 +537,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 {
                     visitId = request.VisitId,
                     stockId = med.StockId,
-                    name = stock.item.Name, // Fixed: Use stock.item.Name
+                    name = stock.Item.Name, // Fixed: Use stock.item.Name
                     dosage = med.Dosage,
                     quantity = med.Quantity,
                     price = med.Price,
@@ -546,8 +546,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     CreatedOn = DateTime.UtcNow
                 };
 
-                stock.quantity -= med.Quantity;
-                if (stock.quantity < stock.item.ReorderLevel)
+                stock.Quantity -= med.Quantity;
+                if (stock.Quantity < stock.Item.ReorderLevel)
                 {
                     // TODO: Trigger reorder alert
                 }
@@ -972,7 +972,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     var stock = await context.Stocks.FindAsync(medication.stockId, cancellationToken);
                     if (stock != null)
                     {
-                        stock.quantity += medication.quantity;
+                        stock.Quantity += medication.quantity;
                         context.Stocks.Update(stock);
                     }
 

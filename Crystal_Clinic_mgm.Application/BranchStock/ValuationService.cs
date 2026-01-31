@@ -139,28 +139,28 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         private async Task<decimal> GetCurrentStockValueAsync(int itemId, CancellationToken cancellationToken)
         {
             return await _context.Stocks
-                .Where(s => s.itemId == itemId && !s.IsDeleted)
-                .SumAsync(s => s.quantity * s.purchasePrice, cancellationToken);
+                .Where(s => s.ItemId == itemId && !s.IsDeleted)
+                .SumAsync(s => s.Quantity * s.PurchasePrice, cancellationToken);
         }
 
         private async Task<decimal> GetCurrentStockQuantityAsync(int itemId, CancellationToken cancellationToken)
         {
             return await _context.Stocks
-                .Where(s => s.itemId == itemId && !s.IsDeleted)
-                .SumAsync(s => s.quantity, cancellationToken);
+                .Where(s => s.ItemId == itemId && !s.IsDeleted)
+                .SumAsync(s => s.Quantity, cancellationToken);
         }
 
         private async Task<IEnumerable<StockValuation>> GetStockValuationsAsync(int itemId, CancellationToken cancellationToken)
         {
             return await _context.Stocks
-                .Where(s => s.itemId == itemId && !s.IsDeleted)
+                .Where(s => s.ItemId == itemId && !s.IsDeleted)
                 .Select(s => new StockValuation
                 {
-                    StockId = s.stockId,
+                    StockId = s.StockId,
                     LotNumber = s.LotNumber,
-                    Quantity = s.quantity,
-                    UnitCost = s.purchasePrice,
-                    TotalValue = s.quantity * s.purchasePrice
+                    Quantity = s.Quantity,
+                    UnitCost = s.PurchasePrice,
+                    TotalValue = s.Quantity * s.PurchasePrice
                 })
                 .ToListAsync(cancellationToken);
         }

@@ -1,22 +1,25 @@
-﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+﻿using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+using Crystal_Clinic_Mgm.Domain.Entities.Look;
 
 namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
 {
     public class Stock : AuditableEntity
     {
-        public int stockId { get; set; }
-        public int quantity { get; set; }
-        public int itemId { get; set; }
-        public int BranchId { get; set; }
-        public Item? item { get; set; }
+        public int StockId { get; set; }
+        public int Quantity { get; set; }
+        public int? ItemId { get; set; }
+        public Item? Item { get; set; }
+        public int? BranchId { get; set; }
+        public Branch? Branch { get; set; }
         public int? SupplierId { get; set; }
         public Supplier? Supplier { get; set; }
-        public decimal purchasePrice { get; set; }
-        public decimal sellPrice { get; set; }
-        public DateTime purchaseDate { get; set; }
-        public string batchNumber { get; set; } = string.Empty;
-        public string barCode { get; set; } = string.Empty;
-        public DateTime expiryDate { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public decimal SellPrice { get; set; }
+        public DateTime PurchaseDate { get; set; }
+        public string BatchNumber { get; set; } = string.Empty;
+        public string BarCode { get; set; } = string.Empty;
+        public DateTime ExpiryDate { get; set; }
 
         // New fields for enhanced inventory management
         public string LotNumber { get; set; } = string.Empty; // Mandatory for medical batch tracking and recalls
@@ -26,7 +29,9 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
 
         // IFRS/IAS Compliance fields
         public int? SiteId { get; set; } // Links to InventorySite
+        public InventorySite? Site { get; set; }
         public int? PurchaseOrderId { get; set; }
+        public PurchaseOrder? PurchaseOrder { get; set; }
         public int? InvoiceId { get; set; }
         public decimal FreightCost { get; set; } // Transportation costs
         public decimal InsuranceCost { get; set; } // Insurance during transit
@@ -34,6 +39,5 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
         public decimal OtherLandingCosts { get; set; } // Other costs to bring to location
 
         // Navigation properties
-        public InventorySite? Site { get; set; }
     }
 }

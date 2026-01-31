@@ -45,14 +45,13 @@ Configure system-wide settings before financial operations.
 GET /api/Look/CurrencyType/GetCurrencyTypeDDL?ExchangeRateDate=2026-01-31
 
 Expected Response: 200 OK
-{
-  "id": 1,
-  "code": "AFN",
-  "name": "Afghan Afghani",
-  "symbol": "؋",
-  "isActive": true,
-  "exchangeRate": 1.0
-}
+[
+  {
+    "id": 1,
+    "name": "Afghan Afghani",
+    "code": "AFN"
+  }
+]
 ```
 
 #### Test 1.2: Get Currency Type List
@@ -61,21 +60,26 @@ POST /api/Look/CurrencyType/GetList
 
 Body:
 {
-  "language": "en",
+  "searchBy": "",
   "pageNumber": 1,
   "pageSize": 20
 }
 
 Expected Response: 200 OK
 {
+  "totalRecord": 5,
+  "currantPage": 1,
   "data": [
     {
       "id": 1,
-      "code": "AFN",
-      "name": "Afghan Afghani"
+      "name": "Afghan Afghani",
+      "englishName": "Afghan Afghani",
+      "pashtoName": "افغانۍ",
+      "dariName": "افغانی",
+      "code": "AFN"
     }
   ],
-  "totalCount": 5
+  "error": ""
 }
 ```
 
@@ -85,17 +89,13 @@ POST /api/Look/CurrencyType
 
 Body:
 {
-  "code": "USD",
-  "name": "US Dollar",
-  "symbol": "$"
+  "englishName": "US Dollar",
+  "dariName": "دالر امریکایی",
+  "pashtoName": "امریکایی ډالر",
+  "code": "USD"
 }
 
-Expected Response: 201 Created
-{
-  "id": 2,
-  "code": "USD",
-  "name": "US Dollar"
-}
+Expected Response: 200 OK
 ```
 
 #### Test 1.4: Get Currency Type Detail
@@ -105,10 +105,11 @@ GET /api/Look/CurrencyType/GetDetail/{id}
 Expected Response: 200 OK
 {
   "id": 1,
-  "code": "AFN",
   "name": "Afghan Afghani",
-  "symbol": "؋",
-  "isActive": true
+  "englishName": "Afghan Afghani",
+  "pashtoName": "افغانۍ",
+  "dariName": "افغانی",
+  "code": "AFN"
 }
 ```
 
@@ -119,8 +120,10 @@ PUT /api/Look/CurrencyType/{id}
 Body:
 {
   "id": 1,
-  "code": "AFN",
-  "name": "Afghan Afghani (Updated)"
+  "englishName": "Afghan Afghani (Updated)",
+  "dariName": "افغانی (اصلاح شده)",
+  "pashtoName": "افغانۍ (اصلاح شوی)",
+  "code": "AFN"
 }
 
 Expected Response: 200 OK
@@ -138,8 +141,7 @@ Expected Response: 200 OK
   {
     "id": 1,
     "code": "MAIN",
-    "name": "Main Branch",
-    "city": "Kabul"
+    "name": "Main Branch"
   }
 ]
 ```
@@ -150,23 +152,28 @@ POST /api/Look/Branch/GetList
 
 Body:
 {
-  "language": "en",
+  "searchBy": "",
   "pageNumber": 1,
   "pageSize": 20
 }
 
 Expected Response: 200 OK
 {
+  "totalRecord": 3,
+  "currantPage": 1,
   "data": [
     {
       "id": 1,
-      "code": "MAIN",
       "name": "Main Branch",
-      "city": "Kabul",
-      "isActive": true
+      "englishName": "Main Branch",
+      "pashtoName": "مرکزي څانګه",
+      "dariName": "نمایندگی مرکزی",
+      "code": "MAIN",
+      "parentId": null,
+      "parentBranchName": ""
     }
   ],
-  "totalCount": 3
+  "error": ""
 }
 ```
 
@@ -176,19 +183,15 @@ POST /api/Look/Branch
 
 Body:
 {
+  "englishName": "North Branch",
+  "pashtoName": "شمالي څانګه",
+  "dariName": "نمایندگی شمال",
   "code": "NORTH",
-  "name": "North Branch",
-  "city": "Mazar-i-Sharif",
-  "address": "Northern Road",
-  "contactNumber": "+93 500 000 001"
+  "parentId": null,
+  "address": "Northern Road, Mazar-i-Sharif"
 }
 
-Expected Response: 201 Created
-{
-  "id": 2,
-  "code": "NORTH",
-  "name": "North Branch"
-}
+Expected Response: 200 OK
 ```
 
 #### Test 1.9: Get Branch Detail
@@ -198,12 +201,14 @@ GET /api/Look/Branch/GetDetail/{id}
 Expected Response: 200 OK
 {
   "id": 1,
-  "code": "MAIN",
   "name": "Main Branch",
-  "city": "Kabul",
-  "address": "Central Kabul",
-  "contactNumber": "+93 700 000 001",
-  "isActive": true
+  "englishName": "Main Branch",
+  "pashtoName": "مرکزي څانګه",
+  "dariName": "نمایندگی مرکزی",
+  "code": "MAIN",
+  "parentId": null,
+  "parentBranchName": "",
+  "modifiedOn": "2026-01-25T10:00:00Z"
 }
 ```
 
@@ -214,9 +219,12 @@ PUT /api/Look/Branch/{id}
 Body:
 {
   "id": 1,
+  "englishName": "Main Branch (Updated)",
+  "pashtoName": "مرکزي څانګه (اصلاح شوی)",
+  "dariName": "نمایندگی مرکزی (اصلاح شده)",
   "code": "MAIN",
-  "name": "Main Branch (Updated)",
-  "city": "Kabul"
+  "parentId": null,
+  "address": "Central Kabul"
 }
 
 Expected Response: 200 OK
@@ -227,10 +235,6 @@ Expected Response: 200 OK
 DELETE /api/Look/Branch/{id}
 
 Expected Response: 200 OK
-{
-  "id": 1,
-  "message": "Branch deleted successfully"
-}
 ```
 
 #### Test 1.12: Get Child/Sub Branches
@@ -241,9 +245,8 @@ Expected Response: 200 OK
 [
   {
     "id": 2,
-    "code": "NORTH-MAIN",
-    "name": "North Branch - Main Office",
-    "parentBranchId": 2
+    "code": "NORTH-SUB",
+    "name": "North Branch Sub-Office"
   }
 ]
 ```
@@ -257,19 +260,22 @@ POST /api/Look/CurrencyExchangeRate
 
 Body:
 {
-  "currencyId": 2,
-  "baseCurrencyId": 1,
-  "rate": 78.5,
-  "effectiveDate": "2026-01-31",
-  "notes": "Exchange rate for USD to AFN"
+  "fromCurrencyId": 2,
+  "toCurrencyId": 1,
+  "exchangeRate": 78.5,
+  "remarks": "Exchange rate for USD to AFN"
 }
 
 Expected Response: 201 Created
 {
   "currencyExchangeRateId": 1,
-  "currencyId": 2,
-  "rate": 78.5,
-  "effectiveDate": "2026-01-31"
+  "fromCurrencyId": 2,
+  "fromCurrencyCode": "USD",
+  "toCurrencyId": 1,
+  "toCurrencyCode": "AFN",
+  "exchangeRate": 78.5,
+  "createdOn": "2026-01-25T10:00:00Z",
+  "remarks": "Exchange rate for USD to AFN"
 }
 ```
 
@@ -280,24 +286,30 @@ GET /api/Look/CurrencyExchangeRate/{id}
 Expected Response: 200 OK
 {
   "currencyExchangeRateId": 1,
-  "currencyId": 2,
-  "currencyCode": "USD",
-  "rate": 78.5,
-  "effectiveDate": "2026-01-31"
+  "fromCurrencyId": 2,
+  "fromCurrencyCode": "USD",
+  "toCurrencyId": 1,
+  "toCurrencyCode": "AFN",
+  "exchangeRate": 78.5,
+  "createdOn": "2026-01-25T10:00:00Z",
+  "remarks": "Exchange rate for USD to AFN"
 }
 ```
 
 #### Test 1.15: Get Exchange Rates by Date
 ```
-GET /api/Look/CurrencyExchangeRate/{date:datetime}
+GET /api/Look/CurrencyExchangeRate/2026-01-25
 
 Expected Response: 200 OK
 [
   {
     "currencyExchangeRateId": 1,
-    "currencyId": 2,
-    "rate": 78.5,
-    "effectiveDate": "2026-01-31"
+    "fromCurrencyId": 2,
+    "fromCurrencyCode": "USD",
+    "toCurrencyId": 1,
+    "toCurrencyCode": "AFN",
+    "exchangeRate": 78.5,
+    "createdOn": "2026-01-25T10:00:00Z"
   }
 ]
 ```
@@ -309,15 +321,14 @@ PUT /api/Look/CurrencyExchangeRate
 Body:
 {
   "currencyExchangeRateId": 1,
-  "currencyId": 2,
-  "rate": 79.0,
-  "effectiveDate": "2026-02-01"
+  "fromCurrencyId": 2,
+  "toCurrencyId": 1,
+  "exchangeRate": 79.0,
+  "remarks": "Updated rate"
 }
 
 Expected Response: 200 OK
-{
-  "message": "Exchange rate updated successfully."
-}
+"Exchange rate updated successfully."
 ```
 
 #### Test 1.17: Delete Exchange Rate
@@ -325,9 +336,7 @@ Expected Response: 200 OK
 DELETE /api/Look/CurrencyExchangeRate/{id}
 
 Expected Response: 200 OK
-{
-  "message": "Exchange rate deleted successfully."
-}
+"Exchange rate deleted successfully."
 ```
 
 ---
@@ -351,7 +360,10 @@ Query Parameters:
 
 Expected Response: 200 OK
 {
-  "data": [
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": [
     {
       "id": 1,
       "accountCode": "1101",
@@ -361,10 +373,11 @@ Expected Response: 200 OK
       "normalBalance": 0,
       "isSystemAccount": true,
       "isActive": true,
-      "description": "Company cash and equivalents"
+      "description": "Company cash and equivalents",
+      "parentAccountId": null
     }
   ],
-  "totalCount": 5
+  "data": [ ... same as value ... ]
 }
 ```
 
@@ -379,18 +392,18 @@ Body:
   "accountType": 5,
   "accountCategory": 500,
   "normalBalance": 0,
+  "isSystemAccount": false,
   "description": "Expenses for medical supplies",
-  "parentAccountId": null,
-  "isSystemAccount": false
+  "parentAccountId": null
 }
 
 Expected Response: 201 Created
 {
-  "id": {accountId},
-  "accountCode": "5201",
-  "accountName": "Medical Supplies Expense",
-  "accountType": 5,
-  "isActive": true
+  "isSuccess": true,
+  "succeeded": true,
+  "error": "Chart of Accounts created successfully.",
+  "value": 42,
+  "data": 42
 }
 ```
 
@@ -400,12 +413,22 @@ GET /api/Finance/ChartOfAccounts/{id}
 
 Expected Response: 200 OK
 {
-  "id": {id},
-  "accountCode": "1101",
-  "accountName": "Cash and Cash Equivalents",
-  "accountType": 1,
-  "normalBalance": 0,
-  "isActive": true
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "id": 1,
+    "accountCode": "1101",
+    "accountName": "Cash and Cash Equivalents",
+    "accountType": 1,
+    "accountCategory": 100,
+    "normalBalance": 0,
+    "isSystemAccount": true,
+    "isActive": true,
+    "description": "Company cash and equivalents",
+    "parentAccountId": null
+  },
+  "data": { ... }
 }
 ```
 
@@ -415,13 +438,20 @@ PUT /api/Finance/ChartOfAccounts/{id}
 
 Body:
 {
-  "id": {id},
+  "id": 1,
   "accountName": "Cash & Cash Equivalents (Updated)",
   "isActive": true,
   "description": "Company cash and equivalents updated"
 }
 
 Expected Response: 200 OK
+{
+  "isSuccess": true,
+  "succeeded": true,
+  "error": "Chart of Accounts updated successfully.",
+  "value": null,
+  "data": null
+}
 ```
 
 #### Test 2.5: Get Accounts by Type
@@ -430,7 +460,10 @@ GET /api/Finance/ChartOfAccounts/ByType/5
 
 Expected Response: 200 OK
 {
-  "data": [
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": [
     {
       "id": 30,
       "accountCode": "5101",
@@ -439,7 +472,7 @@ Expected Response: 200 OK
       "isActive": true
     }
   ],
-  "totalCount": 1
+  "data": [ ... ]
 }
 ```
 
@@ -449,16 +482,21 @@ GET /api/Finance/ChartOfAccounts/Hierarchy?parentAccountId=null
 
 Expected Response: 200 OK
 {
-  "id": 1,
-  "accountCode": "1000",
-  "accountName": "Assets",
-  "children": [
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": [
     {
-      "id": 10,
-      "accountCode": "1100",
-      "accountName": "Current Assets"
+      "id": 1,
+      "accountCode": "1000",
+      "accountName": "Assets",
+      "accountType": 1,
+      "isActive": true,
+      "parentAccountId": null,
+      "childCount": 5
     }
-  ]
+  ],
+  "data": [ ... ]
 }
 ```
 
@@ -468,8 +506,25 @@ POST /api/Finance/ChartOfAccounts/{id}/Deactivate
 
 Expected Response: 200 OK
 {
-  "id": {id},
-  "isActive": false
+  "isSuccess": true,
+  "succeeded": true,
+  "error": "Chart of Accounts updated successfully.",
+  "value": null,
+  "data": null
+}
+```
+
+#### Test 2.8: Move Account
+```
+POST /api/Finance/ChartOfAccounts/{id}/Move?newParentAccountId=10
+
+Expected Response: 200 OK
+{
+  "isSuccess": true,
+  "succeeded": true,
+  "error": "Account moved successfully.",
+  "value": null,
+  "data": null
 }
 ```
 
@@ -498,13 +553,11 @@ Body:
 
 Expected Response: 201 Created
 {
-  "id": {shareholderId},
-  "name": "John Doe",
-  "ownershipPercentage": 50.0,
-  "totalInvestment": 5000000.0,
-  "totalDrawings": 0,
-  "netEquity": 5000000.0,
-  "isActive": true
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": 1,
+  "data": 1
 }
 ```
 
@@ -514,44 +567,60 @@ GET /api/Finance/Equity/Shareholder?isActive=true&pageNumber=1&pageSize=20
 
 Expected Response: 200 OK
 {
-  "data": [
-    {
-      "id": {shareholderId},
-      "name": "John Doe",
-      "ownershipPercentage": 50.0,
-      "totalInvestment": 5000000.0,
-      "isActive": true
-    }
-  ],
-  "totalCount": 1
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "data": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "ownershipPercentage": 50.0,
+        "totalInvestment": 5000000.0,
+        "totalDrawings": 0,
+        "netEquity": 5000000.0,
+        "contactInfo": "+93 700 000 001",
+        "email": "john@crystalclinic.local",
+        "isActive": true
+      }
+    ],
+    "totalCount": 1
+  },
+  "data": { ... }
 }
 ```
 
 #### Test 3.3: Get Shareholder by ID
 ```
-GET /api/Finance/Equity/Shareholder/{shareholderId}
+GET /api/Finance/Equity/Shareholder/{id}
 
 Expected Response: 200 OK
 {
-  "id": {shareholderId},
-  "name": "John Doe",
-  "ownershipPercentage": 50.0,
-  "totalInvestment": 5000000.0,
-  "totalDrawings": 0,
-  "netEquity": 5000000.0,
-  "contactInfo": "+93 700 000 001",
-  "email": "john@crystalclinic.local",
-  "isActive": true
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "id": 1,
+    "name": "John Doe",
+    "ownershipPercentage": 50.0,
+    "totalInvestment": 5000000.0,
+    "totalDrawings": 0,
+    "netEquity": 5000000.0,
+    "contactInfo": "+93 700 000 001",
+    "email": "john@crystalclinic.local",
+    "isActive": true
+  },
+  "data": { ... }
 }
 ```
 
 #### Test 3.4: Update Shareholder
 ```
-PUT /api/Finance/Equity/Shareholder/{shareholderId}
+PUT /api/Finance/Equity/Shareholder/{id}
 
 Body:
 {
-  "id": {shareholderId},
+  "id": 1,
   "name": "John Doe Updated",
   "ownershipPercentage": 50.0,
   "contactInfo": "+93 700 000 002",
@@ -560,6 +629,13 @@ Body:
 }
 
 Expected Response: 200 OK
+{
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": true,
+  "data": true
+}
 ```
 
 #### Test 3.5: Record Equity Transaction
@@ -568,8 +644,8 @@ POST /api/Finance/Equity/Transaction
 
 Body:
 {
-  "shareholderId": {shareholderId},
-  "type": 1,
+  "shareholderId": 1,
+  "type": 0,
   "amount": 1000000.0,
   "transactionDate": "2026-01-05",
   "description": "Additional investment",
@@ -578,36 +654,48 @@ Body:
 
 Expected Response: 201 Created
 {
-  "id": {transactionId},
-  "shareholderId": {shareholderId},
-  "type": 1,
-  "amount": 1000000.0,
-  "transactionDate": "2026-01-05",
-  "description": "Additional investment"
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "id": 1,
+    "shareholderId": 1,
+    "shareholderName": "John Doe",
+    "type": 0,
+    "amount": 1000000.0,
+    "transactionDate": "2026-01-05T00:00:00Z",
+    "description": "Additional investment",
+    "reference": "INV-001"
+  },
+  "data": { ... }
 }
 ```
 
-**Type Values:** 1=Investment, 2=Dividend, 3=CapitalIncrease, 4=Drawing, 5=Other
-
 #### Test 3.6: Get Equity Transactions
 ```
-GET /api/Finance/Equity/Transaction?shareholderId={shareholderId}&type=1&pageNumber=1&pageSize=20
+GET /api/Finance/Equity/Transaction?shareholderId=1&pageNumber=1&pageSize=20
 
 Expected Response: 200 OK
 {
-  "data": [
-    {
-      "id": {transactionId},
-      "shareholderId": {shareholderId},
-      "shareholderName": "John Doe",
-      "type": 1,
-      "amount": 1000000.0,
-      "transactionDate": "2026-01-05",
-      "description": "Additional investment",
-      "reference": "INV-001"
-    }
-  ],
-  "totalCount": 1
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "data": [
+      {
+        "id": 1,
+        "shareholderId": 1,
+        "shareholderName": "John Doe",
+        "type": 0,
+        "amount": 1000000.0,
+        "transactionDate": "2026-01-05T00:00:00Z",
+        "description": "Additional investment",
+        "reference": "INV-001"
+      }
+    ],
+    "totalCount": 1
+  },
+  "data": { ... }
 }
 ```
 
@@ -617,18 +705,25 @@ GET /api/Finance/Equity/Report?asOfDate=2026-01-31
 
 Expected Response: 200 OK
 {
-  "asOfDate": "2026-01-31",
-  "totalEquity": 10000000.0,
-  "shareholders": [
-    {
-      "shareholderId": {shareholderId},
-      "shareholderName": "John Doe",
-      "ownershipPercentage": 50.0,
-      "totalInvestment": 5000000.0,
-      "totalDrawings": 0,
-      "netEquity": 5000000.0
-    }
-  ]
+  "isSuccess": true,
+  "succeeded": true,
+  "error": null,
+  "value": {
+    "asOfDate": "2026-01-31T00:00:00Z",
+    "totalEquity": 6000000.0,
+    "shareholders": [
+      {
+        "shareholderId": 1,
+        "shareholderName": "John Doe",
+        "ownershipPercentage": 50.0,
+        "totalInvestment": 6000000.0,
+        "totalDrawings": 0,
+        "netEquity": 6000000.0,
+        "transactions": [ ... ]
+      }
+    ]
+  },
+  "data": { ... }
 }
 ```
 

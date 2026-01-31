@@ -47,7 +47,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 .Include(v => v.Patient)
                 .Include(v => v.Doctor)
                 .Include(v => v.Medications)
-                .ThenInclude(vm => vm.stock).ThenInclude(s => s!.item)
+                .ThenInclude(vm => vm.stock).ThenInclude(s => s!.Item)
                 .Include(v => v.Services).ThenInclude(vs => vs.service)
                 .Include(v => v.Services).ThenInclude(x => x.CurrencyType)
                 .Include(v => v.Payments).ThenInclude(x => x.CurrencyType)
@@ -263,7 +263,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                     Dosage = m.dosage,
                     Quantity = m.quantity,
                     Price = m.price,
-                    BatchNumber = m.stock?.batchNumber ?? ""
+                    BatchNumber = m.stock?.BatchNumber ?? ""
                 }).ToList(),
                 Services = visit.Services.Select(s => new VisitServiceDto
                 {
@@ -541,7 +541,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var visit = await context.Visit
                 .Include(v => v.Patient)
                 .Include(v => v.BranchDetails)
-                .Include(v => v.Medications).ThenInclude(vm => vm.stock).ThenInclude(s => s!.item)
+                .Include(v => v.Medications).ThenInclude(vm => vm.stock).ThenInclude(s => s!.Item)
                 .Include(v => v.Services).ThenInclude(vs => vs.service)
                 .Include(v => v.Services).ThenInclude(vs => vs.CurrencyType)
                 .Include(v => v.Services).ThenInclude(vs => vs.sessions)
@@ -588,11 +588,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 Medications = visit.Medications.Select(m => new VisitMedicationDto
                 {
                     MedicationId = m.medicationId,
-                    Name = m.stock?.item?.Name ?? "",
+                    Name = m.stock?.Item?.Name ?? "",
                     Dosage = m.dosage,
                     Quantity = m.quantity,
                     Price = m.price,
-                    BatchNumber = m.stock?.batchNumber ?? ""
+                    BatchNumber = m.stock?.BatchNumber ?? ""
                 }).ToList(),
                 Services = serviceBills,
                 CurrencyTotals = currencyTotals

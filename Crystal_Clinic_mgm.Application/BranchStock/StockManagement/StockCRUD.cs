@@ -32,16 +32,16 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
 
             var stock = new Stock
             {
-                itemId = request.ItemId,
-                quantity = request.Quantity,
-                purchasePrice = request.PurchasePrice,
-                sellPrice = request.SellPrice,
-                purchaseDate = request.PurchaseDate,
-                batchNumber = request.BatchNumber,
+                ItemId = request.ItemId,
+                Quantity = request.Quantity,
+                PurchasePrice = request.PurchasePrice,
+                SellPrice = request.SellPrice,
+                PurchaseDate = request.PurchaseDate,
+                BatchNumber = request.BatchNumber,
                 SupplierId = request.SupplierId,
-                barCode = request.BarCode,
-                expiryDate = request.ExpiryDate,
-                BranchId = item.BranchId,
+                BarCode = request.BarCode,
+                ExpiryDate = request.ExpiryDate,
+                BranchId = item.BranchId ?? 0,
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.Now
             };
@@ -51,7 +51,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
             item.UseableStock += request.Quantity;
 
             await context.SaveChangesAsync(cancellationToken);
-            return stock.stockId;
+            return stock.StockId;
         }
     }
     #endregion
@@ -77,26 +77,27 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
         {
             var stock = await context.Stocks.FindAsync(request.StockId);
             if (stock == null || stock.IsDeleted) return 0;
-            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.itemId);
+            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.ItemId);
             if (item == null || item.IsDeleted) return 0;
 
-            if (stock.quantity != request.Quantity)
+            if (stock.Quantity != request.Quantity)
             {
-                item.CurrentStock -= stock.quantity;
-                item.UseableStock -= stock.quantity;
+                item.CurrentStock -= stock.Quantity;
+                item.UseableStock -= stock.Quantity;
 
                 item.CurrentStock += request.Quantity;
                 item.UseableStock += request.Quantity;
                 context.Items.Update(item);
             }
-            stock.quantity = request.Quantity;
-            stock.purchasePrice = request.PurchasePrice;
-            stock.sellPrice = request.SellPrice;
+            stock.Quantity = request.Quantity;
+            stock.PurchasePrice = request.PurchasePrice;
+            stock.SellPrice = request.SellPrice;
             stock.SupplierId = request.SupplierId;
-            stock.purchaseDate = request.PurchaseDate;
-            stock.batchNumber = request.BatchNumber;
-            stock.barCode = request.BarCode;
-            stock.expiryDate = request.ExpiryDate;
+            stock.PurchaseDate = request.PurchaseDate;
+            stock.BatchNumber = request.BatchNumber;
+            stock.BarCode = request.BarCode;
+            stock.ExpiryDate = request.ExpiryDate;
+
             stock.ModifiedBy = loggedInUser.Id;
             stock.ModifiedOn = DateTime.Now;
 
@@ -104,7 +105,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return stock.stockId;
+            return stock.StockId;
         }
     }
     #endregion
@@ -120,13 +121,13 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
         public async Task<bool> Handle(DeleteStockCommand request, CancellationToken cancellationToken)
         {
             var stock = await context.Stocks
-                .FirstOrDefaultAsync(s => s.stockId == request.StockId && !s.IsDeleted, cancellationToken);
+                .FirstOrDefaultAsync(s => s.StockId == request.StockId && !s.IsDeleted, cancellationToken);
             if (stock == null) return false;
-            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.itemId);
+            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.ItemId);
             if (item == null || item.IsDeleted) return false;
 
-            item.CurrentStock -= stock.quantity;
-            item.UseableStock -= stock.quantity;
+            item.CurrentStock -= stock.Quantity;
+            item.UseableStock -= stock.Quantity;
             context.Items.Update(item);
 
             stock.IsDeleted = true;
@@ -155,14 +156,14 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
             var stock = await context.Stocks.FindAsync(request.StockId);
             if (stock == null || stock.IsDeleted) return false;
 
-            stock.quantity += request.QuantityAdjustment;
+            stock.Quantity += request.QuantityAdjustment;
 
             // Ensure stock is not negative
-            if (stock.quantity < 0)
+            if (stock.Quantity < 0)
             {
                 return false;
             }
-            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.itemId);
+            var item = context.Items.FirstOrDefault(x => x.ItemId == stock.ItemId);
             if (item == null || item.IsDeleted) return false;
 
             item.CurrentStock -= request.QuantityAdjustment;
@@ -193,8 +194,8 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
             var stock = await context.Stocks.FindAsync(request.StockId);
             if (stock == null || stock.IsDeleted) return false;
 
-            stock.purchasePrice = request.NewPurchasePrice;
-            stock.sellPrice = request.NewSellPrice;
+            stock.PurchasePrice = request.NewPurchasePrice;
+            stock.SellPrice = request.NewSellPrice;
 
             context.Stocks.Update(stock);
             await context.SaveChangesAsync(cancellationToken);

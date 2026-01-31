@@ -386,7 +386,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public async Task<StockLevel> GetStockLevelAsync(int itemId, int? branchId = null, CancellationToken cancellationToken = default)
         {
             var query = _context.Stocks
-                .Where(s => s.itemId == itemId && !s.IsDeleted);
+                .Where(s => s.ItemId == itemId && !s.IsDeleted);
 
             if (branchId.HasValue)
             {
@@ -394,30 +394,30 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             }
 
             var stocks = await query
-                .Include(s => s.item)
+                .Include(s => s.Item)
                 .ToListAsync(cancellationToken);
 
-            var totalQuantity = stocks.Sum(s => s.quantity);
+            var totalQuantity = stocks.Sum(s => s.Quantity);
             var usableQuantity = stocks.Sum(s => s.QuantityRemaining);
             var reservedQuantity = await GetReservedQuantity(itemId, branchId, cancellationToken);
 
             return new StockLevel
             {
                 ItemId = itemId,
-                ItemName = stocks.FirstOrDefault()?.item?.Name ?? "Unknown",
+                ItemName = stocks.FirstOrDefault()?.Item?.Name ?? "Unknown",
                 TotalQuantity = totalQuantity,
                 UsableQuantity = usableQuantity,
                 ReservedQuantity = reservedQuantity,
                 AvailableQuantity = usableQuantity - reservedQuantity,
                 Batches = stocks.Select(s => new StockBatch
                 {
-                    StockId = s.stockId,
+                    StockId = s.StockId,
                     LotNumber = s.LotNumber,
-                    Quantity = s.quantity,
+                    Quantity = s.Quantity,
                     QuantityRemaining = s.QuantityRemaining,
-                    ExpiryDate = s.expiryDate,
+                    ExpiryDate = s.ExpiryDate,
                     IsExpired = s.IsExpired,
-                    UnitCost = s.purchasePrice
+                    UnitCost = s.PurchasePrice
                 })
             };
         }
@@ -442,8 +442,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
             var movementRequest = new MovementRequest
             {
-                ItemId = stock.itemId,
-                StockId = stock.stockId,
+                ItemId = stock.ItemId ?? 0,
+                StockId = stock.StockId,
                 Quantity = Math.Abs(difference),
                 Type = movementType,
                 Reason = movementReason,
@@ -645,8 +645,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             var remainingToReserve = item.Quantity;
 
             var availableBatches = await _context.Stocks
-                .Where(s => s.itemId == item.ItemId && s.QuantityRemaining > 0 && !s.IsExpired && !s.IsDeleted && s.BranchId == _loggedInUser.BranchId)
-                .OrderBy(s => s.purchaseDate)
+                .Where(s => s.ItemId == item.ItemId && s.QuantityRemaining > 0 && !s.IsExpired && !s.IsDeleted && s.BranchId == _loggedInUser.BranchId)
+                .OrderBy(s => s.PurchaseDate)
                 .ToListAsync(cancellationToken);
 
             foreach (var batch in availableBatches)
@@ -659,9 +659,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 {
                     ReservationId = reservationId,
                     ItemId = item.ItemId,
-                    StockId = batch.stockId,
+                    StockId = batch.StockId,
                     ReservedQuantity = reserveFromBatch,
-                    UnitCost = batch.purchasePrice
+                    UnitCost = batch.PurchasePrice
                 };
 
                 _context.ReservedItems.Add(reservedItem);
@@ -735,26 +735,26 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                     movements.Add(new MultiLotMovementInfo
                     {
-                        StockId = stock.stockId,
+                        StockId = stock.StockId,
                         LotNumber = stock.LotNumber,
                         MovedQuantity = moveQuantity,
-                        UnitCost = stock.purchasePrice,
+                        UnitCost = stock.PurchasePrice,
                         RemainingAfter = stock.QuantityRemaining
                     });
 
                     _context.Stocks.Update(stock);
                     await _context.SaveChangesAsync(cancellationToken);
 
-                    totalCostValue += moveQuantity * stock.purchasePrice;
+                    totalCostValue += moveQuantity * stock.PurchasePrice;
                 }
 
-                return (movements, moveQuantity, stock.purchasePrice);
+                return (movements, moveQuantity, stock.PurchasePrice);
             }
 
             var batches = await _context.Stocks
-                .Where(s => s.itemId == request.ItemId && !s.IsDeleted && !s.IsExpired && s.QuantityRemaining > 0)
+                .Where(s => s.ItemId == request.ItemId && !s.IsDeleted && !s.IsExpired && s.QuantityRemaining > 0)
                 .Where(s => !request.BranchId.HasValue || s.BranchId == request.BranchId.Value)
-                .OrderBy(s => s.purchaseDate)
+                .OrderBy(s => s.PurchaseDate)
                 .ToListAsync(cancellationToken);
 
             if (!batches.Any())
@@ -781,15 +781,15 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                 movements.Add(new MultiLotMovementInfo
                 {
-                    StockId = batch.stockId,
+                    StockId = batch.StockId,
                     LotNumber = batch.LotNumber,
                     MovedQuantity = moveQuantity,
-                    UnitCost = batch.purchasePrice,
+                    UnitCost = batch.PurchasePrice,
                     RemainingAfter = batch.QuantityRemaining
                 });
 
                 _context.Stocks.Update(batch);
-                totalCostValue += moveQuantity * batch.purchasePrice;
+                totalCostValue += moveQuantity * batch.PurchasePrice;
                 remainingToProcess -= moveQuantity;
             }
 
@@ -816,7 +816,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 .Where(ri => ri.ReservationId == reservationId)
                 .Join(_context.Stocks,
                     ri => ri.StockId,
-                    s => s.stockId,
+                    s => s.StockId,
                     (ri, s) => new { ReservedItem = ri, Stock = s })
                 .Join(_context.Items,
                     x => x.ReservedItem.ItemId,
@@ -939,7 +939,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             var today = DateTime.UtcNow.Date;
 
             var query = _context.Stocks
-                .Where(s => s.expiryDate <= futureDate && s.expiryDate >= today && s.QuantityRemaining > 0 && !s.IsDeleted);
+                .Where(s => s.ExpiryDate <= futureDate && s.ExpiryDate >= today && s.QuantityRemaining > 0 && !s.IsDeleted);
 
             if (branchId.HasValue)
             {
@@ -947,27 +947,27 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             }
 
             var stocks = await query
-                .Include(s => s.item)
-                .OrderBy(s => s.expiryDate)
+                .Include(s => s.Item)
+                .OrderBy(s => s.ExpiryDate)
                 .ToListAsync(cancellationToken);
 
             return stocks.Select(s =>
             {
-                var daysRemaining = (int)(s.expiryDate.Date - today).TotalDays;
+                var daysRemaining = (int)(s.ExpiryDate.Date - today).TotalDays;
                 var urgency = daysRemaining <= 7 ? "Critical" : daysRemaining <= 14 ? "High" : "Warning";
 
                 return new ExpiringStock
                 {
-                    StockId = s.stockId,
-                    ItemId = s.itemId,
-                    ItemName = s.item?.Name ?? "Unknown",
+                    StockId = s.StockId,
+                    ItemId = s.ItemId ?? 0,
+                    ItemName = s.Item?.Name ?? "Unknown",
                     LotNumber = s.LotNumber,
                     Quantity = s.QuantityRemaining,
-                    ExpiryDate = s.expiryDate,
+                    ExpiryDate = s.ExpiryDate,
                     DaysUntilExpiry = daysRemaining,
                     Urgency = urgency,
-                    TotalValue = s.QuantityRemaining * s.purchasePrice,
-                    UnitCost = s.purchasePrice
+                    TotalValue = s.QuantityRemaining * s.PurchasePrice,
+                    UnitCost = s.PurchasePrice
                 };
             });
         }
@@ -985,8 +985,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             }
 
             var stocks = await query
-                .Include(s => s.item)
-                .GroupBy(s => s.itemId)
+                .Include(s => s.Item)
+                .GroupBy(s => s.ItemId)
                 .ToListAsync(cancellationToken);
 
             var valuatedItems = new List<ValuatedItem>();
@@ -995,17 +995,17 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             foreach (var itemGroup in stocks)
             {
                 var itemId = itemGroup.Key;
-                var item = itemGroup.First().item;
+                var item = itemGroup.First().Item;
                 var itemName = item?.Name ?? "Unknown";
 
                 var batches = itemGroup
-                    .OrderBy(s => s.purchaseDate)
+                    .OrderBy(s => s.PurchaseDate)
                     .Select(s => new ValuatedBatch
                     {
                         LotNumber = s.LotNumber,
                         Quantity = s.QuantityRemaining,
-                        UnitCost = s.purchasePrice,
-                        BatchValue = s.QuantityRemaining * s.purchasePrice
+                        UnitCost = s.PurchasePrice,
+                        BatchValue = s.QuantityRemaining * s.PurchasePrice
                     })
                     .ToList();
 
@@ -1017,7 +1017,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                 valuatedItems.Add(new ValuatedItem
                 {
-                    ItemId = itemId,
+                    ItemId = itemId ?? 0,
                     ItemName = itemName,
                     TotalQuantity = totalQuantity,
                     TotalValue = totalItemValue,
@@ -1040,7 +1040,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         private async Task<string> DiagnoseStockIssue(int itemId, int? branchId, CancellationToken cancellationToken)
         {
             var allStock = await _context.Stocks
-                .Where(s => s.itemId == itemId && !s.IsDeleted)
+                .Where(s => s.ItemId == itemId && !s.IsDeleted)
                 .ToListAsync(cancellationToken);
 
             if (!allStock.Any())

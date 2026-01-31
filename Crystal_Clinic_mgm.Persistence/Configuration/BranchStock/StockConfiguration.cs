@@ -1,4 +1,5 @@
 ﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,23 +12,27 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
             entity.ToTable(nameof(Stock), "Stock");
 
             // Primary Key configuration
-            entity.HasKey(s => s.stockId);
+            entity.HasKey(s => s.StockId);
 
             // Property configurations
-            entity.Property(s => s.quantity)
+            entity.Property(s => s.Quantity)
                   .HasColumnName("Quantity")
                   .HasColumnType("int")
                   .IsRequired();
 
-            entity.Property(s => s.itemId)
+            entity.Property(s => s.ItemId)
                   .HasColumnName("ItemId")
                   .HasColumnType("int")
-                  .IsRequired();
+                  .IsRequired(false);
 
             entity.Property(s => s.BranchId)
                   .HasColumnName("BranchId")
-                  .HasColumnType("int")
-                  .IsRequired();
+                  .IsRequired(false);
+
+            entity.HasOne(i => i.Branch)
+                    .WithMany()
+                    .HasForeignKey(i => i.BranchId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(s => s.SupplierId)
                   .HasColumnName("SupplierId")
@@ -35,9 +40,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
                   .IsRequired(false);
 
             // Relationship configuration
-            entity.HasOne(s => s.item)
+            entity.HasOne(s => s.Item)
                   .WithMany() // Assuming the relationship with Item is not one-to-many
-                  .HasForeignKey(s => s.itemId)
+                  .HasForeignKey(s => s.ItemId)
                   .OnDelete(DeleteBehavior.Restrict); // Handle as per your business needs (Restrict for now)
 
             entity.HasOne(s => s.Supplier)
@@ -45,32 +50,32 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
                   .HasForeignKey(s => s.SupplierId)
                   .OnDelete(DeleteBehavior.SetNull); 
 
-            entity.Property(s => s.purchasePrice)
+            entity.Property(s => s.PurchasePrice)
                   .HasColumnName("PurchasePrice")
                   .HasColumnType("decimal(18, 2)")
                   .IsRequired();
 
-            entity.Property(s => s.sellPrice)
+            entity.Property(s => s.SellPrice)
                   .HasColumnName("SellPrice")
                   .HasColumnType("decimal(18, 2)")
                   .IsRequired();
 
-            entity.Property(s => s.purchaseDate)
+            entity.Property(s => s.PurchaseDate)
                   .HasColumnName("PurchaseDate")
                   .HasColumnType("datetime")
                   .IsRequired();
 
-            entity.Property(s => s.batchNumber)
+            entity.Property(s => s.BatchNumber)
                   .HasColumnName("BatchNumber")
                   .HasColumnType("nvarchar(100)")
                   .IsRequired();
 
-            entity.Property(s => s.barCode)
+            entity.Property(s => s.BarCode)
                   .HasColumnName("BarCode")
                   .HasColumnType("nvarchar(100)")
                   .IsRequired();
 
-            entity.Property(s => s.expiryDate)
+            entity.Property(s => s.ExpiryDate)
                   .HasColumnName("ExpiryDate")
                   .HasColumnType("datetime")
                   .IsRequired();
@@ -105,6 +110,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Stocks
                   .HasColumnName("PurchaseOrderId")
                   .HasColumnType("int")
                   .IsRequired(false);
+
+            entity.HasOne(i => i.PurchaseOrder)
+                .WithMany()
+                .HasForeignKey(i => i.PurchaseOrderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(s => s.InvoiceId)
                   .HasColumnName("InvoiceId")

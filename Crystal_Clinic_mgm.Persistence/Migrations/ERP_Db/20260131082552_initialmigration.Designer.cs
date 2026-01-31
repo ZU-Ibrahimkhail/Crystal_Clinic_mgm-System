@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    [Migration("20260124170630_initialMigration")]
-    partial class initialMigration
+    [Migration("20260131082552_initialmigration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3808,15 +3808,17 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("BaseUnit");
 
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int")
+                        .HasColumnName("BranchId");
 
                     b.Property<int?>("BrandId")
                         .HasColumnType("int")
                         .HasColumnName("BrandId");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CategoryId");
 
                     b.Property<string>("CostComponents")
                         .IsRequired()
@@ -3860,9 +3862,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("bit")
                         .HasDefaultValue(true)
                         .HasColumnName("IsInventoryItem");
-
-                    b.Property<int?>("ItemCategorycategoryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("ItemCode")
                         .IsRequired()
@@ -3919,8 +3918,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int>("ValuationMethod")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasColumnName("ValuationMethod");
+                        .HasDefaultValue(1);
 
                     b.Property<decimal>("WriteDownAmount")
                         .ValueGeneratedOnAdd()
@@ -3930,11 +3928,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasKey("ItemId");
 
+                    b.HasIndex("BranchId");
+
                     b.HasIndex("BrandId");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("ItemCategorycategoryId");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("IX_Item_Name");
@@ -7337,19 +7335,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", b =>
                 {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Brand", "Brand")
                         .WithMany("Items")
-                        .HasForeignKey("BrandId");
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.ItemCategory", null)
                         .WithMany("Items")
-                        .HasForeignKey("ItemCategorycategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Brand");
 

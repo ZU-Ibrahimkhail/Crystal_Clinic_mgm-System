@@ -86,8 +86,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
                     BaseUnit = i.BaseUnit,
                     UseableStock = i.UseableStock,
                     ReorderLevel = i.ReorderLevel,
-                    BranchId = i.BranchId,
-                    CategoryId = i.CategoryId,
+                    BranchId = i.BranchId ?? 0,
+                    CategoryId = i.CategoryId ?? 0,
                     CategoryName = i.Category!.Name ?? "",
                     CurrentStock = i.CurrentStock,
                 })

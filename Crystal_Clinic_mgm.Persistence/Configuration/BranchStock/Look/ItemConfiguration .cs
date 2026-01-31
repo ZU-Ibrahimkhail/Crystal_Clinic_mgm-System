@@ -78,11 +78,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look
                     .IsRequired()
                     .HasDefaultValue(true);
 
-                entity.Property(i => i.BrandId)
-                    .HasColumnName("BrandId")
-                    .HasColumnType("int")
-                    .IsRequired(false);
-
                 entity.Property(i => i.IsInventoryItem)
                     .HasColumnName("IsInventoryItem")
                     .HasColumnType("bit")
@@ -90,10 +85,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look
                     .HasDefaultValue(true);
 
                 entity.Property(i => i.ValuationMethod)
-                    .HasColumnName("ValuationMethod")
-                    .HasColumnType("int")
-                    .IsRequired()
-                    .HasDefaultValue(ValuationMethod.FIFO);
+                     .HasColumnType("int")
+                     .IsRequired()
+                     .HasDefaultValue(ValuationMethod.WeightedAverage);
+
 
                 entity.Property(i => i.CostComponents)
                     .HasColumnName("CostComponents")
@@ -117,14 +112,35 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock.Look
                     .IsRequired()
                     .HasDefaultValue(0m);
 
-                // Foreign Keys Configuration
-                entity.HasOne(i => i.Category)
-                    .WithMany()
-                    .HasForeignKey(i => i.CategoryId)
-                    .OnDelete(DeleteBehavior.NoAction); // No cascading delete
+                entity.Property(i => i.BrandId)
+                    .HasColumnName("BrandId")
+                    .IsRequired(false);
 
-                // Optional: You can also create an index on the `Name` for search optimization
-                entity.HasIndex(i => i.Name).HasDatabaseName("IX_Item_Name");
+                entity.HasOne(i => i.Brand)
+                    .WithMany(b => b.Items)
+                    .HasForeignKey(i => i.BrandId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.Property(i => i.BranchId)
+                    .HasColumnName("BranchId")
+                    .IsRequired(false);
+
+                entity.HasOne(i => i.Branch)
+                    .WithMany()
+                    .HasForeignKey(i => i.BranchId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.Property(c => c.CategoryId)
+                    .HasColumnName("CategoryId")
+                    .IsRequired(false);
+
+                entity.HasOne(i => i.Category)
+                    .WithMany(c => c.Items) 
+                    .HasForeignKey(i => i.CategoryId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+
+            entity.HasIndex(i => i.Name).HasDatabaseName("IX_Item_Name");
 
             EntityConfiguration<Item>.AuditableEntityConfigurations(entity);
             }
