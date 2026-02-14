@@ -5,14 +5,13 @@ namespace Crystal_Clinic_Mgm.Domain.Entities
         public bool IsSuccess { get; }
         public bool Succeeded => IsSuccess;
         public string? Error { get; }
-        public object? Value { get; }
-        public object? Data => Value;
+        public object? Data { get; }
 
         protected Result(bool isSuccess, string? error, object? value)
         {
             IsSuccess = isSuccess;
             Error = error;
-            Value = value;
+            Data = value;
         }
 
         public static Result Success(object? value = null, string? message = null)

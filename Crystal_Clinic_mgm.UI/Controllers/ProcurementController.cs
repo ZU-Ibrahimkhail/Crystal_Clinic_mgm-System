@@ -25,7 +25,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         {
             var result = await _procurementService.CreatePurchaseOrderAsync(request);
             if (result.IsSuccess)
-                return Ok(result.Value);
+                return Ok(result.Data);
             return BadRequest(result.Error);
         }
 
@@ -55,7 +55,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
             var result = await _procurementService.GetAllPurchaseOrdersAsync(
                 vendorId, status, branchId, pageNumber, pageSize);
             if (result.IsSuccess)
-                return Ok(result.Value);
+                return Ok(result.Data);
             return BadRequest(result.Error);
         }
 
@@ -67,7 +67,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         {
             var result = await _procurementService.GetPurchaseOrderByIdAsync(id);
             if (result.IsSuccess)
-                return Ok(result.Value);
+                return Ok(result.Data);
             return NotFound(result.Error);
         }
 
@@ -79,7 +79,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         {
             var result = await _procurementService.CreateVendorBillAsync(request);
             if (result.IsSuccess)
-                return Ok(result.Value);
+                return Ok(result.Data);
             return BadRequest(result.Error);
         }
 
@@ -109,7 +109,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
             var result = await _procurementService.GetAllVendorBillsAsync(
                 vendorId, status, branchId, pageNumber, pageSize);
             if (result.IsSuccess)
-                return Ok(result.Value);
+                return Ok(result.Data);
             return BadRequest(result.Error);
         }
     }

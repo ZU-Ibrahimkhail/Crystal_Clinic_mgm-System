@@ -32,7 +32,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 {
                     Id = expense.Id,
                     CategoryId = expense.CategoryId,
-                    ClassId = expense.ClassId,
                     Amount = expense.Amount,
                     ExpenseDate = expense.ExpenseDate,
                     Description = expense.Description,
@@ -111,7 +110,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 {
                     Id = e.Id,
                     CategoryId = e.CategoryId,
-                    ClassId = e.ClassId,
                     Amount = e.Amount,
                     ExpenseDate = e.ExpenseDate,
                     Description = e.Description,
@@ -174,7 +172,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 {
                     Id = e.Id,
                     CategoryId = e.CategoryId,
-                    ClassId = e.ClassId,
                     Amount = e.Amount,
                     ExpenseDate = e.ExpenseDate,
                     Description = e.Description,

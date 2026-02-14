@@ -118,9 +118,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
                 var query = new GetJournalEntryByIdQuery { Id = journalEntryId };
                 var result = await _mediator.Send(query, cancellationToken);
 
-                if (result.IsSuccess && result.Value is JournalEntryDto dto)
+                if (result.IsSuccess && result.Data is JournalEntryDto dto)
                 {
-                    return (JournalEntryDto?)result.Value;
+                    return (JournalEntryDto?)result.Data;
                 }
 
                 return null;

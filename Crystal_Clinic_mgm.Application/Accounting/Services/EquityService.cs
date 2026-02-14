@@ -39,6 +39,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
         }
 
         public async Task<Result> GetShareholderByIdAsync(int id, CancellationToken cancellationToken = default)
+        
         {
             var query = new GetShareholderByIdQuery { Id = id };
             return await mediator.Send(query, cancellationToken);

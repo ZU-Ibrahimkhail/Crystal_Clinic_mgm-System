@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
                 return BadRequest(ModelState);
 
             var result = await _equityService.CreateShareholderAsync(dto);
-            return result.IsSuccess ? CreatedAtAction(nameof(GetShareholderById), new { id = result.Value }, result) : BadRequest(result);
+            return result.IsSuccess ? CreatedAtAction(nameof(GetShareholderById), new { id = result.Data }, result) : BadRequest(result);
         }
 
         [HttpGet("Shareholder")]

@@ -30,36 +30,27 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             _loggedInUser = loggedInUser;
         }
 
-        public async Task<MovementResult> RegisterMovementAsync(MovementRequest request, CancellationToken cancellationToken = default)
-        {
-            bool ownsTransaction = _context.Database.CurrentTransaction == null;
-            using var transaction = ownsTransaction ? await _context.Database.BeginTransactionAsync(cancellationToken) : null;
-
-            try
+        public async Task<MovementResult> RegisterMovementAsync(
+             MovementRequest request,
+             CancellationToken cancellationToken = default)
+            {
+                try
             {
                 var validationResult = await ValidateMovementRequest(request);
                 if (!validationResult.IsValid)
-                {
-                    return new MovementResult
-                    {
-                        Success = false,
-                        ErrorMessage = validationResult.ErrorMessage
-                    };
-                }
+                    return new MovementResult { Success = false, ErrorMessage = validationResult.ErrorMessage };
 
-                var (movements, totalQuantity, weightedAverageCost) = await ProcessMultiLotMovement(request, cancellationToken);
+                var (movements, totalQuantity, weightedAverageCost) =
+                    await ProcessMultiLotMovement(request, cancellationToken);
 
                 if (!movements.Any())
                 {
-                    var diagnosticMessage = await DiagnoseStockIssue(request.ItemId, request.BranchId, cancellationToken);
-                    return new MovementResult
-                    {
-                        Success = false,
-                        ErrorMessage = diagnosticMessage
-                    };
+                    var diagnosticMessage =
+                        await DiagnoseStockIssue(request.ItemId, request.BranchId, cancellationToken);
+
+                    return new MovementResult { Success = false, ErrorMessage = diagnosticMessage };
                 }
 
-                var totalCost = totalQuantity * weightedAverageCost;
                 var movementIds = new List<int>();
 
                 foreach (var multiLotMove in movements)
@@ -81,59 +72,28 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     };
 
                     _context.StockMovements.Add(movement);
-                    movementIds.Add(movement.StockMovementId);
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                foreach (var movementId in movementIds)
+                foreach (var movement in _context.StockMovements.Local)
                 {
-                    var movement = await _context.StockMovements.FirstOrDefaultAsync(m => m.StockMovementId == movementId, cancellationToken);
-                    if (movement != null)
-                    {
-                        await PublishMovementEvent(movement, cancellationToken);
-                    }
+                    await PublishMovementEvent(movement, cancellationToken);
                 }
-
-                if (ownsTransaction)
-                {
-                    await transaction!.CommitAsync(cancellationToken);
-                }
-
-                var newBalance = movements.Last().RemainingAfter;
 
                 return new MovementResult
                 {
                     Success = true,
-                    NewBalance = newBalance,
-                    MovementId = movementIds.FirstOrDefault(),
+                    NewBalance = movements.Last().RemainingAfter,
+                    MovementId = movements.First().StockId,
                     UnitCost = weightedAverageCost,
-                    TotalCost = totalCost,
+                    TotalCost = totalQuantity * weightedAverageCost,
                     Quantity = totalQuantity
-                };
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ownsTransaction)
-                {
-                    await transaction!.RollbackAsync(cancellationToken);
-                }
-                _logger.LogWarning(ex, "Validation error registering movement for item {ItemId}", request.ItemId);
-
-                return new MovementResult
-                {
-                    Success = false,
-                    ErrorMessage = ex.Message
                 };
             }
             catch (Exception ex)
             {
-                if (ownsTransaction)
-                {
-                    await transaction!.RollbackAsync(cancellationToken);
-                }
                 _logger.LogError(ex, "Error registering inventory movement for item {ItemId}", request.ItemId);
-
                 return new MovementResult
                 {
                     Success = false,
@@ -141,6 +101,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 };
             }
         }
+
 
         public async Task<ReservationResult> ReserveItemsAsync(ReservationRequest request, CancellationToken cancellationToken = default)
         {
@@ -424,36 +385,41 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
         public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> PerformStockTakeAsync(StockTakeRequest request, CancellationToken cancellationToken = default)
         {
-            var stock = await _context.Stocks.FindAsync(new object[] { request.StockId }, cancellationToken);
-            if (stock == null)
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Stock batch not found");
-            }
+                var stock = await _context.Stocks.FindAsync(new object[] { request.StockId }, cancellationToken);
+                if (stock == null)
+                {
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Stock batch not found");
+                }
 
-            var difference = request.ActualQuantity - stock.QuantityRemaining;
+                var difference = request.ActualQuantity - stock.QuantityRemaining;
 
-            if (difference == 0)
-            {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Success(); // No adjustment needed
-            }
+                if (difference == 0)
+                {
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Success(); // No adjustment needed
+                }
 
-            var movementType = difference > 0 ? MovementType.In : MovementType.Out;
-            var movementReason = MovementReason.Adjustment;
+                var movementType = difference > 0 ? MovementType.In : MovementType.Out;
+                var movementReason = MovementReason.Adjustment;
 
-            var movementRequest = new MovementRequest
-            {
-                ItemId = stock.ItemId ?? 0,
-                StockId = stock.StockId,
-                Quantity = Math.Abs(difference),
-                Type = movementType,
-                Reason = movementReason,
-                ReferenceId = $"STOCKTAKE-{request.StockId}",
-                Notes = $"Stock take adjustment: {request.Reason}. {request.Notes}",
-                ProcessedBy = request.ProcessedBy ?? _loggedInUser.Id
-            };
+                var movementRequest = new MovementRequest
+                {
+                    ItemId = stock.ItemId ?? 0,
+                    StockId = stock.StockId,
+                    Quantity = Math.Abs(difference),
+                    Type = movementType,
+                    Reason = movementReason,
+                    ReferenceId = $"STOCKTAKE-{request.StockId}",
+                    Notes = $"Stock take adjustment: {request.Reason}. {request.Notes}",
+                    ProcessedBy = request.ProcessedBy ?? _loggedInUser.Id
+                };
 
-            var result = await RegisterMovementAsync(movementRequest, cancellationToken);
-            return result.Success ? Crystal_Clinic_Mgm.Domain.Entities.Result.Success() : Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(result.ErrorMessage ?? "Stock take failed");
+                var result = await RegisterMovementAsync(movementRequest, cancellationToken);
+                return result.Success ? Crystal_Clinic_Mgm.Domain.Entities.Result.Success() : Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(result.ErrorMessage ?? "Stock take failed");
+            });
         }
 
         public async Task<IEnumerable<InventoryKit>> GetAvailableKitsAsync(int? branchId = null, CancellationToken cancellationToken = default)

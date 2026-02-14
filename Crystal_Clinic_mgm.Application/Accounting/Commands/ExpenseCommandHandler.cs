@@ -24,7 +24,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 var expense = new Expense
                 {
                     CategoryId = request.Dto.CategoryId,
-                    ClassId = request.Dto.ClassId,
                     Amount = request.Dto.Amount,
                     ExpenseDate = request.Dto.ExpenseDate,
                     Description = request.Dto.Description,
@@ -72,7 +71,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     return Result.Fail("Only draft expenses can be updated");
 
                 expense.CategoryId = request.Dto.CategoryId;
-                expense.ClassId = request.Dto.ClassId;
                 expense.Amount = request.Dto.Amount;
                 expense.ExpenseDate = request.Dto.ExpenseDate;
                 expense.Description = request.Dto.Description;

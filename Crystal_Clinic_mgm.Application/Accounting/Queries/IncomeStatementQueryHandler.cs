@@ -163,8 +163,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (!statement1.IsSuccess || !statement2.IsSuccess)
                     return Result.Fail("Error generating comparison statements");
 
-                var stmt1 = statement1.Value as IncomeStatementDto;
-                var stmt2 = statement2.Value as IncomeStatementDto;
+                var stmt1 = statement1.Data as IncomeStatementDto;
+                var stmt2 = statement2.Data as IncomeStatementDto;
 
                 var comparison = new
                 {
@@ -173,6 +173,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     variance = new
                     {
                         revenue = stmt2.TotalRevenue - stmt1.TotalRevenue,
+
                         revenuePercentage = stmt1.TotalRevenue != 0 ? ((stmt2.TotalRevenue - stmt1.TotalRevenue) / stmt1.TotalRevenue * 100) : 0,
                         netIncome = stmt2.NetIncome - stmt1.NetIncome,
                         netIncomePercentage = stmt1.NetIncome != 0 ? ((stmt2.NetIncome - stmt1.NetIncome) / stmt1.NetIncome * 100) : 0

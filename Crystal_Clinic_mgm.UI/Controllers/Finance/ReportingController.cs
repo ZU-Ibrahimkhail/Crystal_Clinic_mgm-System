@@ -24,7 +24,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             return Ok(new
             {
                 asOfDate = effectiveDate,
-                trialBalance = trialBalance.Value,
+                trialBalance = trialBalance.Data,
                 kpis = new
                 {
                     totalAssets = 0m,

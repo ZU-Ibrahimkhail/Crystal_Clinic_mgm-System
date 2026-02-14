@@ -55,7 +55,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             if (!result.IsSuccess)
                 return BadRequest(result);
 
-            return Ok(new { message = "Audit trail export initiated", status = "pending", data = result.Value });
+            return Ok(new { message = "Audit trail export initiated", status = "pending", data = result.Data });
         }
     }
 }

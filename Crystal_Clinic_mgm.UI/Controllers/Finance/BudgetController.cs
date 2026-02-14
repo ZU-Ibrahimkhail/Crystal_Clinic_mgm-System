@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
                 return BadRequest(ModelState);
 
             var result = await _budgetService.CreateBudgetAsync(dto);
-            return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result) : BadRequest(result);
+            return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Data }, result) : BadRequest(result);
         }
 
         [HttpGet]

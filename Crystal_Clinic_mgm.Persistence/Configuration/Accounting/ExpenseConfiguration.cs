@@ -18,10 +18,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("int")
                 .IsRequired();
 
-            entity.Property(e => e.ClassId)
-                .HasColumnName("ClassId")
-                .HasColumnType("int")
-                .IsRequired(false);
 
             entity.Property(e => e.Amount)
                 .HasColumnName("Amount")

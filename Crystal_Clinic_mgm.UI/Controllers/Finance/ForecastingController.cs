@@ -87,7 +87,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             if (!result.IsSuccess)
                 return NotFound(result);
 
-            return Ok(new { message = "Forecast export initiated", status = "pending", format, data = result.Value });
+            return Ok(new { message = "Forecast export initiated", status = "pending", format, data = result.Data });
         }
     }
 }

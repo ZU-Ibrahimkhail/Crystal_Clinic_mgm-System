@@ -622,7 +622,8 @@ curl -X GET "https://api.crystalclinic.local/api/inventory/reservations/active" 
 
 ### Request
 ```bash
-curl -X GET "https://api.crystalclinic.local/api/inventory/kits" \
+curl -X GET "https://api.crystalclinic.local/
+" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json"
 ```

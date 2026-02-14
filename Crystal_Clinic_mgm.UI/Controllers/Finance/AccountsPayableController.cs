@@ -22,7 +22,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             var command = new CreateAccountsPayableCommand { Dto = dto };
             var result = await Mediator.Send(command);
 
-            return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result) : BadRequest(result);
+            return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Data }, result) : BadRequest(result);
         }
 
         [HttpGet]

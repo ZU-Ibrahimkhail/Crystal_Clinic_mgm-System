@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
                 return BadRequest(ModelState);
 
             var result = await _procurementService.CreatePurchaseOrderAsync(dto);
-            return result.IsSuccess ? CreatedAtAction(nameof(GetPurchaseOrderById), new { id = result.Value }, result) : BadRequest(result);
+            return result.IsSuccess ? CreatedAtAction(nameof(GetPurchaseOrderById), new { id = result.Data }, result) : BadRequest(result);
         }
 
         [HttpGet("PurchaseOrder")]
@@ -79,7 +79,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
                 return BadRequest(ModelState);
 
             var result = await _procurementService.CreateVendorBillAsync(dto);
-            return result.IsSuccess ? CreatedAtAction(nameof(GetVendorBillById), new { id = result.Value }, result) : BadRequest(result);
+            return result.IsSuccess ? CreatedAtAction(nameof(GetVendorBillById), new { id = result.Data }, result) : BadRequest(result);
         }
 
         [HttpGet("VendorBill")]
