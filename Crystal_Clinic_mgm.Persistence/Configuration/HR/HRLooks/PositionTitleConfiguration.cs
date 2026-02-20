@@ -10,26 +10,32 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
         public void Configure(EntityTypeBuilder<PositionTitle> entity)
         {
             entity.ToTable("PositionTitle", "HRLooks");
-            entity.HasKey("ID");
-            entity.Property(c => c.ID).HasColumnName("ID");
-            entity.Property(c => c.EnglishName).HasColumnName("EnglishName").HasMaxLength(300).IsRequired(true).HasColumnType("nvarchar");
-            entity.Property(c => c.PashtoName).HasColumnName("PashtoName").HasMaxLength(300).IsRequired(true).HasColumnType("nvarchar");
-            entity.Property(c => c.DariName).HasColumnName("DariName").HasMaxLength(300).IsRequired(true).HasColumnType("nvarchar");
-            entity.Property(c => c.Code).HasColumnName("Code").IsRequired(true).HasMaxLength(50).HasColumnType("nvarchar");
+            entity.HasKey(x => x.Id);
+            entity.Property(c => c.Id).HasColumnName("Id");
+            entity.Property(c => c.Title).HasColumnName("Title").HasMaxLength(100).IsRequired(true).HasColumnType("nvarchar");
+            entity.Property(c => c.JobDescription).HasColumnName("JobDescription").HasColumnType("nvarchar(max)").IsRequired(false);
 
             entity.Property(c => c.BranchId).HasColumnName("BranchId").HasColumnType("int").IsRequired(true).HasDefaultValue(1);
             entity.HasOne<Branch>("Branch").WithMany().HasForeignKey(f => f.BranchId).OnDelete(DeleteBehavior.NoAction);
             entity.Property(c => c.IsActive).HasColumnName("IsActive").HasColumnType("bit").HasDefaultValue(true);
-            entity.Property(c => c.JobDescription).HasColumnName("JobDescription").HasColumnType("nvarchar(max)").IsRequired(false);
 
+            // Phase 1 Enhancements
+            entity.Property(c => c.ReportsToId).HasColumnName("ReportsToId").HasColumnType("int").IsRequired(false);
+            entity.HasOne(x => x.ReportsTo)
+                .WithMany()
+                .HasForeignKey(f => f.ReportsToId)
+                .OnDelete(DeleteBehavior.NoAction);
 
+            entity.Property(c => c.JobGrade).HasColumnName("JobGrade").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
+            entity.Property(c => c.MinSalary).HasColumnName("MinSalary").HasColumnType("decimal(18,2)").IsRequired(true).HasDefaultValue(0);
+            entity.Property(c => c.MaxSalary).HasColumnName("MaxSalary").HasColumnType("decimal(18,2)").IsRequired(true).HasDefaultValue(0);
 
-            entity.Property(c => c.CreatedBy).HasColumnName("CreatedBy").HasMaxLength(50).IsRequired(true).HasColumnType("UNIQUEIDENTIFIER");
-            entity.Property(c => c.CreatedOn).HasColumnName("CreatedOn").IsRequired(true).HasColumnType("DateTime");
-            entity.Property(c => c.ModifiedBy).HasColumnName("ModifiedBy").HasMaxLength(50).IsRequired(false).HasColumnType("UNIQUEIDENTIFIER");
-            entity.Property(c => c.ModifiedOn).HasColumnName("ModifiedOn").IsRequired(false).HasColumnType("DateTime");
-            entity.Property(c => c.IsDeleted).HasColumnName("IsDeleted").HasColumnType("bit");
-            entity.Property(c => c.Remarks).HasColumnName("Remarks").IsRequired(false).HasMaxLength(500).HasColumnType("nvarchar");
+            entity.HasMany(x => x.PayrollContracts)
+                .WithOne(x => x.PositionTitle)
+                .HasForeignKey(f => f.PositionTitleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            EntityConfiguration<PositionTitle>.AuditableEntityConfigurations(entity);
         }
     }
 }

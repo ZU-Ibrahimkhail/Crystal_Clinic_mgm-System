@@ -52,6 +52,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
             entity.Property(c => c.IsActive).HasColumnName("IsCurrent").HasColumnType("bit").IsRequired(true);
             entity.Property(c => c.HasAccount).HasColumnName("HasAccount").HasColumnType("bit").IsRequired(true).HasDefaultValue(false);
 
+            // Phase 1 Enhancements
+            entity.Property(c => c.DepartmentId).HasColumnName("DepartmentId").HasColumnType("int").IsRequired(false);
+            entity.HasOne(x => x.Department)
+                .WithMany(x => x.Employees)
+                .HasForeignKey(f => f.DepartmentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.Property(c => c.ManagerId).HasColumnName("ManagerId").HasColumnType("int").IsRequired(false);
+            entity.HasOne(x => x.Manager)
+                .WithMany(x => x.DirectReports)
+                .HasForeignKey(f => f.ManagerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            entity.Property(c => c.EmploymentStatus).HasColumnName("EmploymentStatus").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Active
+            entity.Property(c => c.BankAccountNo).HasColumnName("BankAccountNo").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
+            entity.Property(c => c.EmployeeCode).HasColumnName("EmployeeCode").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
+            entity.Property(c => c.WorkEmail).HasColumnName("WorkEmail").HasColumnType("nvarchar").HasMaxLength(100).IsRequired(false);
+            entity.Property(c => c.PreferredPaymentMethod).HasColumnName("PreferredPaymentMethod").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
+
             EntityConfiguration<EmployeeProfile>.AuditableEntityConfigurations(entity);
         }
     }

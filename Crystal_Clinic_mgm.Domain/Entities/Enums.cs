@@ -262,5 +262,83 @@
     }
     #endregion
 
+    #region HR Enums
+    public enum EmploymentStatus
+    {
+        Active = 1,
+        Probation = 2,
+        OnLeave = 3,
+        Suspended = 4,
+        Terminated = 5,
+        Retired = 6
+    }
+
+    public enum LeaveStatus
+    {
+        Pending = 1,
+        Approved = 2,
+        Rejected = 3,
+        Cancelled = 4
+    }
+
+    public enum AttendanceStatus
+    {
+        Present = 1,
+        Absent = 2,
+        Late = 3,
+        OnLeave = 4,
+        HalfDay = 5
+    }
+
+    public enum PayrollComponentType
+    {
+        Benefit = 1,        // Added to salary
+        Deduction = 2       // Subtracted from salary
+    }
+
+    public enum ComponentCalculationType
+    {
+        FixedAmount = 1,
+        PercentageOfBaseSalary = 2,
+        PercentageOfGross = 3
+    }
+
+    public enum PayCycle
+    {
+        Monthly = 1,
+        BiWeekly = 2,
+        Weekly = 3,
+        Hourly = 4
+    }
+
+    public enum PayrollAdjustmentType
+    {
+        Reward = 1,
+        Charge = 2,
+        Overtime = 3,
+        Bonus = 4,
+        Penalty = 5
+    }
+
+    public enum HRTaskCategory
+    {
+        Onboarding = 1,
+        Offboarding = 2
+    }
+
+    public enum HRTaskStatus
+    {
+        Pending = 1,
+        Completed = 2,
+        Cancelled = 3
+    }
+
+    public enum TaxCalculationType
+    {
+        StepByStep = 1,  // Progressive - calculate on overdraft amount in bracket
+        Single = 2       // Flat - single bracket applies
+    }
+    #endregion
+
     #endregion
 }

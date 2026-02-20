@@ -40,10 +40,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<Partners> Partners { get; set; }
         public DbSet<ContractType> ContractTypes { get; set; }
         public DbSet<PositionTitle> PositionTitles { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Shift> Shifts { get; set; }
+        public DbSet<LeaveType> LeaveTypes { get; set; }
+        public DbSet<PayrollComponent> PayrollComponents { get; set; }
         public DbSet<ContractDetails> ContractDetails { get; set; }
+        public DbSet<PayrollContract> PayrollContracts { get; set; }
         public DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
+        public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<LeaveCarryover> LeaveCarryovers { get; set; }
+        public DbSet<EmployeePayrollComponent> EmployeePayrollComponents { get; set; }
+        public DbSet<PayrollAdjustment> PayrollAdjustments { get; set; }
+        public DbSet<HRTask> HRTasks { get; set; }
         public DbSet<PayrollTracking> PayrollTracking { get; set; }
         public DbSet<AdvancePayment> AdvancePayment { get; set; }
+        public DbSet<TaxConfiguration> TaxConfigurations { get; set; }
+        public DbSet<TaxBracket> TaxBrackets { get; set; }
+        public DbSet<OnboardingTaskTemplate> OnboardingTaskTemplates { get; set; }
+        public DbSet<OnboardingTaskTemplateLine> OnboardingTaskTemplateLines { get; set; }
 
         #endregion
 
@@ -162,17 +177,34 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
 
             #region HR Configuration
 
-            // LookUp
+            // LookUp - Existing
             modelBuilder.ApplyConfiguration(new ContractTypeConfiguration());
             modelBuilder.ApplyConfiguration(new PositionTitleConfiguration());
 
-            // main table
+            // LookUp - Phase 1 Enhancements
+            modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
+            modelBuilder.ApplyConfiguration(new ShiftConfiguration());
+            modelBuilder.ApplyConfiguration(new LeaveTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PayrollComponentConfiguration());
+            modelBuilder.ApplyConfiguration(new TaxConfigurationConfiguration());
+            modelBuilder.ApplyConfiguration(new TaxBracketConfiguration());
+            modelBuilder.ApplyConfiguration(new OnboardingTaskTemplateConfiguration());
+            modelBuilder.ApplyConfiguration(new OnboardingTaskTemplateLineConfiguration());
+
+            // Main Tables - Existing
             modelBuilder.ApplyConfiguration(new ContractDetailsConfiguration());
             modelBuilder.ApplyConfiguration(new EmployeeProfileConfiguration());
-
-
             modelBuilder.ApplyConfiguration(new PayrollTrackingConfiguration());
             modelBuilder.ApplyConfiguration(new AdvancePaymentConfiguration());
+
+            // Main Tables - Phase 1 New Entities
+            modelBuilder.ApplyConfiguration(new PayrollContractConfiguration());
+            modelBuilder.ApplyConfiguration(new AttendanceRecordConfiguration());
+            modelBuilder.ApplyConfiguration(new LeaveRequestConfiguration());
+            modelBuilder.ApplyConfiguration(new LeaveCarryoverConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeePayrollComponentConfiguration());
+            modelBuilder.ApplyConfiguration(new PayrollAdjustmentConfiguration());
+            modelBuilder.ApplyConfiguration(new HRTaskConfiguration());
 
             #endregion
 

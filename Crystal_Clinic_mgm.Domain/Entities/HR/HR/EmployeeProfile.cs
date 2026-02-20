@@ -1,4 +1,5 @@
 ﻿using Crystal_Clinic_Mgm.Domain.Entities.Look;
+using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 
 namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HR
 {
@@ -38,5 +39,25 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HR
         public string PhotoPath { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public bool HasAccount { get; set; } = false;
+
+        // Phase 1 Enhancements
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
+
+        public int? ManagerId { get; set; }
+        public EmployeeProfile? Manager { get; set; }
+        public ICollection<EmployeeProfile> DirectReports { get; set; } = new List<EmployeeProfile>();
+
+        public EmploymentStatus EmploymentStatus { get; set; } = EmploymentStatus.Active;
+        public string? BankAccountNo { get; set; }
+        public string? EmployeeCode { get; set; }
+        public string? WorkEmail { get; set; }
+        public string? PreferredPaymentMethod { get; set; }
+
+        // Navigation properties for Phase 1
+        public ICollection<PayrollContract> PayrollContracts { get; set; } = new List<PayrollContract>();
+        public ICollection<AttendanceRecord> AttendanceRecords { get; set; } = new List<AttendanceRecord>();
+        public ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
+        public ICollection<EmployeePayrollComponent> PayrollComponents { get; set; } = new List<EmployeePayrollComponent>();
     }
 }
