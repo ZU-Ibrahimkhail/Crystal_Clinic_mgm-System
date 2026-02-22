@@ -2,7 +2,6 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks
 {
     public class Shift : LookAndAuditableEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }

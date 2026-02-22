@@ -10,8 +10,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
         public void Configure(EntityTypeBuilder<PositionTitle> entity)
         {
             entity.ToTable("PositionTitle", "HRLooks");
-            entity.HasKey(x => x.Id);
-            entity.Property(c => c.Id).HasColumnName("Id");
+            entity.HasKey(x => x.ID);
+            entity.Property(c => c.ID).HasColumnName("Id");
             entity.Property(c => c.Title).HasColumnName("Title").HasMaxLength(100).IsRequired(true).HasColumnType("nvarchar");
             entity.Property(c => c.JobDescription).HasColumnName("JobDescription").HasColumnType("nvarchar(max)").IsRequired(false);
 

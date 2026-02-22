@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
             entity.Property(c => c.CheckIn).HasColumnName("CheckIn").HasColumnType("datetime").IsRequired(true);
             entity.Property(c => c.CheckOut).HasColumnName("CheckOut").HasColumnType("datetime").IsRequired(false);
 
-            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Present
+            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(AttendanceStatus.Present); // Present
             entity.Property(c => c.WorkingHours).HasColumnName("WorkingHours").HasColumnType("decimal(5,2)").IsRequired(true).HasDefaultValue(0);
             entity.Property(c => c.OvertimeHours).HasColumnName("OvertimeHours").HasColumnType("decimal(5,2)").IsRequired(true).HasDefaultValue(0);
             entity.Property(c => c.Notes).HasColumnName("Notes").HasColumnType("nvarchar(max)").IsRequired(false);

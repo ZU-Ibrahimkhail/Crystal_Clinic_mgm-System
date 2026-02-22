@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,7 +24,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
             entity.Property(c => c.MaxAmount).HasColumnName("MaxAmount").HasColumnType("decimal(18,2)").IsRequired(true);
             entity.Property(c => c.Percentage).HasColumnName("Percentage").HasColumnType("decimal(5,2)").IsRequired(true);
             entity.Property(c => c.FlatAmount).HasColumnName("FlatAmount").HasColumnType("decimal(18,2)").IsRequired(true);
-            entity.Property(c => c.CalculationType).HasColumnName("CalculationType").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // StepByStep
+            entity.Property(c => c.CalculationType).HasColumnName("CalculationType").HasColumnType("int").IsRequired(true).HasDefaultValue(TaxCalculationType.StepByStep); // StepByStep
             entity.Property(c => c.BracketOrder).HasColumnName("BracketOrder").HasColumnType("int").IsRequired(true);
             entity.Property(c => c.IsActive).HasColumnName("IsActive").HasColumnType("bit").IsRequired(true).HasDefaultValue(true);
 

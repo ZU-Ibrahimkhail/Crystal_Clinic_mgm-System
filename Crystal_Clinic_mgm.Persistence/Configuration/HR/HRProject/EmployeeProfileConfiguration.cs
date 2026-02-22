@@ -1,4 +1,5 @@
-﻿using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
+﻿using Crystal_Clinic_Mgm.Domain;
+using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
                 .HasForeignKey(f => f.ManagerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            entity.Property(c => c.EmploymentStatus).HasColumnName("EmploymentStatus").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Active
+            entity.Property(c => c.EmploymentStatus).HasColumnName("EmploymentStatus").HasColumnType("int").IsRequired(true).HasDefaultValue(EmploymentStatus.Active); // Active
             entity.Property(c => c.BankAccountNo).HasColumnName("BankAccountNo").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
             entity.Property(c => c.EmployeeCode).HasColumnName("EmployeeCode").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
             entity.Property(c => c.WorkEmail).HasColumnName("WorkEmail").HasColumnType("nvarchar").HasMaxLength(100).IsRequired(false);

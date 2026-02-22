@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
             entity.Property(c => c.TotalDays).HasColumnName("TotalDays").HasColumnType("decimal(5,2)").IsRequired(true);
 
             entity.Property(c => c.Reason).HasColumnName("Reason").HasColumnType("nvarchar(max)").IsRequired(false);
-            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Pending
+            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(LeaveStatus.Pending); // Pending
 
             entity.Property(c => c.ApprovedById).HasColumnName("ApprovedById").HasColumnType("int").IsRequired(false);
             entity.HasOne(x => x.ApprovedBy)

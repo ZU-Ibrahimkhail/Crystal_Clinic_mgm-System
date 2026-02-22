@@ -2,7 +2,6 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks
 {
     public class Department : LookAndAuditableEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? DeptCode { get; set; }
         public int? ParentDepartmentId { get; set; }

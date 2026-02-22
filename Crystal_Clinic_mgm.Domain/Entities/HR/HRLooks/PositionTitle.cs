@@ -4,7 +4,6 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks
 {
     public class PositionTitle : LookAndAuditableEntity
     {
-        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string JobDescription { get; set; } = string.Empty;
         public int BranchId { get; set; }

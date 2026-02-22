@@ -2,7 +2,6 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks
 {
     public class PayrollComponent : LookAndAuditableEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public PayrollComponentType Type { get; set; }
         public ComponentCalculationType CalculationType { get; set; }

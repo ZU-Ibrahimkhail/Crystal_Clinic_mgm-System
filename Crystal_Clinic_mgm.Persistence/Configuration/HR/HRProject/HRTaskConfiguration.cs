@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Microsoft.EntityFrameworkCore;
@@ -27,8 +28,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
                 .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(c => c.TaskName).HasColumnName("TaskName").HasColumnType("nvarchar").HasMaxLength(200).IsRequired(true);
-            entity.Property(c => c.Category).HasColumnName("Category").HasColumnType("int").IsRequired(true);
-            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Pending
+            entity.Property(c => c.Category).HasColumnName("Category").HasColumnType("int").IsRequired(true).HasDefaultValue(HRTaskCategory.Onboarding);
+            entity.Property(c => c.Status).HasColumnName("Status").HasColumnType("int").IsRequired(true).HasDefaultValue(HRTaskStatus.Pending); // Pending
 
             entity.Property(c => c.DueDate).HasColumnName("DueDate").HasColumnType("datetime").IsRequired(true);
             entity.Property(c => c.CompletedDate).HasColumnName("CompletedDate").HasColumnType("datetime").IsRequired(false);

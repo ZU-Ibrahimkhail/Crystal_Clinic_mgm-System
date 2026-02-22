@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
@@ -50,7 +51,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
 
             // Phase 1 Enhancements
             entity.Property(c => c.Conditions).HasColumnName("Conditions").HasColumnType("nvarchar(max)").IsRequired(false);
-            entity.Property(c => c.PayCycle).HasColumnName("PayCycle").HasColumnType("int").IsRequired(true).HasDefaultValue(1); // Monthly
+            entity.Property(c => c.PayCycle).HasColumnName("PayCycle").HasColumnType("int").IsRequired(true).HasDefaultValue(PayCycle.Monthly); // Monthly
             entity.Property(c => c.InsuranceDetails).HasColumnName("InsuranceDetails").HasColumnType("nvarchar(max)").IsRequired(false);
 
             EntityConfiguration<PayrollContract>.AuditableEntityConfigurations(entity);

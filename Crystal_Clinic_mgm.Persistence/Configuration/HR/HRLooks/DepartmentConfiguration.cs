@@ -9,9 +9,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
         public void Configure(EntityTypeBuilder<Department> entity)
         {
             entity.ToTable("Department", "HR");
-            entity.HasKey(x => x.Id);
+            entity.HasKey(x => x.ID);
 
-            entity.Property(c => c.Id).HasColumnName("Id").HasColumnType("int").ValueGeneratedOnAdd();
+            entity.Property(c => c.ID).HasColumnName("Id").HasColumnType("int").ValueGeneratedOnAdd();
             entity.Property(c => c.Name).HasColumnName("Name").HasColumnType("nvarchar").HasMaxLength(100).IsRequired(true);
             entity.Property(c => c.DeptCode).HasColumnName("DeptCode").HasColumnType("nvarchar").HasMaxLength(50).IsRequired(false);
 
