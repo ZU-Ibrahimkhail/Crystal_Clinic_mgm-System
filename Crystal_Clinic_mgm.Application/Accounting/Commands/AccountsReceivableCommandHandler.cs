@@ -108,124 +108,134 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(RecordReceiptCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-            try
+            var strategy = context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async() =>
             {
-                var receivable = await context.AccountsReceivables
-                    .Include(a => a.ChartOfAccount)
-                    .FirstOrDefaultAsync(a => a.Id == request.Dto.AccountsReceivableId && !a.IsDeleted, cancellationToken);
-
-                if (receivable == null)
-                    return Result.Fail("Accounts Receivable not found.");
-
-                // Validate payment amount
-                if (request.Dto.Amount <= 0)
-                    return Result.Fail("Payment amount must be greater than zero.");
-
-                // Validate overpayment limit (max 50% overpayment to prevent fraud)
-                var maxAllowedOverpayment = receivable.BalanceAmount * 1.5m;
-                var validationAmount = request.Dto.Amount * (request.Dto.ExchangeRate ?? 1);
-                if (validationAmount > maxAllowedOverpayment)
-                    return Result.Fail($"Payment amount exceeds maximum allowed overpayment limit of {maxAllowedOverpayment:N2} AFN.");
-
-                // Get exchange rate
-                decimal exchangeRate;
-                int currencyId = request.Dto.CurrencyId ?? receivable.CurrencyId ?? 1;
-                const int BaseCurrencyId = 1;
-
-                if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
+                await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                try
                 {
-                    exchangeRate = request.Dto.ExchangeRate.Value;
-                }
-                else
-                {
-                    exchangeRate = await context.GetExchangeRate(currencyId, BaseCurrencyId, cancellationToken);
-                }
+                    var receivable = await context.AccountsReceivables
+                        .Include(a => a.ChartOfAccount)
+                        .FirstOrDefaultAsync(a =>
+                            a.Id == request.Dto.AccountsReceivableId &&
+                            !a.IsDeleted,
+                            cancellationToken);
 
-                // Convert amount to base currency
-                var amountInBaseCurrency = request.Dto.Amount * exchangeRate;
 
-                // Calculate overpayment
-                var overpaymentAmount = Math.Max(0, amountInBaseCurrency - receivable.BalanceAmount);
-                var appliedAmount = amountInBaseCurrency - overpaymentAmount;
 
-                // Create receipt record for amount received
-                var receipt = new Receipt
-                {
-                    AccountsReceivableId = request.Dto.AccountsReceivableId,
-                    ReceiptNumber = GenerateReceiptNumber("REC"),
-                    ReceiptDate = request.Dto.ReceiptDate,
-                    TransactionType = TransactionType.Receipt,
-                    Amount = request.Dto.Amount,
-                    PaymentMethodId = request.Dto.PaymentMethodId,
-                    Reference = request.Dto.Reference ?? string.Empty,
-                    CurrencyId = currencyId,
-                    ExchangeRate = exchangeRate,
-                    AmountInBaseCurrency = amountInBaseCurrency,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
+                    if (receivable == null)
+                        return Result.Fail("Accounts Receivable not found.");
 
-                context.Receipts.Add(receipt);
-                await context.SaveChangesAsync(cancellationToken); // Save to get receipt.Id
+                    // Validate payment amount
+                    if (request.Dto.Amount <= 0)
+                        return Result.Fail("Payment amount must be greater than zero.");
 
-                // Create refund record if there's overpayment
-                Receipt? refund = null;
-                if (overpaymentAmount > 0)
-                {
-                    refund = new Receipt
+                    // Validate overpayment limit (max 50% overpayment to prevent fraud)
+                    var maxAllowedOverpayment = receivable.BalanceAmount * 1.5m;
+                    var validationAmount = request.Dto.Amount * (request.Dto.ExchangeRate ?? 1);
+                    if (validationAmount > maxAllowedOverpayment)
+                        return Result.Fail($"Payment amount exceeds maximum allowed overpayment limit of {maxAllowedOverpayment:N2} AFN.");
+
+                    // Get exchange rate
+                    decimal exchangeRate;
+                    int currencyId = request.Dto.CurrencyId ?? receivable.CurrencyId ?? 1;
+                    const int BaseCurrencyId = 1;
+
+                    if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
+                    {
+                        exchangeRate = request.Dto.ExchangeRate.Value;
+                    }
+                    else
+                    {
+                        exchangeRate = await context.GetExchangeRate(currencyId, BaseCurrencyId, cancellationToken);
+                    }
+
+                    // Convert amount to base currency
+                    var amountInBaseCurrency = request.Dto.Amount * exchangeRate;
+
+                    // Calculate overpayment
+                    var overpaymentAmount = Math.Max(0, amountInBaseCurrency - receivable.BalanceAmount);
+                    var appliedAmount = amountInBaseCurrency - overpaymentAmount;
+
+                    // Create receipt record for amount received
+                    var receipt = new Receipt
                     {
                         AccountsReceivableId = request.Dto.AccountsReceivableId,
-                        ReceiptNumber = GenerateReceiptNumber("REF"),
+                        ReceiptNumber = GenerateReceiptNumber("REC"),
                         ReceiptDate = request.Dto.ReceiptDate,
-                        TransactionType = TransactionType.Refund,
-                        Amount = overpaymentAmount / exchangeRate, // Convert back to original currency
+                        TransactionType = TransactionType.Receipt,
+                        Amount = request.Dto.Amount,
                         PaymentMethodId = request.Dto.PaymentMethodId,
-                        Reference = $"Change for {receipt.ReceiptNumber}",
+                        Reference = request.Dto.Reference ?? string.Empty,
                         CurrencyId = currencyId,
                         ExchangeRate = exchangeRate,
-                        AmountInBaseCurrency = overpaymentAmount,
-                        OriginalReceiptId = receipt.Id,
+                        AmountInBaseCurrency = amountInBaseCurrency,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     };
 
-                    context.Receipts.Add(refund);
+                    context.Receipts.Add(receipt);
+                    await context.SaveChangesAsync(cancellationToken); // Save to get receipt.Id
+
+                    // Create refund record if there's overpayment
+                    Receipt? refund = null;
+                    if (overpaymentAmount > 0)
+                    {
+                        refund = new Receipt
+                        {
+                            AccountsReceivableId = request.Dto.AccountsReceivableId,
+                            ReceiptNumber = GenerateReceiptNumber("REF"),
+                            ReceiptDate = request.Dto.ReceiptDate,
+                            TransactionType = TransactionType.Refund,
+                            Amount = overpaymentAmount / exchangeRate, // Convert back to original currency
+                            PaymentMethodId = request.Dto.PaymentMethodId,
+                            Reference = $"Change for {receipt.ReceiptNumber}",
+                            CurrencyId = currencyId,
+                            ExchangeRate = exchangeRate,
+                            AmountInBaseCurrency = overpaymentAmount,
+                            OriginalReceiptId = receipt.Id,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        context.Receipts.Add(refund);
+                    }
+
+                    // Update AR balance
+                    receivable.PaidAmount += appliedAmount;
+                    receivable.BalanceAmount -= appliedAmount;
+
+                    if (receivable.BalanceAmount <= 0)
+                    {
+                        receivable.Status = ARStatus.Paid;
+                        receivable.BalanceAmount = 0; // Ensure no negative balance
+                    }
+                    else
+                    {
+                        receivable.Status = ARStatus.PartiallyPaid;
+                    }
+
+                    context.AccountsReceivables.Update(receivable);
+                    await context.SaveChangesAsync(cancellationToken);
+
+                    // Create journal entries
+                    await CreateJournalEntries(context, receipt, refund, receivable, loggedInUser.Id, cancellationToken);
+
+                    await transaction.CommitAsync(cancellationToken);
+
+                    var message = overpaymentAmount > 0
+                        ? $"Payment recorded. Change given: {overpaymentAmount:N2} AFN"
+                        : "Payment recorded successfully.";
+
+                    return Result.Success(receipt.Id, message);
                 }
-
-                // Update AR balance
-                receivable.PaidAmount += appliedAmount;
-                receivable.BalanceAmount -= appliedAmount;
-
-                if (receivable.BalanceAmount <= 0)
+                catch (Exception ex)
                 {
-                    receivable.Status = ARStatus.Paid;
-                    receivable.BalanceAmount = 0; // Ensure no negative balance
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Result.Fail($"Error recording payment: {ex.Message}");
                 }
-                else
-                {
-                    receivable.Status = ARStatus.PartiallyPaid;
-                }
-
-                context.AccountsReceivables.Update(receivable);
-                await context.SaveChangesAsync(cancellationToken);
-
-                // Create journal entries
-                await CreateJournalEntries(context, receipt, refund, receivable, loggedInUser.Id, cancellationToken);
-
-                await transaction.CommitAsync(cancellationToken);
-
-                var message = overpaymentAmount > 0
-                    ? $"Payment recorded. Change given: {overpaymentAmount:N2} AFN"
-                    : "Payment recorded successfully.";
-
-                return Result.Success(receipt.Id, message);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                return Result.Fail($"Error recording payment: {ex.Message}");
-            }
+            });
         }
 
         private string GenerateReceiptNumber(string suffix = "")
