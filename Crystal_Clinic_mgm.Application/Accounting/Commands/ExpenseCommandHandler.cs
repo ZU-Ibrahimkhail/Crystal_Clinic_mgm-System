@@ -33,7 +33,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     BranchId = request.Dto.BranchId,
                     AttachmentPath = request.Dto.AttachmentPath,
                     Status = ExpenseStatus.Draft,
-                    CreatedBy = request.UserId
+                    CreatedBy = request.UserId,
+                    CreatedOn = DateTime.UtcNow,
                 };
 
                 context.Expenses.Add(expense);
