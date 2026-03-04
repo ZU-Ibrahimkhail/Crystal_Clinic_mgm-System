@@ -105,243 +105,271 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
         public async Task<ReservationResult> ReserveItemsAsync(ReservationRequest request, CancellationToken cancellationToken = default)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            try
+            return await strategy.ExecuteAsync(async () =>
             {
-                var existingReservation = await _context.InventoryReservations
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
-
-                if (existingReservation != null)
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync(
+                        System.Data.IsolationLevel.Serializable,
+                        cancellationToken);
+                try
                 {
-                    if (existingReservation.ExpiresAt > DateTime.UtcNow)
+                    var existingReservation = await _context.InventoryReservations
+                        .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
+
+                    if (existingReservation != null)
                     {
-                        await transaction.CommitAsync(cancellationToken);
-                        var existingLots = await GetReservedLots(existingReservation.Id, cancellationToken);
-                        return new ReservationResult
+                        if (existingReservation.ExpiresAt > DateTime.UtcNow)
                         {
-                            Success = true,
-                            ReservationId = existingReservation.Id,
-                            ExpiresAt = existingReservation.ExpiresAt,
-                            ReservedLots = existingLots
-                        };
-                    }
-                    else
-                    {
+                            var existingLots = await GetReservedLots(existingReservation.Id, cancellationToken);
+                            return new ReservationResult
+                            {
+                                Success = true,
+                                ReservationId = existingReservation.Id,
+                                ExpiresAt = existingReservation.ExpiresAt,
+                                ReservedLots = existingLots
+                            };
+                        }
+
                         await ReleaseReservationAsync(existingReservation.Id, cancellationToken);
                     }
-                }
 
-                var availabilityCheck = await CheckItemsAvailability(request.Items, cancellationToken);
-                if (!availabilityCheck.IsAvailable)
-                {
-                    await transaction.CommitAsync(cancellationToken);
-                    return new ReservationResult
+                    var availabilityCheck = await CheckItemsAvailability(request.Items, cancellationToken);
+                    if (!availabilityCheck.IsAvailable)
                     {
-                        Success = false,
-                        ErrorMessage = "Insufficient stock for one or more items",
-                        Shortages = availabilityCheck.Shortages
+                        return new ReservationResult
+                        {
+                            Success = false,
+                            ErrorMessage = "Insufficient stock for one or more items",
+                            Shortages = availabilityCheck.Shortages
+                        };
+                    }
+
+                    var reservation = new InventoryReservation
+                    {
+                        VisitId = request.VisitId,
+                        ServiceId = request.ServiceId,
+                        IdempotencyToken = request.IdempotencyToken,
+                        ExpiresAt = DateTime.UtcNow.AddSeconds(request.TtlSeconds),
+                        RequestedBy = request.RequestedBy ?? _loggedInUser.Id,
+                        Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active,
+                        BranchId = _loggedInUser.BranchId,
+                        CreatedBy = _loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
                     };
-                }
 
-                var reservation = new InventoryReservation
-                {
-                    VisitId = request.VisitId,
-                    ServiceId = request.ServiceId,
-                    IdempotencyToken = request.IdempotencyToken,
-                    ExpiresAt = DateTime.UtcNow.AddSeconds(request.TtlSeconds),
-                    RequestedBy = request.RequestedBy ?? _loggedInUser.Id,
-                    Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active,
-                    BranchId = _loggedInUser.BranchId
-                };
+                    _context.InventoryReservations.Add(reservation);
+                    await _context.SaveChangesAsync(cancellationToken);
 
-                _context.InventoryReservations.Add(reservation);
-                await _context.SaveChangesAsync(cancellationToken);
+                    var reservedItems = new List<ReservedItem>();
+                    foreach (var item in request.Items)
+                    {
+                        var lots = await ReserveItemLots(reservation.Id, item, cancellationToken);
+                        reservedItems.AddRange(lots);
+                    }
 
-                var reservedItems = new List<ReservedItem>();
-                foreach (var item in request.Items)
-                {
-                    var lots = await ReserveItemLots(reservation.Id, item, cancellationToken);
-                    reservedItems.AddRange(lots);
-                }
+                    await _context.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
 
-                _logger.LogInformation("Created reservation {ReservationId} with idempotency token {Token} for visit {VisitId}",
+                    _logger.LogInformation("Created reservation {ReservationId} with idempotency token {Token} for visit {VisitId}",
                     reservation.Id, request.IdempotencyToken, request.VisitId);
 
-                var reservedLots = reservedItems.Select(ri => new ReservedLot
-                {
-                    StockId = ri.StockId,
-                    ItemId = ri.ItemId,
-                    ReservedQuantity = ri.ReservedQuantity,
-                    UnitCost = ri.UnitCost
-                });
 
-                return new ReservationResult
-                {
-                    Success = true,
-                    ReservationId = reservation.Id,
-                    ExpiresAt = reservation.ExpiresAt,
-                    ReservedLots = reservedLots
-                };
-            }
-            catch (DbUpdateException dbex) when (dbex.InnerException?.Message.Contains("UNIQUE") == true)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogWarning(dbex, "Duplicate idempotency token detected: {Token}", request.IdempotencyToken);
-                
-                var retry = await _context.InventoryReservations
-                    .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
-                
-                if (retry != null && retry.ExpiresAt > DateTime.UtcNow)
-                {
-                    var reservedLots = await GetReservedLots(retry.Id, cancellationToken);
+
                     return new ReservationResult
                     {
                         Success = true,
-                        ReservationId = retry.Id,
-                        ExpiresAt = retry.ExpiresAt,
-                        ReservedLots = reservedLots
+                        ReservationId = reservation.Id,
+                        ExpiresAt = reservation.ExpiresAt,
+                        ReservedLots = reservedItems.Select(ri => new ReservedLot
+                        {
+                            StockId = ri.StockId,
+                            ItemId = ri.ItemId,
+                            ReservedQuantity = ri.ReservedQuantity,
+                            UnitCost = ri.UnitCost
+                        })
                     };
                 }
-
-                return new ReservationResult
-                {
-                    Success = false,
-                    ErrorMessage = "Failed to create reservation: duplicate request detected"
-                };
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Error creating reservation for visit {VisitId}", request.VisitId);
-
-                return new ReservationResult
-                {
-                    Success = false,
-                    ErrorMessage = "Failed to create reservation"
-                };
-            }
-        }
-
-        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync(int reservationId, CancellationToken cancellationToken = default)
-        {
-            var reservation = await _context.InventoryReservations
-                .Include(r => r.ReservedItems)
-                .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
-            if (reservation == null || reservation.Status != Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active)
-            {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found or not active");
-            }
-
-            if (reservation.ExpiresAt < DateTime.UtcNow)
-            {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has expired");
-            }
-
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-
-            try
-            {
-                // Get reserved items
-                var reservedItems = await _context.ReservedItems
-                    .Where(ri => ri.ReservationId == reservationId)
-                    .ToListAsync(cancellationToken);
-
-                // Convert reservations to actual movements
-                foreach (var reservedItem in reservedItems)
-                {
-                    var movementRequest = new MovementRequest
-                    {
-                        ItemId = reservedItem.ItemId,
-                        StockId = reservedItem.StockId,
-                        Quantity = reservedItem.ReservedQuantity,
-                        Type = MovementType.Out,
-                        Reason = MovementReason.SaleDeduction,
-                        ReferenceId = $"VIS-{reservation.VisitId}",
-                        ProcessedBy = reservation.RequestedBy
-                    };
-
-                    var result = await RegisterMovementAsync(movementRequest, cancellationToken);
-                    if (!result.Success)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail($"Failed to process movement: {result.ErrorMessage}");
-                    }
-                }
-
-                reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed;
-                
-                try
-                {
-                    await _context.SaveChangesAsync(cancellationToken);
-                }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException dbex) when (dbex.InnerException?.Message.Contains("UNIQUE") == true)
                 {
                     await transaction.RollbackAsync(cancellationToken);
-                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has been modified by another request. Please retry.");
-                }
+                    _logger.LogWarning(dbex, "Duplicate idempotency token detected: {Token}", request.IdempotencyToken);
 
-                await transaction.CommitAsync(cancellationToken);
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
-            }
-            catch (Exception ex)
+                    var retry = await _context.InventoryReservations
+                        .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
+
+                    if (retry != null && retry.ExpiresAt > DateTime.UtcNow)
+                    {
+                        var reservedLots = await GetReservedLots(retry.Id, cancellationToken);
+                        return new ReservationResult
+                        {
+                            Success = true,
+                            ReservationId = retry.Id,
+                            ExpiresAt = retry.ExpiresAt,
+                            ReservedLots = reservedLots
+                        };
+                    }
+
+                    return new ReservationResult
+                    {
+                        Success = false,
+                        ErrorMessage = "Failed to create reservation: duplicate request detected"
+                    };
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    _logger.LogError(ex, "Error creating reservation for visit {VisitId}", request.VisitId);
+
+                    return new ReservationResult
+                    {
+                        Success = false,
+                        ErrorMessage = "Failed to create reservation"
+                    };
+                }
+            });
+        }
+
+        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync( int reservationId, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Error committing reservation {ReservationId}", reservationId);
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to commit reservation");
-            }
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync(
+                        System.Data.IsolationLevel.Serializable,
+                        cancellationToken);
+
+                try
+                {
+                    // 1️⃣ Load reservation with reserved items
+                    var reservation = await _context.InventoryReservations
+                        .Include(r => r.ReservedItems)
+                        .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
+
+                    if (reservation == null ||
+                        reservation.Status != Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active)
+                    {
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found or not active");
+                    }
+
+                    if (reservation.ExpiresAt < DateTime.UtcNow)
+                    {
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has expired");
+                    }
+
+                    foreach (var reservedItem in reservation.ReservedItems)
+                    {
+                        var movementRequest = new MovementRequest
+                        {
+                            ItemId = reservedItem.ItemId,
+                            StockId = reservedItem.StockId,
+                            Quantity = reservedItem.ReservedQuantity,
+                            Type = MovementType.Out,
+                            Reason = MovementReason.SaleDeduction,
+                            ReferenceId = $"VIS-{reservation.VisitId}",
+                            ProcessedBy = reservation.RequestedBy
+                        };
+
+                        var result = await RegisterMovementAsync(movementRequest, cancellationToken);
+                        if (!result.Success)
+                        {
+                            await transaction.RollbackAsync(cancellationToken);
+                            return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail($"Failed to process movement: {result.ErrorMessage}");
+                        }
+                    }
+
+                    reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed;
+
+                    try
+                    {
+                        await _context.SaveChangesAsync(cancellationToken);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has been modified by another request. Please retry.");
+                    }
+
+                    // 4️⃣ Commit transaction
+                    await transaction.CommitAsync(cancellationToken);
+
+                    _logger.LogInformation(
+                        "Reservation {ReservationId} committed successfully",
+                        reservationId);
+
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    _logger.LogError(ex, "Error committing reservation {ReservationId}", reservationId);
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to commit reservation");
+                }
+            });
         }
 
         public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> ReleaseReservationAsync(int reservationId, CancellationToken cancellationToken = default)
         {
-            var reservation = await _context.InventoryReservations
-                .Include(r => r.ReservedItems)
-                .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            if (reservation == null)
+            return await strategy.ExecuteAsync(async () =>
             {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found");
-            }
+                await using var transaction = await _context.Database.BeginTransactionAsync(
+                    System.Data.IsolationLevel.Serializable,
+                    cancellationToken);
 
-            if (reservation.Status == Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed)
-            {
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Cannot release a committed reservation. Reserved items have already been deducted.");
-            }
-
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-
-            try
-            {
-                foreach (var reservedItem in reservation.ReservedItems)
+                try
                 {
-                    var stock = await _context.Stocks.FindAsync(reservedItem.StockId);
-                    if (stock != null)
+                    var reservation = await _context.InventoryReservations
+                        .Include(r => r.ReservedItems)
+                        .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
+
+                    if (reservation == null)
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found");
+
+                    if (reservation.Status == Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed)
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(
+                            "Cannot release a committed reservation. Reserved items have already been deducted.");
+
+                    // 1️⃣ Restore stock quantities
+                    foreach (var reservedItem in reservation.ReservedItems)
                     {
-                        stock.QuantityRemaining += reservedItem.ReservedQuantity;
-                        _context.Stocks.Update(stock);
+                        var stock = await _context.Stocks
+                            .FirstOrDefaultAsync(s => s.StockId == reservedItem.StockId, cancellationToken);
+
+                        if (stock != null)
+                        {
+                            stock.QuantityRemaining += reservedItem.ReservedQuantity;
+                            _context.Stocks.Update(stock);
+                        }
                     }
+
+                    // 2️⃣ Log BEFORE removing reserved items
+                    _logger.LogInformation(
+                        "Releasing reservation {ReservationId} with {Count} items",
+                        reservationId, reservation.ReservedItems.Count);
+
+                    // 3️⃣ Update reservation status and remove reserved items
+                    reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Released;
+                    _context.ReservedItems.RemoveRange(reservation.ReservedItems);
+
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    await transaction.CommitAsync(cancellationToken);
+
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
                 }
-
-                reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Released;
-                _context.ReservedItems.RemoveRange(reservation.ReservedItems);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                _logger.LogInformation("Released reservation {ReservationId} with {Count} items", 
-                    reservationId, reservation.ReservedItems.Count);
-
-                await transaction.CommitAsync(cancellationToken);
-
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Error releasing reservation {ReservationId}", reservationId);
-                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to release reservation");
-            }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    _logger.LogError(ex, "Error releasing reservation {ReservationId}", reservationId);
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to release reservation");
+                }
+            });
         }
 
         public async Task<StockLevel> GetStockLevelAsync(int itemId, int? branchId = null, CancellationToken cancellationToken = default)
@@ -627,7 +655,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     ItemId = item.ItemId,
                     StockId = batch.StockId,
                     ReservedQuantity = reserveFromBatch,
-                    UnitCost = batch.PurchasePrice
+                    UnitCost = batch.PurchasePrice,
+                    CreatedBy = _loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
                 };
 
                 _context.ReservedItems.Add(reservedItem);
@@ -1039,6 +1069,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
             return "No suitable stock batches found";
         }
+
     }
 
     public class MultiLotMovementInfo
