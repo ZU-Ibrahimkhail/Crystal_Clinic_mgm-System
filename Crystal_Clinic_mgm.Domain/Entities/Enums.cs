@@ -189,7 +189,8 @@
 
     public enum ARStatus
     {
-        Open,
+        Draft,
+        Issue,
         PartiallyPaid,
         Paid,
         Overdue,
@@ -198,7 +199,8 @@
 
     public enum APStatus
     {
-        Open,
+        Draft,
+        Approve,
         PartiallyPaid,
         Paid,
         Overdue

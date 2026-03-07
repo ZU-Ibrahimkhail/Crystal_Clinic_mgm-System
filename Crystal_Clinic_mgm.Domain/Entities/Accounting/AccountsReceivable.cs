@@ -14,7 +14,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public decimal InvoiceAmount { get; set; }
         public decimal PaidAmount { get; set; } = 0;
         public decimal BalanceAmount { get; set; }
-        public ARStatus Status { get; set; } = ARStatus.Open;
+        public ARStatus Status { get; set; } = ARStatus.Draft;
         public int? ChartOfAccountId { get; set; }
         public ChartOfAccounts? ChartOfAccount { get; set; }
         public int? BranchId { get; set; }
@@ -23,6 +23,10 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public CurrencyType? Currency { get; set; }
         public int? VisitId { get; set; }
         public Visit? Visit { get; set; }
+        public double CurrencyRate { get; set; }
+        public string? Description { get; set; }
+        public string? Reference { get; set; }
+        public string? Attachment { get; set; }
         public ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
     }
 }

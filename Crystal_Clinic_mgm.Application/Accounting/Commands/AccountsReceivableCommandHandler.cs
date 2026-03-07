@@ -36,9 +36,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     DueDate = request.Dto.DueDate,
                     InvoiceAmount = request.Dto.InvoiceAmount,
                     BalanceAmount = request.Dto.InvoiceAmount,
-                    Status = ARStatus.Open,
+                    Status = ARStatus.Draft,
                     ChartOfAccountId = request.Dto.ChartOfAccountId,
                     BranchId = request.Dto.BranchId,
+                    CurrencyRate = request.Dto.CurrencyRate,
+                    Attachment = request.Dto.Attachment,
+                    Description = request.Dto.Description,
+                    Reference = request.Dto.Reference,
                     CurrencyId = request.Dto.CurrencyId,
                     VisitId = request.Dto.VisitId,
                     CreatedBy = loggedInUser.Id,
@@ -81,7 +85,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 if (receivable == null)
                     return Result.Fail("Accounts Receivable not found.");
 
-                receivable.Status = ARStatus.Open;
+                receivable.Status = ARStatus.Issue;
                 receivable.ModifiedBy = loggedInUser.Id;
                 receivable.ModifiedOn = DateTime.UtcNow;
 

@@ -119,6 +119,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     BalanceAmount = receivable.BalanceAmount,
                     Status = receivable.Status,
                     BranchId = receivable.BranchId,
+                    CurrencyRate = receivable.CurrencyRate,
+                    Attachment = receivable.Attachment,
+                    Description = receivable.Description,
+                    Reference = receivable.Reference,
+                    CustomerName = receivable.Customer.name,
                     Receipts = receipts
                 };
 

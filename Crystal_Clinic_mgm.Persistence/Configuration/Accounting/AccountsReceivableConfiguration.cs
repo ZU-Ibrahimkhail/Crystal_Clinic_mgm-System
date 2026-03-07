@@ -54,7 +54,28 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("Status")
                 .HasColumnType("int")
                 .IsRequired()
-                .HasDefaultValue(ARStatus.Open);
+                .HasDefaultValue(ARStatus.Draft);
+
+            entity.Property(a => a.Attachment)
+                .HasColumnName("Attachemnt")
+                .HasColumnType("nvarchar(100)")
+                .IsRequired();
+
+            entity.Property(a => a.Reference)
+                .HasColumnName("Refrence")
+                .HasColumnType("nvarchar(100)")
+                .IsRequired();
+
+            entity.Property(a => a.CurrencyRate)
+                .HasColumnName("CurrencyRate")
+                .HasColumnType("int")
+                .IsRequired()
+                .HasDefaultValue(APStatus.Draft);
+
+            entity.Property(a => a.Description)
+                .HasColumnName("Description")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired();
 
             entity.Property(a => a.ChartOfAccountId)
                 .HasColumnName("ChartOfAccountId")

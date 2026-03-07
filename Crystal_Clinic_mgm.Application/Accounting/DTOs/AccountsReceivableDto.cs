@@ -15,6 +15,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal BalanceAmount { get; set; }
         public ARStatus Status { get; set; }
         public int? BranchId { get; set; }
+        public double CurrencyRate { get; set; }
+        public string? Description { get; set; }
+        public string? Reference { get; set; }
+        public string? Attachment { get; set; }
         public List<ReceiptDto> Receipts { get; set; } = new();
     }
 
@@ -28,6 +32,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int? BranchId { get; set; }
         public int? VisitId { get; set; }
         public int? CurrencyId { get; set; }
+        public double  CurrencyRate { get; set; }
+        public string? Description { get; set; }
+        public string? Reference { get; set; }
+        public string? Attachment { get; set; }
     }
 
     public class ReceiptDto

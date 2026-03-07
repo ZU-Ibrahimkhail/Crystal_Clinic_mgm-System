@@ -14,13 +14,17 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public decimal InvoiceAmount { get; set; }
         public decimal PaidAmount { get; set; } = 0;
         public decimal BalanceAmount { get; set; }
-        public APStatus Status { get; set; } = APStatus.Open;
+        public APStatus Status { get; set; } = APStatus.Draft;
         public int? ChartOfAccountId { get; set; }
         public ChartOfAccounts? ChartOfAccount { get; set; }
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
         public int? CurrencyId { get; set; }
         public CurrencyType? Currency { get; set; }
+        public double CurrencyRate { get; set; }
+        public string? Description { get; set; }
+        public string? Reference { get; set; }
+        public string? Attachment { get; set; }
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

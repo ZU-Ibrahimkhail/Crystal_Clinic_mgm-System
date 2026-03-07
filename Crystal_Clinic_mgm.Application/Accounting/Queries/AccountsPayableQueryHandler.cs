@@ -99,7 +99,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     PaidAmount = payable.PaidAmount,
                     BalanceAmount = payable.BalanceAmount,
                     Status = payable.Status,
-                    BranchId = payable.BranchId
+                    BranchId = payable.BranchId,
+                    VendorName = payable.Vendor.Name,
+                    CurrencyRate = payable.CurrencyRate,
+                    Attachment = payable.Attachment,
+                    Description = payable.Description,
+                    Reference = payable.Reference
+
                 };
 
                 return Result.Success(dto);

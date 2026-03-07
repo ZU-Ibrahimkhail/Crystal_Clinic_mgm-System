@@ -168,7 +168,7 @@ namespace Crystal_Clinic_Mgm.Common.AppConfig
         }
         public static string ClinicAttachment
         {
-            get { return AppSettings["AttachmentFilesPath:ClinicAttachments"]!; }
+            get { return AppSettings["CrystalClinic:ClinicAttachments"]!; }
         }
         public static string MailHost
         {

@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "c8a4d2e1-7b8c-4d5e-9f0a-1b2c3d4e5f6g",
+		"name": "Crystal Clinic Inventory API",
+		"description": "Comprehensive collection for testing and integrating with the Crystal Clinic Inventory Management System.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Stock & Movement",
+			"item": [
+				{
+					"name": "Get Stock Level",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/stock/4521",
+							"host": ["{{baseUrl}}"],
+							"path": ["stock", "4521"]
+						},
+						"description": "Retrieve stock level and batch (Lot) information for a specific item."
+					}
+				},
+				{
+					"name": "Register Movement (In/Out)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+							{ "key": "Content-Type", "value": "application/json", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"itemId\": 4521,\n    \"stockId\": null,\n    \"quantity\": 5,\n    \"type\": \"In\",\n    \"reason\": \"PurchaseReceipt\",\n    \"referenceId\": \"PO-2026-00789\",\n    \"notes\": \"Emergency purchase receipt\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/movement",
+							"host": ["{{baseUrl}}"],
+							"path": ["movement"]
+						}
+					}
+				},
+				{
+					"name": "Stock Take (Adjustment)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stockId\": 1002,\n    \"actualQuantity\": 6,\n    \"reason\": \"Monthly Physical Count\",\n    \"notes\": \"Discrepancy of 1 unit found\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/stocktake",
+							"host": ["{{baseUrl}}"],
+							"path": ["stocktake"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "Reserve Items",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"visitId\": 8724,\n    \"serviceId\": 501,\n    \"items\": [\n        { \"itemId\": 4521, \"quantity\": 1 },\n        { \"itemId\": 2015, \"quantity\": 5 }\n    ],\n    \"idempotencyToken\": \"VIS-8724-{{$guid}}\",\n    \"ttlSeconds\": 3600\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reserve",
+							"host": ["{{baseUrl}}"],
+							"path": ["reserve"]
+						}
+					}
+				},
+				{
+					"name": "Get Reservation Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reservation/5421",
+							"host": ["{{baseUrl}}"],
+							"path": ["reservation", "5421"]
+						}
+					}
+				},
+				{
+					"name": "Commit Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reservation/5421/commit",
+							"host": ["{{baseUrl}}"],
+							"path": ["reservation", "5421", "commit"]
+						}
+					}
+				},
+				{
+					"name": "Release Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/reservation/5422/release",
+							"host": ["{{baseUrl}}"],
+							"path": ["reservation", "5422", "release"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Kits",
+			"item": [
+				{
+					"name": "Get Available Kits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/kits",
+							"host": ["{{baseUrl}}"],
+							"path": ["kits"]
+						}
+					}
+				},
+				{
+					"name": "Consume Kit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 1,\n    \"referenceId\": \"VIS-8724\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/kits/7/consume",
+							"host": ["{{baseUrl}}"],
+							"path": ["kits", "7", "consume"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Movement History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/movements?itemId=4521",
+							"host": ["{{baseUrl}}"],
+							"path": ["movements"],
+							"query": [
+								{ "key": "itemId", "value": "4521" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Expiring Stock",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/expiring?daysUntilExpiry=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["expiring"],
+							"query": [
+								{ "key": "daysUntilExpiry", "value": "30" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Valuation Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}", "type": "text" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/valuation",
+							"host": ["{{baseUrl}}"],
+							"path": ["valuation"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "https://api.crystalclinic.local/api/inventory", "type": "string" },
+		{ "key": "token", "value": "YOUR_TOKEN_HERE", "type": "string" }
+	]
+}

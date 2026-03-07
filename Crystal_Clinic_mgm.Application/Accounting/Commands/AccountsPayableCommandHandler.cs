@@ -29,8 +29,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     DueDate = request.Dto.DueDate,
                     InvoiceAmount = request.Dto.InvoiceAmount,
                     BalanceAmount = request.Dto.InvoiceAmount,
-                    Status = APStatus.Open,
+                    Status = APStatus.Draft,
                     ChartOfAccountId = request.Dto.ChartOfAccountId,
+                    CurrencyRate = request.Dto.CurrencyRate,
+                    Attachment = request.Dto.Attachment,
+                    Description = request.Dto.Description,
+                    Reference = request.Dto.Reference,
                     BranchId = request.Dto.BranchId,
                     CurrencyId = request.Dto.CurrencyId,
                     CreatedBy = loggedInUser.Id,
@@ -73,7 +77,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 if (payable == null)
                     return Result.Fail("Accounts Payable not found.");
 
-                payable.Status = APStatus.Open;
+                payable.Status = APStatus.Approve;
                 payable.ModifiedBy = loggedInUser.Id;
                 payable.ModifiedOn = DateTime.UtcNow;
 
