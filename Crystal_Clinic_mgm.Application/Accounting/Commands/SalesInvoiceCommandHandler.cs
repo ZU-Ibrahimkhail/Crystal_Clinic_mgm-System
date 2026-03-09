@@ -37,6 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     SalesArea = request.Dto.SalesArea,
                     BranchId = request.Dto.BranchId,
                     Status = SalesStatus.Draft,
+                    Attachment = request.Dto.Attachment,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
@@ -57,7 +58,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             UnitPrice = lineDto.UnitPrice,
                             LineTotal = lineDto.Quantity * lineDto.UnitPrice,
                             DiscountAmount = lineDto.DiscountAmount,
-                            TaxAmount = lineDto.TaxAmount
+                            TaxAmount = lineDto.TaxAmount,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
                         };
                         invoice.Lines.Add(line);
                     }
@@ -66,6 +69,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     invoice.DiscountAmount = invoice.Lines.Sum(l => l.DiscountAmount);
                     invoice.TaxAmount = invoice.Lines.Sum(l => l.TaxAmount);
                     invoice.NetAmount = invoice.TotalAmount - invoice.DiscountAmount + invoice.TaxAmount;
+                    context.Update(invoice);
+                    await context.SaveChangesAsync(cancellationToken);
                 }
 
 

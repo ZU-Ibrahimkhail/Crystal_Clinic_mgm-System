@@ -15,6 +15,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public string ReferenceType { get; set; } = string.Empty;
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
+        public string? Attachment { get; set; }
         public ICollection<JournalEntryLine> JournalEntryLines { get; set; } = new List<JournalEntryLine>();
         public ICollection<GeneralLedger> GeneralLedgerEntries { get; set; } = new List<GeneralLedger>();
     }

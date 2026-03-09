@@ -88,6 +88,24 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (payable == null)
                     return Result.Fail("Accounts Payable not found.");
 
+                var payments = await context.Payments
+                    .Where(p => p.AccountsPayableId == request.Id && !p.IsDeleted)
+                    .OrderByDescending(r => r.PaymentDate)
+                    .Select(p => new PaymentDto
+                    {
+                        Id = p.Id,
+                        AccountsPayableId = p.Id,
+                        PaymentNumber = p.PaymentNumber,
+                        PaymentDate = p.PaymentDate,
+                        AmountPaid = p.AmountPaid,
+                        PaymentMethodId = p.PaymentMethodId,
+                        Reference = p.Reference,
+                        CurrencyId = p.CurrencyId,
+                        ExchangeRate = p.ExchangeRate,
+                        AmountInBaseCurrency = p.AmountInBaseCurrency
+                        
+                    }).ToListAsync(cancellationToken);
+
                 var dto = new AccountsPayableDto
                 {
                     Id = payable.Id,
@@ -104,7 +122,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     CurrencyRate = payable.CurrencyRate,
                     Attachment = payable.Attachment,
                     Description = payable.Description,
-                    Reference = payable.Reference
+                    Reference = payable.Reference,
+                    Payments = payments
 
                 };
 

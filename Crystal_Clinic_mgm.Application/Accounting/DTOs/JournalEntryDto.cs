@@ -12,6 +12,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string ReferenceNumber { get; set; } = string.Empty;
         public string ReferenceType { get; set; } = string.Empty;
         public int? BranchId { get; set; }
+        public string? Attachment { get; set; }
         public List<JournalEntryLineDto> Lines { get; set; } = new();
     }
 
@@ -36,6 +37,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string ReferenceNumber { get; set; } = string.Empty;
         public string ReferenceType { get; set; } = string.Empty;
         public int? BranchId { get; set; }
+        public string? Attachment { get; set; }
         public List<CreateJournalEntryLineDto> Lines { get; set; } = new();
     }
 

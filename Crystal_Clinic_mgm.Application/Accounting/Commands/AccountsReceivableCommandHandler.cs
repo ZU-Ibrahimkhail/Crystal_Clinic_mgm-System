@@ -85,7 +85,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 if (receivable == null)
                     return Result.Fail("Accounts Receivable not found.");
 
-                receivable.Status = ARStatus.Issue;
+                receivable.Status = ARStatus.Open;
                 receivable.ModifiedBy = loggedInUser.Id;
                 receivable.ModifiedOn = DateTime.UtcNow;
 

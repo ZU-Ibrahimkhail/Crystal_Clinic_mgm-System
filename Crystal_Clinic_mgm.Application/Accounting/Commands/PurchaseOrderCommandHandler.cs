@@ -35,7 +35,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     OrderDate = request.Dto.OrderDate,
                     ExpectedDeliveryDate = request.Dto.ExpectedDeliveryDate,
                     BranchId = request.Dto.BranchId,
-                    Status = POStatus.Open,
+                    Status = POStatus.Draft,
+                    Attachment = request.Dto.Attachment,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
@@ -53,15 +54,18 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ItemDescription = lineDto.Description,
                             Quantity = lineDto.Quantity,
                             UnitPrice = lineDto.UnitPrice,
-                            LineTotal = lineDto.Quantity * lineDto.UnitPrice
+                            LineTotal = lineDto.Quantity * lineDto.UnitPrice,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.Now
                         };
                         po.Lines.Add(line);
                     }
 
                     po.TotalAmount = po.Lines.Sum(l => l.LineTotal);
+                    context.Update(po);
+                    await context.SaveChangesAsync(cancellationToken);
+
                 }
-
-
                 return Result.Success(po.Id, $"Purchase Order {poNumber} created successfully.");
             }
             catch (Exception ex)

@@ -13,6 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string ContactInfo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public string? Attachment { get; set; }
     }
 
     public class CreateShareholderDto
@@ -22,6 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TotalInvestment { get; set; }
         public string ContactInfo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string? Attachment { get; set; }
     }
 
     public class UpdateShareholderDto

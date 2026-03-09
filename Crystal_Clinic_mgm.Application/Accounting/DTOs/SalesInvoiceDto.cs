@@ -16,6 +16,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public SalesStatus Status { get; set; }
         public string SalesArea { get; set; } = string.Empty;
         public int? BranchId { get; set; }
+        public string? Attachment { get; set; }
+
     }
 
     public class CreateSalesInvoiceDto
@@ -29,6 +31,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public string? Notes { get; set; }
+        public string? Attachment { get; set; }
         public List<SalesInvoiceLineDto> Lines { get; set; } = new();
     }
 

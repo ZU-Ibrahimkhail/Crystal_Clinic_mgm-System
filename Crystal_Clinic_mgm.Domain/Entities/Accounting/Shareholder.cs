@@ -10,6 +10,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public string ContactInfo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
+        public string? Attachment { get; set; }
         public ICollection<EquityTransaction> Transactions { get; set; } = new List<EquityTransaction>();
     }
 }

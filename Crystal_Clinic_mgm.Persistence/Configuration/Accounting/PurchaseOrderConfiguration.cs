@@ -60,6 +60,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasForeignKey(p => p.BranchId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            entity.Property(a => a.Attachment)
+                .HasColumnName("Attachemnt")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired();
+
             entity.HasMany(p => p.Lines)
                 .WithOne(l => l.PurchaseOrder)
                 .HasForeignKey(l => l.PurchaseOrderId)

@@ -19,8 +19,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
+            try 
+            { 
                 var expense = new Expense
                 {
                     CategoryId = request.Dto.CategoryId,

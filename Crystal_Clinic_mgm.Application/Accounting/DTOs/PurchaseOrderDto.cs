@@ -14,6 +14,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TotalAmount { get; set; }
         public POStatus Status { get; set; }
         public int? BranchId { get; set; }
+        public string? Attachment { get; set; }
+
     }
 
     public class CreatePurchaseOrderDto
@@ -22,6 +24,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public DateTime OrderDate { get; set; }
         public DateTime? ExpectedDeliveryDate { get; set; }
         public int? BranchId { get; set; }
+        public string? Attachment { get; set; }
         public List<POLineDto> Lines { get; set; } = new();
     }
 

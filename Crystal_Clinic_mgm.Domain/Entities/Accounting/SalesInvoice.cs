@@ -18,6 +18,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public string SalesArea { get; set; } = string.Empty;
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
+        public string? Attachment { get; set; }
         public ICollection<SalesInvoiceLine> Lines { get; set; } = new List<SalesInvoiceLine>();
         public ICollection<SalesReceipt> Receipts { get; set; } = new List<SalesReceipt>();
     }

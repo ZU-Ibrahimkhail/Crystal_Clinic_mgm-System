@@ -51,6 +51,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("decimal(18, 2)")
                 .IsRequired();
 
+            entity.Property(a => a.Attachment)
+                .HasColumnName("Attachemnt")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired();
+
             entity.Property(s => s.Status)
                 .HasColumnName("Status")
                 .HasColumnType("int")

@@ -40,6 +40,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ReferenceNumber = request.Dto.ReferenceNumber,
                     ReferenceType = request.Dto.ReferenceType,
                     BranchId = request.Dto.BranchId,
+                    Attachment = request.Dto.Attachment,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };

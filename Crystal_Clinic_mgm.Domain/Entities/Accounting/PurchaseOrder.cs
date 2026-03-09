@@ -15,6 +15,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public POStatus Status { get; set; } = POStatus.Open;
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }
+        public string? Attachment { get; set; }
         public ICollection<POLine> Lines { get; set; } = new List<POLine>();
     }
 }

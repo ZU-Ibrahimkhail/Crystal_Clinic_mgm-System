@@ -31,6 +31,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ContactInfo = request.Dto.ContactInfo,
                     Email = request.Dto.Email,
                     IsActive = true,
+                    Attachment = request.Dto.Attachment,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };

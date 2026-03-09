@@ -52,6 +52,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .IsRequired()
                 .HasDefaultValue(true);
 
+            entity.Property(a => a.Attachment)
+                .HasColumnName("Attachemnt")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired();
+
             entity.HasMany(s => s.Transactions)
                 .WithOne(t => t.Shareholder)
                 .HasForeignKey(t => t.ShareholderId)

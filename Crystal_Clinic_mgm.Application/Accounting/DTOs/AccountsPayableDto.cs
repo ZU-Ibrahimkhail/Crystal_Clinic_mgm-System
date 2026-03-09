@@ -1,5 +1,4 @@
 using Crystal_Clinic_Mgm.Domain;
-using Crystal_Clinic_Mgm.Domain.Entities;
 
 namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 {
@@ -20,6 +19,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? Description { get; set; }
         public string? Reference { get; set; }
         public string? Attachment { get; set; }
+        public List<PaymentDto> Payments { get; set; } = new();
+
     }
 
     public class CreateAccountsPayableDto
@@ -36,6 +37,20 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? Description { get; set; }
         public string? Reference { get; set; }
         public string? Attachment { get; set; }
+    }
+
+    public class PaymentDto
+    {
+        public int Id { get; set; }
+        public int AccountsPayableId { get; set; }
+        public string PaymentNumber { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public decimal AmountPaid { get; set; }
+        public int PaymentMethodId { get; set; }
+        public string Reference { get; set; } = string.Empty;
+        public int? CurrencyId { get; set; }
+        public decimal ExchangeRate { get; set; } = 1;
+        public decimal AmountInBaseCurrency { get; set; }
     }
 
     public class CreatePaymentDto
