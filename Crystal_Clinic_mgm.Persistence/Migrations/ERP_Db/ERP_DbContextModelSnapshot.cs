@@ -2552,6 +2552,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasDefaultValue(0m)
                         .HasColumnName("DiscountAmount");
 
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("DueDate");
+
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime")
                         .HasColumnName("InvoiceDate");
@@ -6358,9 +6362,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("BaseSalary");
 
-                    b.Property<int?>("BranchID")
-                        .HasColumnType("int");
-
                     b.Property<int>("BranchId")
                         .HasColumnType("int")
                         .HasColumnName("BranchId");
@@ -6437,8 +6438,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnName("StartDate");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("BranchID");
 
                     b.HasIndex("BranchId");
 
@@ -9259,10 +9258,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollContract", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchID");
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", null)
                         .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.NoAction)

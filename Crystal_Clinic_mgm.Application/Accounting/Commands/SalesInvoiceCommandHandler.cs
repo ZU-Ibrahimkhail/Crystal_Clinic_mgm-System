@@ -34,6 +34,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     InvoiceNumber = invoiceNumber,
                     CustomerId = request.Dto.CustomerId,
                     InvoiceDate = request.Dto.InvoiceDate,
+                    DueDate = request.Dto.DueDate,
                     SalesArea = request.Dto.SalesArea,
                     BranchId = request.Dto.BranchId,
                     Status = SalesStatus.Draft,

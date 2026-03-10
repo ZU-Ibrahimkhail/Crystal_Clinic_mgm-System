@@ -34,8 +34,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRProject
                 .HasForeignKey(f => f.PositionTitleId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+
             entity.Property(c => c.BranchId).HasColumnName("BranchId").HasColumnType("int").IsRequired(true);
-            entity.HasOne<Branch>().WithMany().HasForeignKey(f => f.BranchId).OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(x => x.Branch).WithMany().HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(c => c.CurrencyTypeId).HasColumnName("CurrencyTypeId").HasColumnType("int").IsRequired(true);
             entity.HasOne(x => x.CurrencyType)

@@ -308,6 +308,39 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
+                name: "Department",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    DeptCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ParentDepartmentId = table.Column<int>(type: "int", nullable: true),
+                    HeadEmployeeId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    EnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PashtoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DariName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Department", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Department_Department_ParentDepartmentId",
+                        column: x => x.ParentDepartmentId,
+                        principalSchema: "HR",
+                        principalTable: "Department",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Doctor",
                 schema: "CrystalClinic",
                 columns: table => new
@@ -413,32 +446,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "InventoryReservations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    VisitId = table.Column<int>(type: "int", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    IdempotencyToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RequestedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: true),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InventoryReservations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ItemCategory",
                 schema: "Stock",
                 columns: table => new
@@ -484,6 +491,36 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LabTestTemplate", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveType",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    MaxDaysPerYear = table.Column<int>(type: "int", nullable: false),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    AllowCarryover = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    MaxCarryoverDays = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    EnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PashtoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DariName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveType", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -538,6 +575,29 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
+                name: "OnboardingTaskTemplate",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnboardingTaskTemplate", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Partners",
                 columns: table => new
                 {
@@ -581,6 +641,36 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Patient", x => x.patientId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayrollComponent",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    CalculationType = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ChartOfAccountId = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    EnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PashtoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DariName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayrollComponent", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -669,6 +759,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     ContactInfo = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -679,6 +770,34 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shareholder", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shift",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    GracePeriodMinutes = table.Column<int>(type: "int", nullable: false, defaultValue: 5),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    EnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PashtoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DariName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shift", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -703,6 +822,29 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Supplier", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaxConfiguration",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TaxType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxConfiguration", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -908,6 +1050,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     ReferenceNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ReferenceType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     BranchId = table.Column<int>(type: "int", nullable: true),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -932,31 +1075,42 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "HRLooks",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    JobDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BranchId = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    JobDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReportsToId = table.Column<int>(type: "int", nullable: true),
+                    JobGrade = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    MinSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
+                    MaxSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    EnglishName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    PashtoName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    DariName = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    EnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PashtoName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DariName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PositionTitle", x => x.ID);
+                    table.PrimaryKey("PK_PositionTitle", x => x.Id);
                     table.ForeignKey(
                         name: "FK_PositionTitle_Branch_BranchId",
                         column: x => x.BranchId,
                         principalSchema: "Look",
                         principalTable: "Branch",
                         principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_PositionTitle_PositionTitle_ReportsToId",
+                        column: x => x.ReportsToId,
+                        principalSchema: "HRLooks",
+                        principalTable: "PositionTitle",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1077,66 +1231,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmployeeProfile",
-                schema: "HR",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EnglishFirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PashtoFirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EnglishSurName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PashtoSurName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EnglishFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PashtoFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EnglishGrandFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PashtoGrandFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    TazkiraTypeId = table.Column<int>(type: "int", nullable: false),
-                    TazkiraNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    JoldNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    PageNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    RegNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    TemporaryAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PermenantAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyTypeId = table.Column<int>(type: "int", nullable: true),
-                    BloodGroup = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    JoinDate = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    LeaveDate = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    LeaveRemark = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PersonalEmail = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EmergencyPhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PhotoPath = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
-                    HasAccount = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EmployeeProfile", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_EmployeeProfile_Branch_BranchId",
-                        column: x => x.BranchId,
-                        principalSchema: "Look",
-                        principalTable: "Branch",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_EmployeeProfile_CurrencyType_CurrencyTypeId",
-                        column: x => x.CurrencyTypeId,
-                        principalSchema: "Look",
-                        principalTable: "CurrencyType",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MainAccount",
                 schema: "AssetMS",
                 columns: table => new
@@ -1211,6 +1305,85 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         column: x => x.CurrencyTypeId,
                         principalSchema: "Look",
                         principalTable: "CurrencyType",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeeProfile",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnglishFirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PashtoFirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EnglishSurName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PashtoSurName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EnglishFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PashtoFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EnglishGrandFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PashtoGrandFatherName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TazkiraTypeId = table.Column<int>(type: "int", nullable: false),
+                    TazkiraNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    JoldNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    PageNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    RegNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    TemporaryAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PermenantAddress = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyTypeId = table.Column<int>(type: "int", nullable: true),
+                    BloodGroup = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    JoinDate = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    LeaveDate = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    LeaveRemark = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PersonalEmail = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EmergencyPhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PhotoPath = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    HasAccount = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: true),
+                    ManagerId = table.Column<int>(type: "int", nullable: true),
+                    EmploymentStatus = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    BankAccountNo = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    EmployeeCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    WorkEmail = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PreferredPaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeProfile", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_EmployeeProfile_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "Look",
+                        principalTable: "Branch",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_EmployeeProfile_CurrencyType_CurrencyTypeId",
+                        column: x => x.CurrencyTypeId,
+                        principalSchema: "Look",
+                        principalTable: "CurrencyType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_EmployeeProfile_Department_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalSchema: "HR",
+                        principalTable: "Department",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EmployeeProfile_EmployeeProfile_ManagerId",
+                        column: x => x.ManagerId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
                         principalColumn: "ID");
                 });
 
@@ -1337,6 +1510,39 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
+                name: "OnboardingTaskTemplateLine",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TemplateId = table.Column<int>(type: "int", nullable: false),
+                    TaskName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    TaskDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TaskOrder = table.Column<int>(type: "int", nullable: false),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    AssignedToDepartmentId = table.Column<int>(type: "int", nullable: true),
+                    AssignedToRole = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnboardingTaskTemplateLine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OnboardingTaskTemplateLine_OnboardingTaskTemplate_TemplateId",
+                        column: x => x.TemplateId,
+                        principalSchema: "HR",
+                        principalTable: "OnboardingTaskTemplate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Expense",
                 schema: "Accounting",
                 columns: table => new
@@ -1344,7 +1550,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    ClassId = table.Column<int>(type: "int", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ExpenseDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -1404,6 +1609,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     InvoiceNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     InvoiceDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
@@ -1411,6 +1617,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     SalesArea = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     BranchId = table.Column<int>(type: "int", nullable: true),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -1525,6 +1732,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     ChartOfAccountId = table.Column<int>(type: "int", nullable: true),
                     BranchId = table.Column<int>(type: "int", nullable: true),
                     CurrencyId = table.Column<int>(type: "int", nullable: true),
+                    CurrencyRate = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Refrence = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -1576,8 +1787,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     OrderDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     ExpectedDeliveryDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
                     BranchId = table.Column<int>(type: "int", nullable: true),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -1641,6 +1853,40 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         principalTable: "Supplier",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaxBracket",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaxConfigurationId = table.Column<int>(type: "int", nullable: false),
+                    MinAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MaxAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Percentage = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    FlatAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CalculationType = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    BracketOrder = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaxBracket", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaxBracket_TaxConfiguration_TaxConfigurationId",
+                        column: x => x.TaxConfigurationId,
+                        principalSchema: "HR",
+                        principalTable: "TaxConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1844,99 +2090,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "CallList",
-                schema: "CrystalClinic",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CallingReason = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(255)", nullable: true),
-                    ToBeCalledDate = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ActualCalledDate = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    CallResponse = table.Column<int>(type: "int", nullable: false),
-                    ResponseReasult = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AssignedEmployeeId = table.Column<int>(type: "int", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CallList", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CallList_EmployeeProfile_AssignedEmployeeId",
-                        column: x => x.AssignedEmployeeId,
-                        principalSchema: "HR",
-                        principalTable: "EmployeeProfile",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ContractDetails",
-                schema: "HR",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeProfileId = table.Column<int>(type: "int", nullable: false),
-                    ContractTypeId = table.Column<int>(type: "int", nullable: false),
-                    PositionTitleId = table.Column<int>(type: "int", nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyTypeId = table.Column<int>(type: "int", nullable: false),
-                    SalaryAmount = table.Column<float>(type: "real", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ContractDetails", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ContractDetails_Branch_BranchId",
-                        column: x => x.BranchId,
-                        principalSchema: "Look",
-                        principalTable: "Branch",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_ContractDetails_ContractType_ContractTypeId",
-                        column: x => x.ContractTypeId,
-                        principalSchema: "HRLooks",
-                        principalTable: "ContractType",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_ContractDetails_CurrencyType_CurrencyTypeId",
-                        column: x => x.CurrencyTypeId,
-                        principalSchema: "Look",
-                        principalTable: "CurrencyType",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_ContractDetails_EmployeeProfile_EmployeeProfileId",
-                        column: x => x.EmployeeProfileId,
-                        principalSchema: "HR",
-                        principalTable: "EmployeeProfile",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_ContractDetails_PositionTitle_PositionTitleId",
-                        column: x => x.PositionTitleId,
-                        principalSchema: "HRLooks",
-                        principalTable: "PositionTitle",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AccountTracking",
                 schema: "AssetMS",
                 columns: table => new
@@ -1977,58 +2130,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         column: x => x.MainAccountId,
                         principalSchema: "AssetMS",
                         principalTable: "MainAccount",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AdvancePayment",
-                schema: "HR",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    PayTypeId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyTypeId = table.Column<int>(type: "int", nullable: false),
-                    MainAccountId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
-                    AdvanceDate = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    AdvanceAmount = table.Column<float>(type: "real", nullable: false),
-                    RemainingBalance = table.Column<float>(type: "real", nullable: false),
-                    EachInstallmentAmount = table.Column<float>(type: "real", nullable: false),
-                    PayedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AdvancePayment", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_AdvancePayment_CurrencyType_CurrencyTypeId",
-                        column: x => x.CurrencyTypeId,
-                        principalSchema: "Look",
-                        principalTable: "CurrencyType",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_AdvancePayment_EmployeeProfile_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalSchema: "HR",
-                        principalTable: "EmployeeProfile",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_AdvancePayment_MainAccount_MainAccountId",
-                        column: x => x.MainAccountId,
-                        principalSchema: "AssetMS",
-                        principalTable: "MainAccount",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_AdvancePayment_PayType_PayTypeId",
-                        column: x => x.PayTypeId,
-                        principalSchema: "Look",
-                        principalTable: "PayType",
                         principalColumn: "ID");
                 });
 
@@ -2177,6 +2278,371 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
+                name: "AdvancePayment",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    PayTypeId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyTypeId = table.Column<int>(type: "int", nullable: false),
+                    MainAccountId = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
+                    AdvanceDate = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    AdvanceAmount = table.Column<float>(type: "real", nullable: false),
+                    RemainingBalance = table.Column<float>(type: "real", nullable: false),
+                    EachInstallmentAmount = table.Column<float>(type: "real", nullable: false),
+                    PayedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdvancePayment", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_AdvancePayment_CurrencyType_CurrencyTypeId",
+                        column: x => x.CurrencyTypeId,
+                        principalSchema: "Look",
+                        principalTable: "CurrencyType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_AdvancePayment_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_AdvancePayment_MainAccount_MainAccountId",
+                        column: x => x.MainAccountId,
+                        principalSchema: "AssetMS",
+                        principalTable: "MainAccount",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_AdvancePayment_PayType_PayTypeId",
+                        column: x => x.PayTypeId,
+                        principalSchema: "Look",
+                        principalTable: "PayType",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CallList",
+                schema: "CrystalClinic",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CallingReason = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(255)", nullable: true),
+                    ToBeCalledDate = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ActualCalledDate = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    CallResponse = table.Column<int>(type: "int", nullable: false),
+                    ResponseReasult = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssignedEmployeeId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CallList", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CallList_EmployeeProfile_AssignedEmployeeId",
+                        column: x => x.AssignedEmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContractDetails",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeProfileId = table.Column<int>(type: "int", nullable: false),
+                    ContractTypeId = table.Column<int>(type: "int", nullable: false),
+                    PositionTitleId = table.Column<int>(type: "int", nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyTypeId = table.Column<int>(type: "int", nullable: false),
+                    SalaryAmount = table.Column<float>(type: "real", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContractDetails", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ContractDetails_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "Look",
+                        principalTable: "Branch",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ContractDetails_ContractType_ContractTypeId",
+                        column: x => x.ContractTypeId,
+                        principalSchema: "HRLooks",
+                        principalTable: "ContractType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ContractDetails_CurrencyType_CurrencyTypeId",
+                        column: x => x.CurrencyTypeId,
+                        principalSchema: "Look",
+                        principalTable: "CurrencyType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ContractDetails_EmployeeProfile_EmployeeProfileId",
+                        column: x => x.EmployeeProfileId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ContractDetails_PositionTitle_PositionTitleId",
+                        column: x => x.PositionTitleId,
+                        principalSchema: "HRLooks",
+                        principalTable: "PositionTitle",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployeePayrollComponent",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    ComponentId = table.Column<int>(type: "int", nullable: false),
+                    EffectiveDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: true),
+                    OverrideAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeePayrollComponent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeePayrollComponent_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_EmployeePayrollComponent_PayrollComponent_ComponentId",
+                        column: x => x.ComponentId,
+                        principalSchema: "HR",
+                        principalTable: "PayrollComponent",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveCarryover",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    LeaveTypeId = table.Column<int>(type: "int", nullable: false),
+                    CarryoverYear = table.Column<int>(type: "int", nullable: false),
+                    RemainingDays = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    UsedDays = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    ExpirationDays = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    ExpirationDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveCarryover", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeaveCarryover_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_LeaveCarryover_LeaveType_LeaveTypeId",
+                        column: x => x.LeaveTypeId,
+                        principalSchema: "HR",
+                        principalTable: "LeaveType",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveRequest",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    LeaveTypeId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    TotalDays = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    ApprovedById = table.Column<int>(type: "int", nullable: true),
+                    ApprovalDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    ApprovalNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveRequest", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeaveRequest_EmployeeProfile_ApprovedById",
+                        column: x => x.ApprovedById,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_LeaveRequest_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_LeaveRequest_LeaveType_LeaveTypeId",
+                        column: x => x.LeaveTypeId,
+                        principalSchema: "HR",
+                        principalTable: "LeaveType",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayrollAdjustment",
+                schema: "HR",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AdjustmentDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsProcessed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayrollAdjustment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PayrollAdjustment_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PayrollContract",
+                schema: "HR",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeProfileId = table.Column<int>(type: "int", nullable: false),
+                    ContractTypeId = table.Column<int>(type: "int", nullable: false),
+                    PositionTitleId = table.Column<int>(type: "int", nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyTypeId = table.Column<int>(type: "int", nullable: false),
+                    BaseSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    AttachmentPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Conditions = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PayCycle = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    InsuranceDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PayrollContract", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_PayrollContract_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "Look",
+                        principalTable: "Branch",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_PayrollContract_ContractType_ContractTypeId",
+                        column: x => x.ContractTypeId,
+                        principalSchema: "HRLooks",
+                        principalTable: "ContractType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_PayrollContract_CurrencyType_CurrencyTypeId",
+                        column: x => x.CurrencyTypeId,
+                        principalSchema: "Look",
+                        principalTable: "CurrencyType",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_PayrollContract_EmployeeProfile_EmployeeProfileId",
+                        column: x => x.EmployeeProfileId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_PayrollContract_PositionTitle_PositionTitleId",
+                        column: x => x.PositionTitleId,
+                        principalSchema: "HRLooks",
+                        principalTable: "PositionTitle",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InventoryKitLine",
                 schema: "BranchStock",
                 columns: table => new
@@ -2237,33 +2703,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stock",
-                schema: "Stock",
+                name: "HRTask",
+                schema: "HR",
                 columns: table => new
                 {
-                    stockId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: true),
-                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SellPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    BatchNumber = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    BarCode = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    ExpiryDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    LotNumber = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    ManufactureDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsExpired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    QuantityRemaining = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    SiteId = table.Column<int>(type: "int", nullable: true),
-                    PurchaseOrderId = table.Column<int>(type: "int", nullable: true),
-                    InvoiceId = table.Column<int>(type: "int", nullable: true),
-                    FreightCost = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
-                    InsuranceCost = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
-                    ImportDuty = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
-                    OtherLandingCosts = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    TemplateLineId = table.Column<int>(type: "int", nullable: true),
+                    TaskName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Category = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    DueDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CompletedDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    AssignedToEmployeeId = table.Column<int>(type: "int", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -2273,26 +2728,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stock", x => x.stockId);
+                    table.PrimaryKey("PK_HRTask", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stock_InventorySites_SiteId",
-                        column: x => x.SiteId,
-                        principalTable: "InventorySites",
+                        name: "FK_HRTask_EmployeeProfile_AssignedToEmployeeId",
+                        column: x => x.AssignedToEmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_HRTask_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_HRTask_OnboardingTaskTemplateLine_TemplateLineId",
+                        column: x => x.TemplateLineId,
+                        principalSchema: "HR",
+                        principalTable: "OnboardingTaskTemplateLine",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Stock_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "Stock",
-                        principalTable: "Item",
-                        principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Stock_Supplier_SupplierId",
-                        column: x => x.SupplierId,
-                        principalSchema: "BranchStock",
-                        principalTable: "Supplier",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -2491,6 +2945,77 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
+                name: "Stock",
+                schema: "Stock",
+                columns: table => new
+                {
+                    StockId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: true),
+                    BranchId = table.Column<int>(type: "int", nullable: true),
+                    SupplierId = table.Column<int>(type: "int", nullable: true),
+                    PurchasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SellPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PurchaseDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    BatchNumber = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    BarCode = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    LotNumber = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ManufactureDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsExpired = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    QuantityRemaining = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    SiteId = table.Column<int>(type: "int", nullable: true),
+                    PurchaseOrderId = table.Column<int>(type: "int", nullable: true),
+                    InvoiceId = table.Column<int>(type: "int", nullable: true),
+                    FreightCost = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
+                    InsuranceCost = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
+                    ImportDuty = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
+                    OtherLandingCosts = table.Column<decimal>(type: "decimal(18,4)", nullable: false, defaultValue: 0m),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stock", x => x.StockId);
+                    table.ForeignKey(
+                        name: "FK_Stock_Branch_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "Look",
+                        principalTable: "Branch",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Stock_InventorySites_SiteId",
+                        column: x => x.SiteId,
+                        principalTable: "InventorySites",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Stock_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "Stock",
+                        principalTable: "Item",
+                        principalColumn: "ItemId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Stock_PurchaseOrder_PurchaseOrderId",
+                        column: x => x.PurchaseOrderId,
+                        principalSchema: "Accounting",
+                        principalTable: "PurchaseOrder",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Stock_Supplier_SupplierId",
+                        column: x => x.SupplierId,
+                        principalSchema: "BranchStock",
+                        principalTable: "Supplier",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VendorBill",
                 schema: "Accounting",
                 columns: table => new
@@ -2597,6 +3122,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     BranchId = table.Column<int>(type: "int", nullable: true),
                     CurrencyId = table.Column<int>(type: "int", nullable: true),
                     VisitId = table.Column<int>(type: "int", nullable: true),
+                    CurrencyRate = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Refrence = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Attachemnt = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -2641,6 +3170,46 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         principalTable: "Visit",
                         principalColumn: "visitId",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InventoryReservations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VisitId = table.Column<int>(type: "int", nullable: false),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    IdempotencyToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RequestedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InventoryReservations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InventoryReservations_Service_ServiceId",
+                        column: x => x.ServiceId,
+                        principalSchema: "Stock",
+                        principalTable: "Service",
+                        principalColumn: "ServiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InventoryReservations_Visit_VisitId",
+                        column: x => x.VisitId,
+                        principalSchema: "CrystalClinic",
+                        principalTable: "Visit",
+                        principalColumn: "visitId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2930,17 +3499,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservedItem",
-                schema: "BranchStock",
+                name: "AttendanceRecord",
+                schema: "HR",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReservationId = table.Column<int>(type: "int", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false),
-                    StockId = table.Column<int>(type: "int", nullable: false),
-                    ReservedQuantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
-                    UnitCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    ShiftId = table.Column<int>(type: "int", nullable: true),
+                    CheckIn = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CheckOut = table.Column<DateTime>(type: "datetime", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    WorkingHours = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    OvertimeHours = table.Column<decimal>(type: "decimal(5,2)", nullable: false, defaultValue: 0m),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AttendanceDate = table.Column<DateTime>(type: "date", nullable: false),
+                    PayrollContractID = table.Column<int>(type: "int", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
@@ -2950,26 +3524,71 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReservedItem", x => x.Id);
+                    table.PrimaryKey("PK_AttendanceRecord", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReservedItem_InventoryReservations_ReservationId",
-                        column: x => x.ReservationId,
-                        principalTable: "InventoryReservations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_AttendanceRecord_EmployeeProfile_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalSchema: "HR",
+                        principalTable: "EmployeeProfile",
+                        principalColumn: "ID");
                     table.ForeignKey(
-                        name: "FK_ReservedItem_Item_ItemId",
+                        name: "FK_AttendanceRecord_PayrollContract_PayrollContractID",
+                        column: x => x.PayrollContractID,
+                        principalSchema: "HR",
+                        principalTable: "PayrollContract",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_AttendanceRecord_Shift_ShiftId",
+                        column: x => x.ShiftId,
+                        principalSchema: "HR",
+                        principalTable: "Shift",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SalesEstimateLine",
+                schema: "Accounting",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SalesEstimateId = table.Column<int>(type: "int", nullable: false),
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ItemId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SalesEstimateLine", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SalesEstimateLine_Item_ItemId",
                         column: x => x.ItemId,
                         principalSchema: "Stock",
                         principalTable: "Item",
                         principalColumn: "ItemId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_ReservedItem_Stock_StockId",
-                        column: x => x.StockId,
+                        name: "FK_SalesEstimateLine_SalesEstimate_SalesEstimateId",
+                        column: x => x.SalesEstimateId,
+                        principalSchema: "Accounting",
+                        principalTable: "SalesEstimate",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SalesEstimateLine_Service_ServiceId",
+                        column: x => x.ServiceId,
                         principalSchema: "Stock",
-                        principalTable: "Stock",
-                        principalColumn: "stockId",
+                        principalTable: "Service",
+                        principalColumn: "ServiceId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -3021,7 +3640,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         column: x => x.StockId,
                         principalSchema: "Stock",
                         principalTable: "Stock",
-                        principalColumn: "stockId");
+                        principalColumn: "StockId");
                 });
 
             migrationBuilder.CreateTable(
@@ -3052,7 +3671,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         column: x => x.stockId,
                         principalSchema: "Stock",
                         principalTable: "Stock",
-                        principalColumn: "stockId",
+                        principalColumn: "StockId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_VisitMedication_Visit_visitId",
@@ -3061,53 +3680,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         principalTable: "Visit",
                         principalColumn: "visitId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SalesEstimateLine",
-                schema: "Accounting",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SalesEstimateId = table.Column<int>(type: "int", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItemId = table.Column<int>(type: "int", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
-                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SalesEstimateLine", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SalesEstimateLine_Item_ItemId",
-                        column: x => x.ItemId,
-                        principalSchema: "Stock",
-                        principalTable: "Item",
-                        principalColumn: "ItemId",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_SalesEstimateLine_SalesEstimate_SalesEstimateId",
-                        column: x => x.SalesEstimateId,
-                        principalSchema: "Accounting",
-                        principalTable: "SalesEstimate",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SalesEstimateLine_Service_ServiceId",
-                        column: x => x.ServiceId,
-                        principalSchema: "Stock",
-                        principalTable: "Service",
-                        principalColumn: "ServiceId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -3158,6 +3730,50 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         principalSchema: "Accounting",
                         principalTable: "Receipt",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReservedItem",
+                schema: "BranchStock",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReservationId = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    StockId = table.Column<int>(type: "int", nullable: false),
+                    ReservedQuantity = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    UnitCost = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: false),
+                    ModifiedBy = table.Column<Guid>(type: "UNIQUEIDENTIFIER", maxLength: 50, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "DateTime", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "DateTime", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReservedItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReservedItem_InventoryReservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "InventoryReservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReservedItem_Item_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "Stock",
+                        principalTable: "Item",
+                        principalColumn: "ItemId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReservedItem_Stock_StockId",
+                        column: x => x.StockId,
+                        principalSchema: "Stock",
+                        principalTable: "Stock",
+                        principalColumn: "StockId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -3301,6 +3917,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "HR",
                 table: "AdvancePayment",
                 column: "PayTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttendanceRecord_EmployeeId_AttendanceDate",
+                schema: "HR",
+                table: "AttendanceRecord",
+                columns: new[] { "EmployeeId", "AttendanceDate" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttendanceRecord_PayrollContractID",
+                schema: "HR",
+                table: "AttendanceRecord",
+                column: "PayrollContractID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AttendanceRecord_ShiftId",
+                schema: "HR",
+                table: "AttendanceRecord",
+                column: "ShiftId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuditTrails_Action",
@@ -3541,6 +4176,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "ToCurrencyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Department_ParentDepartmentId",
+                schema: "HR",
+                table: "Department",
+                column: "ParentDepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DuePayment_CurrencyTypeId",
                 schema: "BranchStock",
                 table: "DuePayment",
@@ -3553,6 +4194,24 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "SupplierDueId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployeePayrollComponent_ComponentId",
+                schema: "HR",
+                table: "EmployeePayrollComponent",
+                column: "ComponentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeePayrollComponent_EmployeeId",
+                schema: "HR",
+                table: "EmployeePayrollComponent",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeePayrollComponent_EmployeeId_ComponentId",
+                schema: "HR",
+                table: "EmployeePayrollComponent",
+                columns: new[] { "EmployeeId", "ComponentId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeProfile_BranchId",
                 schema: "HR",
                 table: "EmployeeProfile",
@@ -3563,6 +4222,18 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "HR",
                 table: "EmployeeProfile",
                 column: "CurrencyTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeProfile_DepartmentId",
+                schema: "HR",
+                table: "EmployeeProfile",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeProfile_ManagerId",
+                schema: "HR",
+                table: "EmployeeProfile",
+                column: "ManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EquityTransaction_ShareholderId",
@@ -3674,6 +4345,30 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "JournalEntryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_HRTask_AssignedToEmployeeId",
+                schema: "HR",
+                table: "HRTask",
+                column: "AssignedToEmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HRTask_EmployeeId_Category",
+                schema: "HR",
+                table: "HRTask",
+                columns: new[] { "EmployeeId", "Category" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HRTask_Status",
+                schema: "HR",
+                table: "HRTask",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HRTask_TemplateLineId",
+                schema: "HR",
+                table: "HRTask",
+                column: "TemplateLineId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InventoryKitLine_ItemId",
                 schema: "BranchStock",
                 table: "InventoryKitLine",
@@ -3684,6 +4379,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "BranchStock",
                 table: "InventoryKitLine",
                 column: "KitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_ServiceId",
+                table: "InventoryReservations",
+                column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InventoryReservations_VisitId",
+                table: "InventoryReservations",
+                column: "VisitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InventorySites_BranchId",
@@ -3770,6 +4475,43 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "VisitId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LeaveCarryover_EmployeeId_LeaveTypeId_CarryoverYear",
+                schema: "HR",
+                table: "LeaveCarryover",
+                columns: new[] { "EmployeeId", "LeaveTypeId", "CarryoverYear" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveCarryover_LeaveTypeId",
+                schema: "HR",
+                table: "LeaveCarryover",
+                column: "LeaveTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequest_ApprovedById",
+                schema: "HR",
+                table: "LeaveRequest",
+                column: "ApprovedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequest_EmployeeId",
+                schema: "HR",
+                table: "LeaveRequest",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequest_LeaveTypeId",
+                schema: "HR",
+                table: "LeaveRequest",
+                column: "LeaveTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeaveRequest_Status",
+                schema: "HR",
+                table: "LeaveRequest",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MainAccount_BranchId",
                 schema: "AssetMS",
                 table: "MainAccount",
@@ -3800,6 +4542,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "NewsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OnboardingTaskTemplateLine_TemplateId_TaskOrder",
+                schema: "HR",
+                table: "OnboardingTaskTemplateLine",
+                columns: new[] { "TemplateId", "TaskOrder" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Payment_AccountsPayableId",
                 schema: "Accounting",
                 table: "Payment",
@@ -3810,6 +4558,48 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Accounting",
                 table: "Payment",
                 column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollAdjustment_EmployeeId_AdjustmentDate",
+                schema: "HR",
+                table: "PayrollAdjustment",
+                columns: new[] { "EmployeeId", "AdjustmentDate" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollAdjustment_IsProcessed",
+                schema: "HR",
+                table: "PayrollAdjustment",
+                column: "IsProcessed");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollContract_BranchId",
+                schema: "HR",
+                table: "PayrollContract",
+                column: "BranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollContract_ContractTypeId",
+                schema: "HR",
+                table: "PayrollContract",
+                column: "ContractTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollContract_CurrencyTypeId",
+                schema: "HR",
+                table: "PayrollContract",
+                column: "CurrencyTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollContract_EmployeeProfileId",
+                schema: "HR",
+                table: "PayrollContract",
+                column: "EmployeeProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PayrollContract_PositionTitleId",
+                schema: "HR",
+                table: "PayrollContract",
+                column: "PositionTitleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PayrollTracking_BranchId",
@@ -3852,6 +4642,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "HRLooks",
                 table: "PositionTitle",
                 column: "BranchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PositionTitle_ReportsToId",
+                schema: "HRLooks",
+                table: "PositionTitle",
+                column: "ReportsToId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProcedureLog_FixedAssetId",
@@ -4031,10 +4827,22 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 column: "VisitServiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stock_BranchId",
+                schema: "Stock",
+                table: "Stock",
+                column: "BranchId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stock_ItemId",
                 schema: "Stock",
                 table: "Stock",
                 column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stock_PurchaseOrderId",
+                schema: "Stock",
+                table: "Stock",
+                column: "PurchaseOrderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stock_SiteId",
@@ -4077,6 +4885,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "BranchStock",
                 table: "SupplierDue",
                 column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaxBracket_TaxConfigurationId_BracketOrder",
+                schema: "HR",
+                table: "TaxBracket",
+                columns: new[] { "TaxConfigurationId", "BracketOrder" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_TradeTracking_BranchId",
@@ -4226,6 +5040,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "General");
 
             migrationBuilder.DropTable(
+                name: "AttendanceRecord",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "AuditTrails");
 
             migrationBuilder.DropTable(
@@ -4251,6 +5069,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "BranchStock");
 
             migrationBuilder.DropTable(
+                name: "EmployeePayrollComponent",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "EquityTransaction",
                 schema: "Accounting");
 
@@ -4264,6 +5086,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             migrationBuilder.DropTable(
                 name: "ForecastLines");
+
+            migrationBuilder.DropTable(
+                name: "HRTask",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "InventoryKitLine",
@@ -4282,6 +5108,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Accounting");
 
             migrationBuilder.DropTable(
+                name: "LeaveCarryover",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
+                name: "LeaveRequest",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "LoanType",
                 schema: "Look");
 
@@ -4295,6 +5129,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             migrationBuilder.DropTable(
                 name: "Payment",
                 schema: "Accounting");
+
+            migrationBuilder.DropTable(
+                name: "PayrollAdjustment",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "PayrollTracking",
@@ -4345,6 +5183,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Stock");
 
             migrationBuilder.DropTable(
+                name: "TaxBracket",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "TradeTracking",
                 schema: "AssetMS");
 
@@ -4369,6 +5211,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "AssetMS");
 
             migrationBuilder.DropTable(
+                name: "PayrollContract",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
+                name: "Shift",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "BankStatementLines");
 
             migrationBuilder.DropTable(
@@ -4384,6 +5234,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "BranchStock");
 
             migrationBuilder.DropTable(
+                name: "PayrollComponent",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "Shareholder",
                 schema: "Accounting");
 
@@ -4395,11 +5249,19 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 name: "ForecastSnapshots");
 
             migrationBuilder.DropTable(
+                name: "OnboardingTaskTemplateLine",
+                schema: "HR");
+
+            migrationBuilder.DropTable(
                 name: "InventoryKits");
 
             migrationBuilder.DropTable(
                 name: "LabTestTemplate",
                 schema: "Accounting");
+
+            migrationBuilder.DropTable(
+                name: "LeaveType",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "News",
@@ -4444,8 +5306,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 name: "AdjustmentCategories");
 
             migrationBuilder.DropTable(
-                name: "PurchaseOrder",
-                schema: "Accounting");
+                name: "TaxConfiguration",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "Stock",
@@ -4461,6 +5323,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             migrationBuilder.DropTable(
                 name: "JournalEntry",
                 schema: "Accounting");
+
+            migrationBuilder.DropTable(
+                name: "OnboardingTaskTemplate",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "ContractType",
@@ -4498,8 +5364,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 schema: "Stock");
 
             migrationBuilder.DropTable(
-                name: "Supplier",
-                schema: "BranchStock");
+                name: "PurchaseOrder",
+                schema: "Accounting");
+
+            migrationBuilder.DropTable(
+                name: "Department",
+                schema: "HR");
 
             migrationBuilder.DropTable(
                 name: "CurrencyType",
@@ -4523,6 +5393,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             migrationBuilder.DropTable(
                 name: "ItemCategory",
                 schema: "Stock");
+
+            migrationBuilder.DropTable(
+                name: "Supplier",
+                schema: "BranchStock");
 
             migrationBuilder.DropTable(
                 name: "Branch",

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    [Migration("20260210051806_removeClassIdfromExpense")]
-    partial class removeClassIdfromExpense
+    [Migration("20260310060039_initialmigration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
 
                     b.Property<decimal>("BalanceAmount")
                         .HasColumnType("decimal(18, 2)")
@@ -56,6 +61,17 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.Property<int?>("CurrencyId")
                         .HasColumnType("int");
+
+                    b.Property<int>("CurrencyRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("CurrencyRate");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime")
@@ -93,6 +109,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18, 2)")
                         .HasDefaultValue(0m)
                         .HasColumnName("PaidAmount");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Refrence");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
@@ -133,6 +154,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
+
                     b.Property<decimal>("BalanceAmount")
                         .HasColumnType("decimal(18, 2)")
                         .HasColumnName("BalanceAmount");
@@ -157,9 +183,20 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int?>("CurrencyId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrencyRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("CurrencyRate");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int")
                         .HasColumnName("CustomerId");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
 
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime")
@@ -197,6 +234,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18, 2)")
                         .HasDefaultValue(0m)
                         .HasColumnName("PaidAmount");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("Refrence");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
@@ -1434,6 +1476,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("datetime")
                         .HasColumnName("ApprovedDate");
 
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
+
                     b.Property<int?>("BranchId")
                         .HasColumnType("int")
                         .HasColumnName("BranchId");
@@ -1993,6 +2040,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
+
                     b.Property<int?>("BranchId")
                         .HasColumnType("int")
                         .HasColumnName("BranchId");
@@ -2041,7 +2093,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasDefaultValue(0)
+                        .HasDefaultValue(1)
                         .HasColumnName("Status");
 
                     b.Property<decimal>("TotalAmount")
@@ -2475,6 +2527,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
+
                     b.Property<int?>("BranchId")
                         .HasColumnType("int")
                         .HasColumnName("BranchId");
@@ -2497,6 +2554,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18, 2)")
                         .HasDefaultValue(0m)
                         .HasColumnName("DiscountAmount");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("DueDate");
 
                     b.Property<DateTime>("InvoiceDate")
                         .HasColumnType("datetime")
@@ -2792,6 +2853,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Attachment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Attachemnt");
 
                     b.Property<string>("ContactInfo")
                         .HasMaxLength(255)
@@ -5432,6 +5498,99 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("AdvancePayment", "HR");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.AttendanceRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AttendanceDate")
+                        .HasColumnType("date")
+                        .HasColumnName("AttendanceDate");
+
+                    b.Property<DateTime>("CheckIn")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CheckIn");
+
+                    b.Property<DateTime?>("CheckOut")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CheckOut");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Notes");
+
+                    b.Property<decimal>("OvertimeHours")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("OvertimeHours");
+
+                    b.Property<int?>("PayrollContractID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int?>("ShiftId")
+                        .HasColumnType("int")
+                        .HasColumnName("ShiftId");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("Status");
+
+                    b.Property<decimal>("WorkingHours")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("WorkingHours");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayrollContractID");
+
+                    b.HasIndex("ShiftId");
+
+                    b.HasIndex("EmployeeId", "AttendanceDate")
+                        .IsUnique();
+
+                    b.ToTable("AttendanceRecord", "HR");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.ContractDetails", b =>
                 {
                     b.Property<int>("ID")
@@ -5522,6 +5681,83 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("ContractDetails", "HR");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeePayrollComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnType("int")
+                        .HasColumnName("ComponentId");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("date")
+                        .HasColumnName("EffectiveDate");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("EndDate");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Notes");
+
+                    b.Property<decimal?>("OverrideAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("OverrideAmount");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComponentId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EmployeeId", "ComponentId");
+
+                    b.ToTable("EmployeePayrollComponent", "HR");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", b =>
                 {
                     b.Property<int>("ID")
@@ -5529,6 +5765,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("BankAccountNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("BankAccountNo");
 
                     b.Property<string>("BloodGroup")
                         .HasMaxLength(50)
@@ -5556,11 +5797,26 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("DateTime")
                         .HasColumnName("DateOfBirth");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("DepartmentId");
+
                     b.Property<string>("EmergencyPhoneNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar")
                         .HasColumnName("EmergencyPhoneNumber");
+
+                    b.Property<string>("EmployeeCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("EmployeeCode");
+
+                    b.Property<int>("EmploymentStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("EmploymentStatus");
 
                     b.Property<string>("EnglishFatherName")
                         .IsRequired()
@@ -5624,6 +5880,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("LeaveRemark");
 
+                    b.Property<int?>("ManagerId")
+                        .HasColumnType("int")
+                        .HasColumnName("ManagerId");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasMaxLength(50)
                         .HasColumnType("UNIQUEIDENTIFIER")
@@ -5685,6 +5945,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("PhotoPath");
 
+                    b.Property<string>("PreferredPaymentMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("PreferredPaymentMethod");
+
                     b.Property<string>("RegNo")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar")
@@ -5711,13 +5976,483 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("TemporaryAddress");
 
+                    b.Property<string>("WorkEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("WorkEmail");
+
                     b.HasKey("ID");
 
                     b.HasIndex("BranchId");
 
                     b.HasIndex("CurrencyTypeId");
 
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("ManagerId");
+
                     b.ToTable("EmployeeProfile", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.HRTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssignedToEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("AssignedToEmployeeId");
+
+                    b.Property<int>("Category")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("Category");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("CompletedDate");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("DueDate");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Notes");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("Status");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("TaskName");
+
+                    b.Property<int?>("TemplateLineId")
+                        .HasColumnType("int")
+                        .HasColumnName("TemplateLineId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedToEmployeeId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("TemplateLineId");
+
+                    b.HasIndex("EmployeeId", "Category");
+
+                    b.ToTable("HRTask", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.LeaveCarryover", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarryoverYear")
+                        .HasColumnType("int")
+                        .HasColumnName("CarryoverYear");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("ExpirationDate");
+
+                    b.Property<decimal>("ExpirationDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("ExpirationDays");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<int>("LeaveTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("LeaveTypeId");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Notes");
+
+                    b.Property<decimal>("RemainingDays")
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("RemainingDays");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<decimal>("UsedDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("UsedDays");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.HasIndex("EmployeeId", "LeaveTypeId", "CarryoverYear")
+                        .IsUnique();
+
+                    b.ToTable("LeaveCarryover", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.LeaveRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ApprovalDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("ApprovalDate");
+
+                    b.Property<string>("ApprovalNotes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ApprovalNotes");
+
+                    b.Property<int?>("ApprovedById")
+                        .HasColumnType("int")
+                        .HasColumnName("ApprovedById");
+
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AttachmentPath");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("EndDate");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<int>("LeaveTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("LeaveTypeId");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Reason");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("StartDate");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("Status");
+
+                    b.Property<decimal>("TotalDays")
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("TotalDays");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedById");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("LeaveRequest", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollAdjustment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AdjustmentDate")
+                        .HasColumnType("date")
+                        .HasColumnName("AdjustmentDate");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("Amount");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Category");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeId");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsProcessed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsProcessed");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("ReferenceNumber");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasColumnName("Type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsProcessed");
+
+                    b.HasIndex("EmployeeId", "AdjustmentDate");
+
+                    b.ToTable("PayrollAdjustment", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollContract", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AttachmentPath");
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("BaseSalary");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int")
+                        .HasColumnName("BranchId");
+
+                    b.Property<string>("Conditions")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Conditions");
+
+                    b.Property<int>("ContractTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("ContractTypeId");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<int>("CurrencyTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("CurrencyTypeId");
+
+                    b.Property<int>("EmployeeProfileId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeProfileId");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("EndDate");
+
+                    b.Property<string>("InsuranceDetails")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("InsuranceDetails");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<int>("PayCycle")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("PayCycle");
+
+                    b.Property<int>("PositionTitleId")
+                        .HasColumnType("int")
+                        .HasColumnName("PositionTitleId");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("StartDate");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("ContractTypeId");
+
+                    b.HasIndex("CurrencyTypeId");
+
+                    b.HasIndex("EmployeeProfileId");
+
+                    b.HasIndex("PositionTitleId");
+
+                    b.ToTable("PayrollContract", "HR");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollTracking", b =>
@@ -5880,6 +6615,319 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("ContractType", "HRLooks");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Department", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("DariName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeptCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("DeptCode");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("HeadEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("HeadEmployeeId");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Name");
+
+                    b.Property<int?>("ParentDepartmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("ParentDepartmentId");
+
+                    b.Property<string>("PashtoName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentDepartmentId");
+
+                    b.ToTable("Department", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.LeaveType", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<bool>("AllowCarryover")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("AllowCarryover");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("DariName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsPaid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsPaid");
+
+                    b.Property<int>("MaxCarryoverDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("MaxCarryoverDays");
+
+                    b.Property<int>("MaxDaysPerYear")
+                        .HasColumnType("int")
+                        .HasColumnName("MaxDaysPerYear");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("PashtoName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("LeaveType", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("Category");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OnboardingTaskTemplate", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplateLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AssignedToDepartmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("AssignedToDepartmentId");
+
+                    b.Property<string>("AssignedToRole")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("AssignedToRole");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsRequired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsRequired");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<string>("TaskDescription")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("TaskDescription");
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("TaskName");
+
+                    b.Property<int>("TaskOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("TaskOrder");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int")
+                        .HasColumnName("TemplateId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId", "TaskOrder");
+
+                    b.ToTable("OnboardingTaskTemplateLine", "HR");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Partners", b =>
                 {
                     b.Property<int>("ID")
@@ -5926,7 +6974,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("Partners");
                 });
 
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", b =>
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PayrollComponent", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -5935,17 +6983,21 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<int>("BranchId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("Amount");
+
+                    b.Property<int>("CalculationType")
                         .HasColumnType("int")
-                        .HasDefaultValue(1)
-                        .HasColumnName("BranchId");
+                        .HasColumnName("CalculationType");
+
+                    b.Property<int?>("ChartOfAccountId")
+                        .HasColumnType("int")
+                        .HasColumnName("ChartOfAccountId");
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar")
-                        .HasColumnName("Code");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedBy")
                         .HasMaxLength(50)
@@ -5958,15 +7010,95 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.Property<string>("DariName")
                         .IsRequired()
-                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
                         .HasColumnType("nvarchar")
-                        .HasColumnName("DariName");
+                        .HasColumnName("Description");
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
-                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("nvarchar")
-                        .HasColumnName("EnglishName");
+                        .HasColumnName("Name");
+
+                    b.Property<string>("PashtoName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasColumnName("Type");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("PayrollComponent", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("BranchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("BranchId");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("DariName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -5982,6 +7114,23 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("JobDescription");
 
+                    b.Property<string>("JobGrade")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("JobGrade");
+
+                    b.Property<decimal>("MaxSalary")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("MaxSalary");
+
+                    b.Property<decimal>("MinSalary")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("MinSalary");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasMaxLength(50)
                         .HasColumnType("UNIQUEIDENTIFIER")
@@ -5993,20 +7142,255 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.Property<string>("PashtoName")
                         .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar")
-                        .HasColumnName("PashtoName");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar")
                         .HasColumnName("Remarks");
 
+                    b.Property<int?>("ReportsToId")
+                        .HasColumnType("int")
+                        .HasColumnName("ReportsToId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Title");
+
                     b.HasKey("ID");
 
                     b.HasIndex("BranchId");
 
+                    b.HasIndex("ReportsToId");
+
                     b.ToTable("PositionTitle", "HRLooks");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Shift", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("DariName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time")
+                        .HasColumnName("EndTime");
+
+                    b.Property<string>("EnglishName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GracePeriodMinutes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(5)
+                        .HasColumnName("GracePeriodMinutes");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("PashtoName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time")
+                        .HasColumnName("StartTime");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Shift", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.TaxBracket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BracketOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("BracketOrder");
+
+                    b.Property<int>("CalculationType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("CalculationType");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<decimal>("FlatAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("FlatAmount");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<decimal>("MaxAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("MaxAmount");
+
+                    b.Property<decimal>("MinAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("MinAmount");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<decimal>("Percentage")
+                        .HasColumnType("decimal(5,2)")
+                        .HasColumnName("Percentage");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<int>("TaxConfigurationId")
+                        .HasColumnType("int")
+                        .HasColumnName("TaxConfigurationId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaxConfigurationId", "BracketOrder");
+
+                    b.ToTable("TaxBracket", "HR");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.TaxConfiguration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("CreatedBy");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedOn");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Description");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("UNIQUEIDENTIFIER")
+                        .HasColumnName("ModifiedBy");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("DateTime")
+                        .HasColumnName("ModifiedOn");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Name");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("Remarks");
+
+                    b.Property<string>("TaxType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar")
+                        .HasColumnName("TaxType");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxConfiguration", "HR");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Look.AssetType", b =>
@@ -7677,6 +9061,28 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("PayType");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.AttendanceRecord", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany("AttendanceRecords")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollContract", null)
+                        .WithMany("AttendanceRecords")
+                        .HasForeignKey("PayrollContractID");
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Shift", "Shift")
+                        .WithMany("AttendanceRecords")
+                        .HasForeignKey("ShiftId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Shift");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.ContractDetails", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
@@ -7720,6 +9126,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("PositionTitle");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeePayrollComponent", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PayrollComponent", "Component")
+                        .WithMany("EmployeeComponents")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany("PayrollComponents")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Component");
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
@@ -7733,9 +9158,147 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasForeignKey("CurrencyTypeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Department", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Manager")
+                        .WithMany("DirectReports")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Branch");
 
                     b.Navigation("CurrencyType");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Manager");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.HRTask", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "AssignedToEmployee")
+                        .WithMany()
+                        .HasForeignKey("AssignedToEmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplateLine", "TemplateLine")
+                        .WithMany()
+                        .HasForeignKey("TemplateLineId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("AssignedToEmployee");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("TemplateLine");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.LeaveCarryover", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.LeaveType", "LeaveType")
+                        .WithMany()
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.LeaveRequest", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "ApprovedBy")
+                        .WithMany()
+                        .HasForeignKey("ApprovedById")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.LeaveType", "LeaveType")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApprovedBy");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollAdjustment", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollContract", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.ContractType", "ContractType")
+                        .WithMany()
+                        .HasForeignKey("ContractTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.CurrencyType", "CurrencyType")
+                        .WithMany()
+                        .HasForeignKey("CurrencyTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", "EmployeeProfile")
+                        .WithMany("PayrollContracts")
+                        .HasForeignKey("EmployeeProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", "PositionTitle")
+                        .WithMany("PayrollContracts")
+                        .HasForeignKey("PositionTitleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("ContractType");
+
+                    b.Navigation("CurrencyType");
+
+                    b.Navigation("EmployeeProfile");
+
+                    b.Navigation("PositionTitle");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollTracking", b =>
@@ -7778,6 +9341,27 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("PayType");
                 });
 
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Department", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Department", "ParentDepartment")
+                        .WithMany("ChildDepartments")
+                        .HasForeignKey("ParentDepartmentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ParentDepartment");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplateLine", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplate", "Template")
+                        .WithMany("TemplateLines")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", b =>
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", "Branch")
@@ -7786,7 +9370,25 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", "ReportsTo")
+                        .WithMany()
+                        .HasForeignKey("ReportsToId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Branch");
+
+                    b.Navigation("ReportsTo");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.TaxBracket", b =>
+                {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.TaxConfiguration", "TaxConfiguration")
+                        .WithMany("Brackets")
+                        .HasForeignKey("TaxConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaxConfiguration");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Look.Branch", b =>
@@ -7955,6 +9557,61 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitServices", b =>
                 {
                     b.Navigation("sessions");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.EmployeeProfile", b =>
+                {
+                    b.Navigation("AttendanceRecords");
+
+                    b.Navigation("DirectReports");
+
+                    b.Navigation("LeaveRequests");
+
+                    b.Navigation("PayrollComponents");
+
+                    b.Navigation("PayrollContracts");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HR.PayrollContract", b =>
+                {
+                    b.Navigation("AttendanceRecords");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Department", b =>
+                {
+                    b.Navigation("ChildDepartments");
+
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.LeaveType", b =>
+                {
+                    b.Navigation("LeaveRequests");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.OnboardingTaskTemplate", b =>
+                {
+                    b.Navigation("TemplateLines");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PayrollComponent", b =>
+                {
+                    b.Navigation("EmployeeComponents");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.PositionTitle", b =>
+                {
+                    b.Navigation("PayrollContracts");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.Shift", b =>
+                {
+                    b.Navigation("AttendanceRecords");
+                });
+
+            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.HR.HRLooks.TaxConfiguration", b =>
+                {
+                    b.Navigation("Brackets");
                 });
 #pragma warning restore 612, 618
         }

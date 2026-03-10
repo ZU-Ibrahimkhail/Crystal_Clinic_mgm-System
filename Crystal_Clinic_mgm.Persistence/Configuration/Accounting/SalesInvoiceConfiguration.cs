@@ -29,6 +29,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("datetime")
                 .IsRequired();
 
+            entity.Property(s => s.DueDate)
+                .HasColumnName("DueDate")
+                .HasColumnType("datetime")
+                .IsRequired(false);
+
             entity.Property(s => s.TotalAmount)
                 .HasColumnName("TotalAmount")
                 .HasColumnType("decimal(18, 2)")

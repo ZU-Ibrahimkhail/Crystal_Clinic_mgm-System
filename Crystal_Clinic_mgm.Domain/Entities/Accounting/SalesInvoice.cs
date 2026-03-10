@@ -10,6 +10,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int CustomerId { get; set; }
         public Patient? Customer { get; set; }
         public DateTime InvoiceDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
