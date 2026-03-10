@@ -83,6 +83,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             try
             {
                 var payable = await context.AccountsPayables
+                    .Include(a => a.Vendor)
                     .FirstOrDefaultAsync(a => a.Id == request.Id && !a.IsDeleted, cancellationToken);
 
                 if (payable == null)
