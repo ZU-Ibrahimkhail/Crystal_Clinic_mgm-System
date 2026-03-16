@@ -24,8 +24,13 @@ public class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCo
             return type switch
             {
                 AttachmentType.PatientDocument => "PatientDocuments",
-                AttachmentType.Invoice => "Invoices",
-                AttachmentType.VendorBill => "VendorBills",
+                AttachmentType.SalesInvoice => "SalesInvoice",
+                AttachmentType.PurchaseOrder => "PurchaseOrder",
+                AttachmentType.ShareHolder => "ShareHolder",
+                AttachmentType.AccountReceivable => "AccountReceivable",
+                AttachmentType.AccountPayable => "AccountPayable",
+                AttachmentType.VendorBill => "VendorBill",
+                AttachmentType.JournalEntry => "JournalEntry",
                 _ => "Others"
             };
         }
