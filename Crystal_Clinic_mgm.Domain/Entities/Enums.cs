@@ -10,8 +10,13 @@
 
     public enum AttachmentType
     {
+        ShareHolder,
+        JournalEntry,
+        AccountReceivable,
+        AccountPayable,
+        PurchaseOrder,
         PatientDocument,
-        Invoice,
+        SalesInvoice,
         VendorBill
     }
 

@@ -49,7 +49,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
                         DebitAmount = line.DebitAmount,
                         CreditAmount = line.CreditAmount,
                         CurrencyId = line.CurrencyId,
-                        ExchangeRate = line.ExchangeRate
+                        ExchangeRate = line.ExchangeRate,
+                        
                     });
                 }
 
