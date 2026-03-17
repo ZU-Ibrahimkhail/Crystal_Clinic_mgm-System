@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public string EntryNumber { get; set; } = string.Empty;
         public DateTime EntryDate { get; set; }
         public string Description { get; set; } = string.Empty;
-        public JournalEntryStatus Status { get; set; } = JournalEntryStatus.Unposted;
+        public JournalEntryStatus Status { get; set; } = JournalEntryStatus.Draft;
         public Guid? ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
         public string ReferenceNumber { get; set; } = string.Empty;

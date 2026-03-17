@@ -43,10 +43,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                         AccountType = c.AccountType,
                         AccountCategory = c.AccountCategory,
                         NormalBalance = c.NormalBalance,
-                        IsSystemAccount = c.IsSystemAccount,
+                        IsSystemAccount = false,
                         IsActive = c.IsActive,
                         Description = c.Description,
                         ParentAccountId = c.ParentAccountId
+
                     })
                     .ToListAsync(cancellationToken);
 

@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Domain;
+using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
 
 namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 {

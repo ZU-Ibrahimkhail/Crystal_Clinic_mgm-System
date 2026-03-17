@@ -36,7 +36,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     EntryNumber = entryNumber,
                     EntryDate = request.Dto.EntryDate,
                     Description = request.Dto.Description,
-                    Status = JournalEntryStatus.Unposted,
+                    Status = JournalEntryStatus.Draft,
                     ReferenceNumber = request.Dto.ReferenceNumber,
                     ReferenceType = request.Dto.ReferenceType,
                     BranchId = request.Dto.BranchId,
