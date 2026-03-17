@@ -23,7 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
         {
             try
             {
-                var query = context.AccountsReceivables.Where(a => !a.IsDeleted);
+                var query = context.AccountsReceivables.Include(x => x.Customer).Where(a => !a.IsDeleted);
 
                 if (request.Status.HasValue)
                     query = query.Where(a => a.Status == request.Status);
@@ -42,6 +42,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                         Id = a.Id,
                         InvoiceNumber = a.InvoiceNumber,
                         CustomerId = a.CustomerId,
+                        CustomerName = a.Customer!.name,
+                        CurrencyRate = a.CurrencyRate,
                         InvoiceDate = a.InvoiceDate,
                         DueDate = a.DueDate,
                         InvoiceAmount = a.InvoiceAmount,
@@ -83,6 +85,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             try
             {
                 var receivable = await context.AccountsReceivables
+                    .Include(x=>x.Currency)
+                    .Include(x=>x.Customer)
                     .FirstOrDefaultAsync(a => a.Id == request.Id && !a.IsDeleted, cancellationToken);
 
                 if (receivable == null)

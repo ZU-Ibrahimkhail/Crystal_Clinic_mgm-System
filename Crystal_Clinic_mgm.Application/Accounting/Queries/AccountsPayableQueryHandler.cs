@@ -23,7 +23,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
         {
             try
             {
-                var query = context.AccountsPayables.Where(a => !a.IsDeleted);
+                var query = context.AccountsPayables.Include(x=>x.Vendor).Where(a => !a.IsDeleted);
 
                 if (request.Status.HasValue)
                     query = query.Where(a => a.Status == request.Status);
@@ -42,6 +42,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                         Id = a.Id,
                         InvoiceNumber = a.InvoiceNumber,
                         VendorId = a.VendorId,
+                        VendorName = a.Vendor!.Name,
                         InvoiceDate = a.InvoiceDate,
                         DueDate = a.DueDate,
                         InvoiceAmount = a.InvoiceAmount,
@@ -119,7 +120,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     BalanceAmount = payable.BalanceAmount,
                     Status = payable.Status,
                     BranchId = payable.BranchId,
-                    VendorName = payable.Vendor.Name,
+                    VendorName = payable.Vendor!.Name,
                     CurrencyRate = payable.CurrencyRate,
                     Attachment = payable.Attachment,
                     Description = payable.Description,
