@@ -1,0 +1,91 @@
+{
+  /*
+The following identity settings need to be configured
+before the project can be successfully executed.
+For more info see https://aka.ms/dotnet-template-ms-identity-platform
+*/
+   "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+
+    }
+  },
+  "ConnectionStrings": {
+
+
+    "ERPDbConnection": "Server=.;Database=CrystalDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+    "UMSDbConnection": "Server=.;Database=CrystalUMS;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+    //// for My PC     
+    // "ERPDbConnection": "Server=MIS-ZABIHULLAH\\MY_SQLSERVER;Database=Crockery_DB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+    // "UMSDbConnection": "Server=MIS-ZABIHULLAH\\MY_SQLSERVER;Database=Crockery_UMS;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+                                                                   
+    //-----Personal PC
+    //"ERPDbConnection": "Server=.;Database=Test_MEW_ERP;Trusted_Connection=True;MultipleActiveResultSets=true",
+    //"UMSDbConnection": "Server=.;Database=Test_ERP_UMS;Trusted_Connection=True;MultipleActiveResultSets=true",
+  },
+
+  "AllowedHosts": "*",
+  "JwtConfig": {
+    "Secret": "HIMYNAMEISSECURITYKEYWHICHISUSEDTOENCRYPTANDDECRYPTACCESSTOKENFROMANDTOSERVERTHANKSFORPRIVACY",
+    "Issuer": "https://Crockery_Mgm.af/en/",
+    "Audience": "https://Crockery_Mgm.af/en/",
+    "DaysToExpire": 5
+  },
+  "Helper": {
+    "SignalRIP": "192.168.70.2:8001"
+  },
+  "Redis": {
+    "ExpirationTimeOffsetHours":8,
+    "ConnectionString": "localhost:6379"
+  },
+  "AttachmentFilesPath": {
+    "DMTS": {
+      "InternalDocument": "/API/DMTS/InternalDocuments/",
+      "ExternalDocument": {
+        "InDocuments": "/API/DMTS/InExternalDocuments/",
+        "OutDocuments": "/API/DMTS/OutExternalDocuments/"
+      }
+    },
+    "UMS": {
+      "UserProfilePhoto": "/API/UMS/UserProfilePhoto/"
+    },
+    "ITSMS": {
+      "RequestForms": "/API/ITSMS/RequestForms/"
+    },
+    "Archive": {
+      "ArchivedDocuments": "/API/Archive/ArchivedDocuments/"
+    },
+    "Reception": {
+      "RequestAttachment": "/API/Reception/RequestAttachment/"
+    },
+    "CrystalClinic": {
+      "ClinicAttachments": "/API/CrystalClinic/Attachments/"
+    },
+    "PMIS": {
+      "PMISAttachments": "/API/PMIS/PMISAttachments/"
+    },
+    "HR": {
+      "CardAttachments": "/API/HR/CardAttachments/"
+    },
+
+    "GeneralForm": {
+      "AdministrativeFormsAttachments": "/API/GeneralForm/AdministrativeFormsAttachments"
+    },
+    "General": {
+      "NewsAttachments": "/API/HR/NewsAttachments/",
+      "TrainingAttachment": "/API/Genral/TrainingAttachment/",
+      "DownloadReportFiles": "/API/GenralReport/Downloads/"
+
+    }
+  },
+  "ProfilePhotoPath": "/UserProfilePhoto/",
+  "WeatherToken": "ebbe64ef9a33fd5015c56360cbf25e12",
+  "MailSettings": {
+    "Mail": "info@crockery-management.com",
+    "DisplayName": "SMTPCrockery",
+    "Password": "Crockery1234!@#$",
+    "Host": "crockery-management.com",
+    "Port": 25
+  }
+}
