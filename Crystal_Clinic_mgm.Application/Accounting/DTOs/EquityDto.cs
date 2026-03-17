@@ -42,6 +42,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int ShareholderId { get; set; }
         public string ShareholderName { get; set; } = string.Empty;
         public EquityTransactionType Type { get; set; }
+        public string TansactionTypeName => Type.ToString();
         public decimal Amount { get; set; }
         public DateTime TransactionDate { get; set; }
         public string Description { get; set; } = string.Empty;
