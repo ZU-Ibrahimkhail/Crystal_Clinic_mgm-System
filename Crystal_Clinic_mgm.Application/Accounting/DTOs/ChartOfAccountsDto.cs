@@ -25,7 +25,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public AccountType AccountType { get; set; }
         public AccountCategory AccountCategory { get; set; }
         public NormalBalanceType NormalBalance { get; set; }
-        public bool IsSystemAccount { get; set; } = false;
         public string? Description { get; set; }
         public int? ParentAccountId { get; set; }
     }

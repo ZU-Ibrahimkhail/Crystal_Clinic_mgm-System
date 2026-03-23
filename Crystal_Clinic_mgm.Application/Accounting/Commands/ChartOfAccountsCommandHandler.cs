@@ -33,7 +33,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     AccountType = request.Dto.AccountType,
                     AccountCategory = request.Dto.AccountCategory,
                     NormalBalance = request.Dto.NormalBalance,
-                    IsSystemAccount = request.Dto.IsSystemAccount,
+                    IsSystemAccount = false,
                     IsActive = true,
                     Description = request.Dto.Description ?? string.Empty,
                     ParentAccountId = request.Dto.ParentAccountId,
