@@ -114,12 +114,12 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPost("VendorBill/{id}/MarkAsPaid")]
-        public async Task<IActionResult> MarkVendorBillAsPaid(int id)
-        {
-            var result = await _procurementService.MarkVendorBillAsPaidAsync(id);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
-        }
+        //[HttpPost("VendorBill/{id}/MarkAsPaid")]
+        //public async Task<IActionResult> MarkVendorBillAsPaid(int id)
+        //{
+        //    var result = await _procurementService.MarkVendorBillAsPaidAsync(id);
+        //    return result.IsSuccess ? Ok(result) : BadRequest(result);
+        //}
 
         #endregion
     }

@@ -19,6 +19,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .IsRequired()
                 .HasMaxLength(100);
 
+            entity.Property(a => a.VendorBillId)
+                .HasColumnName("VendorBillId")
+                .HasColumnType("int")
+                .IsRequired();
+
             entity.Property(a => a.VendorId)
                 .HasColumnName("VendorId")
                 .HasColumnType("int")
@@ -86,6 +91,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("BranchId")
                 .HasColumnType("int")
                 .IsRequired(false);
+
+            entity.HasOne(a => a.VendorBill)
+                .WithMany()
+                .HasForeignKey(a => a.VendorBillId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(a => a.Vendor)
                 .WithMany()

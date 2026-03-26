@@ -59,9 +59,15 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(command, cancellationToken);
         }
 
-        public async Task<Result> MarkVendorBillAsPaidAsync(int vendorBillId, CancellationToken cancellationToken = default)
+        public async Task<Result> PayVendorBillAsync(int vendorBillId, decimal paymentAmount, int paymentMethodId, string reference, CancellationToken cancellationToken = default)
         {
-            var command = new MarkVendorBillAsPaidCommand { VendorBillId = vendorBillId };
+            var command = new PayVendorBillCommand 
+            { 
+                VendorBillId = vendorBillId,
+                PaymentAmount = paymentAmount, 
+                PaymentMethodId = paymentMethodId, 
+                Reference = reference
+            };
             return await mediator.Send(command, cancellationToken);
         }
 

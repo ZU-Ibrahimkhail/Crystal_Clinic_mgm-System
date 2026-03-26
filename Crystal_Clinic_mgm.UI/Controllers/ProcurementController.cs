@@ -87,9 +87,9 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         /// Mark vendor bill as paid
         /// </summary>
         [HttpPost("bill/{vendorBillId}/pay")]
-        public async Task<IActionResult> MarkBillAsPaid(int vendorBillId)
+        public async Task<IActionResult> MarkBillAsPaid(int vendorBillId, decimal paymentAmount, int paymentMethodId, string reference)
         {
-            var result = await _procurementService.MarkVendorBillAsPaidAsync(vendorBillId);
+            var result = await _procurementService.PayVendorBillAsync(vendorBillId, paymentAmount, paymentMethodId, reference);
             if (result.IsSuccess)
                 return Ok();
             return BadRequest(result.Error);

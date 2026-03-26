@@ -688,7 +688,7 @@
             Create a vendor bill
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.ProcurementController.MarkBillAsPaid(System.Int32)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.ProcurementController.MarkBillAsPaid(System.Int32,System.Decimal,System.Int32,System.String)">
             <summary>
             Mark vendor bill as paid
             </summary>

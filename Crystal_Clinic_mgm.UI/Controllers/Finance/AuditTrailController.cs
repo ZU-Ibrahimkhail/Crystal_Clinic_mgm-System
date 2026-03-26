@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Crystal_Clinic_Mgm.Application.Accounting.Commands;
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Accounting.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
 {
@@ -17,6 +18,16 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             _auditTrailService = auditTrailService;
         }
 
+        [HttpPost("Record")]
+        public async Task<IActionResult> RecordAudit([FromBody] CreateAuditTrailDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var result = await _auditTrailService.RecordAuditAsync(dto);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+            
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuditTrail(int id)
         {

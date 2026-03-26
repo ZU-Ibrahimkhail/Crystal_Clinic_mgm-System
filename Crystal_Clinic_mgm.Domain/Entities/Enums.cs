@@ -205,6 +205,7 @@
     public enum APStatus
     {
         Draft,
+        Pending,
         Approve,
         PartiallyPaid,
         Paid,

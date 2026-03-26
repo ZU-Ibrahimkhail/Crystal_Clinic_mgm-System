@@ -6,6 +6,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
     public class AccountsPayable : AuditableEntity
     {
         public int Id { get; set; }
+        public int VendorBillId { get; set; }
+        public VendorBill? VendorBill { get; set; }
         public string InvoiceNumber { get; set; } = string.Empty;
         public int VendorId { get; set; }
         public Supplier? Vendor { get; set; }
