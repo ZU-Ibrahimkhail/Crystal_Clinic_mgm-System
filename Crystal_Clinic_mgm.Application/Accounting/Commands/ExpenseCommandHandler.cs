@@ -163,7 +163,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     {
                         Description = $"Expense Approval: {expense.Description}",
                         Status = JournalEntryStatus.Posted,
-                        EntryDate = DateTime.UtcNow
+                        EntryDate = DateTime.UtcNow,
+                        CreatedBy = request.ApprovedBy,
+                        CreatedOn = DateTime.UtcNow
                     };
 
                     var debitLine = new JournalEntryLine
@@ -171,7 +173,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         ChartOfAccountId = expense.ChartOfAccountId.Value,
                         DebitAmount = expense.Amount,
                         CreditAmount = 0,
-                        Description = expense.Description
+                        Description = expense.Description,
+                        CreatedBy = request.ApprovedBy,
+                        CreatedOn = DateTime.UtcNow
                     };
                     journalEntry.JournalEntryLines.Add(debitLine);
 
@@ -185,7 +189,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         ChartOfAccountId = companyProfile.CashAccountId,
                         DebitAmount = 0,
                         CreditAmount = expense.Amount,
-                        Description = expense.Description
+                        Description = expense.Description,
+                        CreatedBy = request.ApprovedBy,
+                        CreatedOn = DateTime.UtcNow
                     };
                     journalEntry.JournalEntryLines.Add(creditLine);
 

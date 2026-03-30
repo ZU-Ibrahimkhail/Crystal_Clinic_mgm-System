@@ -24,7 +24,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class CreateSalesInvoiceDto
     {
         public int CustomerId { get; set; }
-        public int? PatientId { get; set; }
         public DateTime InvoiceDate { get; set; }
         public DateTime? DueDate { get; set; }
         public string SalesArea { get; set; } = string.Empty;
