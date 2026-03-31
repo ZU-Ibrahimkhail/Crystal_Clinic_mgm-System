@@ -114,7 +114,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         {
             var strategy = context.Database.CreateExecutionStrategy();
 
-            return await strategy.ExecuteAsync(async() =>
+            return await strategy.ExecuteAsync(async () =>
             {
                 await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
                 try
@@ -224,7 +224,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     await context.SaveChangesAsync(cancellationToken);
 
                     // Create journal entries
-                    await CreateJournalEntries(context, receipt, refund, receivable, loggedInUser.Id, cancellationToken);
+                    await CreateJournalEntries(context, receipt, refund, receivable, loggedInUser.Id, request.Dto.Attachment, cancellationToken);
 
                     await transaction.CommitAsync(cancellationToken);
 
@@ -249,7 +249,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         }
 
         private async Task CreateJournalEntries(ERP_DbContext context, Receipt receipt, Receipt? refund,
-            AccountsReceivable receivable, Guid userId, CancellationToken cancellationToken)
+            AccountsReceivable receivable, Guid userId, string attachment, CancellationToken cancellationToken)
         {
             // Get company profile for system account IDs
             var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
@@ -273,6 +273,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 BranchId = receivable.BranchId,
                 ApprovedBy = userId,
                 ApprovedDate = DateTime.UtcNow,
+                Attachment = attachment,
                 CreatedBy = userId,
                 CreatedOn = DateTime.UtcNow
             };

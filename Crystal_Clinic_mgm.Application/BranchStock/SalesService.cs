@@ -137,7 +137,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 // Create sales invoice
                 var invoiceDto = new CreateSalesInvoiceDto
                 {
-                    PatientId = estimate.PatientId,
+                    CustomerId = estimate.PatientId,
                     InvoiceDate = DateTime.UtcNow,
                     DueDate = DateTime.UtcNow.AddDays(30), // Default 30 days payment terms
                     Lines = estimate.EstimateLines.Select(l => new SalesInvoiceLineDto
