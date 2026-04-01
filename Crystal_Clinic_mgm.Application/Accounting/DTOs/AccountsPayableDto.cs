@@ -6,6 +6,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     {
         public int Id { get; set; }
         public string InvoiceNumber { get; set; } = string.Empty;
+        public int? ChartOfAccountId { get; set; }
+        public string? ChartOfAccountName { get; set; }
+        public int? PurchaseOrderId { get; set; }
+        public int? CurrencyId { get; set; }
         public int VendorId { get; set; }
         public string VendorName { get; set; } = string.Empty;
         public DateTime InvoiceDate { get; set; }

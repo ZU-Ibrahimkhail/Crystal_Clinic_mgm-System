@@ -85,6 +85,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             {
                 var payable = await context.AccountsPayables
                     .Include(a => a.Vendor)
+                    .Include(a => a.ChartOfAccount)
                     .FirstOrDefaultAsync(a => a.Id == request.Id && !a.IsDeleted, cancellationToken);
 
                 if (payable == null)
@@ -112,6 +113,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 {
                     Id = payable.Id,
                     InvoiceNumber = payable.InvoiceNumber,
+                    ChartOfAccountId = payable.ChartOfAccountId,
+                    ChartOfAccountName = payable.ChartOfAccount.AccountName,
+                    //PurchaseOrderId = payable.PurchaseOrderId,
+                    CurrencyId = payable.CurrencyId,
                     VendorId = payable.VendorId,
                     InvoiceDate = payable.InvoiceDate,
                     DueDate = payable.DueDate,

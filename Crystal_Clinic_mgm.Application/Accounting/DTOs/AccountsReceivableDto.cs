@@ -7,6 +7,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int Id { get; set; }
         public string InvoiceNumber { get; set; } = string.Empty;
         public int CustomerId { get; set; }
+        public int? VisitId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }
@@ -19,6 +20,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? Description { get; set; }
         public string? Reference { get; set; }
         public string? Attachment { get; set; }
+        public int? ChartOfAccountId { get; set; }
+        public int? CurrencyId { get; set; }
         public List<ReceiptDto> Receipts { get; set; } = new();
     }
 

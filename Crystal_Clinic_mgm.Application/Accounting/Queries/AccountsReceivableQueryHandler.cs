@@ -116,6 +116,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     Id = receivable.Id,
                     InvoiceNumber = receivable.InvoiceNumber,
                     CustomerId = receivable.CustomerId,
+                    CustomerName = receivable.Customer.name,
                     InvoiceDate = receivable.InvoiceDate,
                     DueDate = receivable.DueDate,
                     InvoiceAmount = receivable.InvoiceAmount,
@@ -127,8 +128,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     Attachment = receivable.Attachment,
                     Description = receivable.Description,
                     Reference = receivable.Reference,
-                    CustomerName = receivable.Customer.name,
-                    Receipts = receipts
+                    VisitId = receivable.VisitId,
+                    ChartOfAccountId = receivable.ChartOfAccountId,
+                    CurrencyId = receivable.CurrencyId,
+                    Receipts = receipts,
+                    
                 };
 
                 return Result.Success(dto);
