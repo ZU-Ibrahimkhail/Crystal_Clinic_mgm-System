@@ -20,7 +20,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 
     public class CreateChartOfAccountsDto
     {
-        public string AccountCode { get; set; } = string.Empty;
         public string AccountName { get; set; } = string.Empty;
         public AccountType AccountType { get; set; }
         public AccountCategory AccountCategory { get; set; }

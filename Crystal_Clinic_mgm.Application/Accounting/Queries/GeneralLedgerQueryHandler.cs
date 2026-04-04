@@ -11,7 +11,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
     #region Get Account Ledger
     public class GetAccountLedgerQuery : IRequest<Result>
     {
-        public int ChartOfAccountId { get; set; }
+        public int? ChartOfAccountId { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
     }
@@ -117,7 +117,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
     #region Get Account Balance
     public class GetAccountBalanceQuery : IRequest<Result>
     {
-        public int ChartOfAccountId { get; set; }
+        public int? ChartOfAccountId { get; set; } 
         public DateTime AsOfDate { get; set; }
     }
 
@@ -127,27 +127,48 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
         {
             try
             {
-                var account = await context.ChartOfAccounts
-                    .FirstOrDefaultAsync(c => c.Id == request.ChartOfAccountId && !c.IsDeleted, cancellationToken);
-
-                if (account == null)
-                    return Result.Fail("Chart of Accounts not found.");
-
-                var balance = await accountingRepository.GetAccountBalanceAsync(
-                    request.ChartOfAccountId, 
-                    request.AsOfDate, 
-                    cancellationToken);
-
-                var result = new
+                if (request.ChartOfAccountId.HasValue)
                 {
-                    accountId = account.Id,
-                    accountCode = account.AccountCode,
-                    accountName = account.AccountName,
-                    balance,
-                    asOfDate = request.AsOfDate
-                };
+                    var account = await context.ChartOfAccounts
+                        .FirstOrDefaultAsync(c => c.Id == request.ChartOfAccountId.Value && !c.IsDeleted, cancellationToken);
 
-                return Result.Success(result);
+                    if (account == null)
+                        return Result.Fail("Chart of Accounts not found.");
+
+                    var balance = await accountingRepository.GetAccountBalanceAsync(
+                        request.ChartOfAccountId,
+                        request.AsOfDate,
+                        cancellationToken);
+
+                    var result = new
+                    {
+                        accountId = account.Id,
+                        accountCode = account.AccountCode,
+                        accountName = account.AccountName,
+                        balance,
+                        asOfDate = request.AsOfDate
+                    };
+
+                    return Result.Success(result);
+                }
+                else
+                {
+                    var balance = await accountingRepository.GetAccountBalanceAsync(
+                        null,
+                        request.AsOfDate,
+                        cancellationToken);
+
+                    var result = new
+                    {
+                        accountId = (int?)null,
+                        accountCode = "ALL",
+                        accountName = "All Accounts",
+                        balance,
+                        asOfDate = request.AsOfDate
+                    };
+
+                    return Result.Success(result);
+                }
             }
             catch (Exception ex)
             {

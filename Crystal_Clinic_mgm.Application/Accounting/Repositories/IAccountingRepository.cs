@@ -21,8 +21,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Repositories
         #endregion
 
         #region General Ledger
-        Task<IEnumerable<GeneralLedger>> GetAccountLedgerAsync(int chartOfAccountId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken);
-        Task<decimal> GetAccountBalanceAsync(int chartOfAccountId, DateTime asOfDate, CancellationToken cancellationToken);
+        Task<IEnumerable<GeneralLedger>> GetAccountLedgerAsync(int? chartOfAccountId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken);
+        Task<decimal> GetAccountBalanceAsync(int? chartOfAccountId, DateTime asOfDate, CancellationToken cancellationToken);
         Task<IEnumerable<GeneralLedger>> GetTrialBalanceAsync(int? branchId, DateTime asOfDate, CancellationToken cancellationToken);
         #endregion
 

@@ -75,30 +75,45 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Repositories
         #endregion
 
         #region General Ledger
-        public async Task<IEnumerable<GeneralLedger>> GetAccountLedgerAsync(int chartOfAccountId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GeneralLedger>> GetAccountLedgerAsync(int? chartOfAccountId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
         {
-            return await _context.GeneralLedgers
+            var query = _context.GeneralLedgers
                 .Include(g => g.ChartOfAccount)
-                .Where(g => g.ChartOfAccountId == chartOfAccountId && g.TransactionDate >= fromDate && g.TransactionDate <= toDate && !g.IsDeleted)
+                .Where(g => g.TransactionDate >= fromDate && g.TransactionDate <= toDate && !g.IsDeleted);
+
+            if (chartOfAccountId.HasValue)
+            {
+                query = query.Where(g => g.ChartOfAccountId == chartOfAccountId.Value);
+            }
+
+            return await query
                 .OrderBy(g => g.TransactionDate)
                 .ToListAsync(cancellationToken);
+                
         }
 
-        public async Task<decimal> GetAccountBalanceAsync(int chartOfAccountId, DateTime asOfDate, CancellationToken cancellationToken)
+        public async Task<decimal> GetAccountBalanceAsync(int? chartOfAccountId, DateTime asOfDate, CancellationToken cancellationToken)
         {
-            var debit = await _context.GeneralLedgers
-                .Where(g => g.ChartOfAccountId == chartOfAccountId && g.TransactionDate <= asOfDate && !g.IsDeleted)
-                .SumAsync(g => g.DebitAmount, cancellationToken);
+            var query = _context.GeneralLedgers
+                .Where(g => g.TransactionDate <= asOfDate && !g.IsDeleted);
 
-            var credit = await _context.GeneralLedgers
-                .Where(g => g.ChartOfAccountId == chartOfAccountId && g.TransactionDate <= asOfDate && !g.IsDeleted)
-                .SumAsync(g => g.CreditAmount, cancellationToken);
+            if (chartOfAccountId.HasValue)
+            {
+                query = query.Where(g => g.ChartOfAccountId == chartOfAccountId.Value);
+            }
 
-            var account = await _context.ChartOfAccounts.FirstOrDefaultAsync(c => c.Id == chartOfAccountId, cancellationToken);
-            if (account?.NormalBalance == NormalBalanceType.Debit)
+            var debit = await query.SumAsync(g => g.DebitAmount, cancellationToken);
+            var credit = await query.SumAsync(g => g.CreditAmount, cancellationToken);
+
+            if (!chartOfAccountId.HasValue)
+            {
                 return debit - credit;
-            else
-                return credit - debit;
+            }
+
+            var account = await _context.ChartOfAccounts
+                .FirstOrDefaultAsync(c => c.Id == chartOfAccountId.Value, cancellationToken);
+
+            return account?.NormalBalance == NormalBalanceType.Debit ? debit - credit : credit - debit;
         }
 
         public async Task<IEnumerable<GeneralLedger>> GetTrialBalanceAsync(int? branchId, DateTime asOfDate, CancellationToken cancellationToken)

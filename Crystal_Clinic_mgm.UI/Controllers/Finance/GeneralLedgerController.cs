@@ -9,9 +9,9 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
     [ApiController]
     public class GeneralLedgerController : BaseController
     {
-        [HttpGet("AccountLedger/{chartOfAccountId}")]
+        [HttpGet("AccountLedger")]
         public async Task<IActionResult> GetAccountLedger(
-            int chartOfAccountId,
+            [FromQuery] int? chartOfAccountId,
             [FromQuery] DateTime? fromDate = null,
             [FromQuery] DateTime? toDate = null)
         {
@@ -46,9 +46,9 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             return result.IsSuccess ? Ok(result) : NotFound(result);
         }
 
-        [HttpGet("AccountBalance/{chartOfAccountId}")]
+        [HttpGet("AccountBalance")]
         public async Task<IActionResult> GetAccountBalance(
-            int chartOfAccountId,
+            [FromQuery] int? chartOfAccountId,
             [FromQuery] DateTime? asOf = null)
         {
             var effectiveDate = asOf ?? DateTime.UtcNow;

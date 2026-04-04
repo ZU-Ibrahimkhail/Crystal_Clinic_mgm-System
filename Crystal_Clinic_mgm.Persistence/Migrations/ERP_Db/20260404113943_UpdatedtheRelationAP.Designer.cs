@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260404113943_UpdatedtheRelationAP")]
+    partial class UpdatedtheRelationAP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

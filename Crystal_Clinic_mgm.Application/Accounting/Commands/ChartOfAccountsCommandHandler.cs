@@ -27,14 +27,14 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     cancellationToken);
 
                 var existingAccount = await context.ChartOfAccounts
-                    .FirstOrDefaultAsync(c => c.AccountCode == request.Dto.AccountCode && !c.IsDeleted, cancellationToken);
+                    .FirstOrDefaultAsync(c => c.AccountCode == accountCode && !c.IsDeleted, cancellationToken);
 
                 if (existingAccount != null)
                     return Result.Fail("Account code already exists.");
 
                 var account = new ChartOfAccounts
                 {
-                    AccountCode = request.Dto.AccountCode,
+                    AccountCode = accountCode,
                     AccountName = request.Dto.AccountName,
                     AccountType = request.Dto.AccountType,
                     AccountCategory = request.Dto.AccountCategory,

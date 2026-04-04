@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 
 namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
@@ -8,6 +9,10 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int Id { get; set; }
         public int VendorBillId { get; set; }
         public VendorBill? VendorBill { get; set; }
+        public int? CutormerId { get; set; }
+        public Patient? Customer { get; set; }
+        public int? PurchaseOrderId { get; set; }
+        public PurchaseOrder? PurchaseOrder { get; set; }
         public int VendorId { get; set; }
         public Supplier? Vendor { get; set; }
         public int? CurrencyId { get; set; }
