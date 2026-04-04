@@ -11,7 +11,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.HR.HRLooks
             entity.ToTable("PayrollComponent", "HR");
             entity.HasKey(x => x.ID);
 
-            entity.Property(c => c.ID).HasColumnName("").HasColumnType("int").ValueGeneratedOnAdd();
+            entity.Property(c => c.ID).HasColumnName("ID").HasColumnType("int").ValueGeneratedOnAdd();
             entity.Property(c => c.Name).HasColumnName("Name").HasColumnType("nvarchar").HasMaxLength(100).IsRequired(true);
             entity.Property(c => c.Type).HasColumnName("Type").HasColumnType("int").IsRequired(true);
             entity.Property(c => c.CalculationType).HasColumnName("CalculationType").HasColumnType("int").IsRequired(true);
