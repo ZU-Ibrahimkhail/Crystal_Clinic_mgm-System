@@ -1,5 +1,6 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
@@ -20,6 +21,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         {
             try
             {
+                var accountCode = await GenerateAccountCode(
+                    request.Dto.AccountType,
+                    request.Dto.AccountCategory,
+                    cancellationToken);
+
                 var existingAccount = await context.ChartOfAccounts
                     .FirstOrDefaultAsync(c => c.AccountCode == request.Dto.AccountCode && !c.IsDeleted, cancellationToken);
 
@@ -50,6 +56,27 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             {
                 return Result.Fail($"Error creating Chart of Accounts: {ex.Message}");
             }
+        }
+
+        private async Task<string> GenerateAccountCode(AccountType type,AccountCategory category, CancellationToken cancellationToken)
+        {
+            var prefix = $"{(int)type}-{(int)category}";
+
+            var lastAccount = await context.ChartOfAccounts
+                .Where(a => a.AccountType == type && a.AccountCategory == category)
+                .OrderByDescending(a => a.AccountCode)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            int nextSequence = 1;
+
+            if (lastAccount != null)
+            {
+                var parts = lastAccount.AccountCode.Split('-');
+                var lastSeq = int.Parse(parts.Last());
+                nextSequence = lastSeq + 1;
+            }
+
+            return $"{prefix}-{nextSequence:D3}";
         }
     }
     #endregion

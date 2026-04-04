@@ -8,21 +8,21 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int Id { get; set; }
         public int VendorBillId { get; set; }
         public VendorBill? VendorBill { get; set; }
-        public string InvoiceNumber { get; set; } = string.Empty;
         public int VendorId { get; set; }
         public Supplier? Vendor { get; set; }
+        public int? CurrencyId { get; set; }
+        public CurrencyType? Currency { get; set; }
+        public int? BranchId { get; set; }
+        public Branch? Branch { get; set; }
+        public int? ChartOfAccountId { get; set; }
+        public ChartOfAccounts? ChartOfAccount { get; set; }
+        public string InvoiceNumber { get; set; } = string.Empty;
+        public APStatus Status { get; set; } = APStatus.Draft;
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }
         public decimal InvoiceAmount { get; set; }
         public decimal PaidAmount { get; set; } = 0;
         public decimal BalanceAmount { get; set; }
-        public APStatus Status { get; set; } = APStatus.Draft;
-        public int? ChartOfAccountId { get; set; }
-        public ChartOfAccounts? ChartOfAccount { get; set; }
-        public int? BranchId { get; set; }
-        public Branch? Branch { get; set; }
-        public int? CurrencyId { get; set; }
-        public CurrencyType? Currency { get; set; }
         public double CurrencyRate { get; set; }
         public string? Description { get; set; }
         public string? Reference { get; set; }
