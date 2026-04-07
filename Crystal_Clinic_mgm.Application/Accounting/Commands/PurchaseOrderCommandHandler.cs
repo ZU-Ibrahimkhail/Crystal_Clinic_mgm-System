@@ -133,6 +133,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         {
             try
             {
+                var apAccount = await context.ChartOfAccounts
+                    .FirstOrDefaultAsync(a => a.AccountName == "Accounts Payable" && !a.IsDeleted, cancellationToken);
+
+                if (apAccount == null)
+                    return Result.Fail("Accounts Payable account not found.");
+
                 var po = await context.PurchaseOrders
                     .FirstOrDefaultAsync(p => p.Id == request.PurchaseOrderId && !p.IsDeleted, cancellationToken);
 
@@ -143,6 +149,30 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 po.ModifiedBy = loggedInUser.Id;
                 po.ModifiedOn = DateTime.UtcNow;
 
+                var aP = new AccountsPayable
+                {
+                    InvoiceNumber = GenerateInvoiceNumber(),
+                    VendorId = po.VendorId,
+                    PurchaseOrderId = po.Id,
+                    InvoiceDate = DateTime.UtcNow,
+                    DueDate = DateTime.UtcNow.AddDays(30),
+                    InvoiceAmount = po.TotalAmount,
+                    BalanceAmount = po.TotalAmount,
+                    Status = APStatus.Draft,
+                    Type = APType.Purchase,
+                    ChartOfAccountId = apAccount.Id,
+                    CurrencyId = 1,
+                    CurrencyRate = 1,
+                    Attachment = null,
+                    Description =  $"AP created from PO #{po.Id}",
+                    Reference = po.PONumber,
+                    BranchId = po.BranchId,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+
+                context.AccountsPayables.Add(aP);
                 context.PurchaseOrders.Update(po);
                 await context.SaveChangesAsync(cancellationToken);
 
@@ -153,7 +183,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 return Result.Fail($"Error receiving Purchase Order: {ex.Message}");
             }
         }
+        private string GenerateInvoiceNumber()
+        {
+            return $"AP-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+        }
     }
+
     #endregion
 
     #region Create Vendor Bill
@@ -180,6 +215,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 {
                     BillNumber = billNumber,
                     PurchaseOrderId = request.Dto.PurchaseOrderId,
+                    paymentId = request.Dto.PaymentId,
                     VendorId = request.Dto.VendorId,
                     BillDate = request.Dto.BillDate,
                     DueDate = request.Dto.DueDate,
@@ -191,6 +227,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 };
 
                 context.VendorBills.Add(bill);
+
 
                 var ap = new AccountsPayable
                 {

@@ -24,8 +24,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("int")
                 .IsRequired();
 
-            entity.Property(a => a.CutormerId)
-               .HasColumnName("CutormerId")
+            entity.Property(a => a.CustomerId)
+               .HasColumnName("CustomerId")
                .HasColumnType("int")
                .IsRequired(false);
 
@@ -71,6 +71,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .IsRequired()
                 .HasDefaultValue(APStatus.Draft);
 
+            entity.Property(a => a.Type)
+               .HasColumnName("Type")
+               .HasColumnType("int")
+               .IsRequired();
+
             entity.Property(a => a.Attachment)
                 .HasColumnName("Attachemnt")
                 .HasColumnType("nvarchar(max)")
@@ -109,7 +114,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
 
             entity.HasOne(a => a.Customer)
                 .WithMany()
-                .HasForeignKey(a => a.CutormerId)
+                .HasForeignKey(a => a.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(a => a.PurchaseOrder)

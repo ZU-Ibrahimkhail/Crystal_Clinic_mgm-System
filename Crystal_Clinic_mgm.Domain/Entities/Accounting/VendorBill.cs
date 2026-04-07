@@ -8,6 +8,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int Id { get; set; }
         public int? PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
+        public int? paymentId { get; set; }
+        public Payment? Payment { get; set; }
         public int VendorId { get; set; }
         public Supplier? Vendor { get; set; }
         public int? BranchId { get; set; }

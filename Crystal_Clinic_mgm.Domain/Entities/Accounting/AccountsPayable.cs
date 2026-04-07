@@ -9,7 +9,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int Id { get; set; }
         public int VendorBillId { get; set; }
         public VendorBill? VendorBill { get; set; }
-        public int? CutormerId { get; set; }
+        public int? CustomerId { get; set; }
         public Patient? Customer { get; set; }
         public int? PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
@@ -22,6 +22,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int? ChartOfAccountId { get; set; }
         public ChartOfAccounts? ChartOfAccount { get; set; }
         public string InvoiceNumber { get; set; } = string.Empty;
+        public APType Type { get; set; }
         public APStatus Status { get; set; } = APStatus.Draft;
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }

@@ -64,6 +64,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class CreateVendorBillDto
     {
         public int? PurchaseOrderId { get; set; }
+        public int? PaymentId { get; set; }
         public int VendorId { get; set; }
         public DateTime BillDate { get; set; }
         public DateTime DueDate { get; set; }

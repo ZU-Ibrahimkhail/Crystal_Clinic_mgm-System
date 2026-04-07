@@ -30,13 +30,15 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class CreateAccountsPayableDto
     {
         public int VendorId { get; set; }
+        public int? PurchaseOrderId { get; set; }
+        public int? CustomerId { get; set; }
+        public int? BranchId { get; set; }
+        public int? CurrencyId { get; set; }
+        public int? ChartOfAccountId { get; set; }
+        public APType Type { get; set; }
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }
         public decimal InvoiceAmount { get; set; }
-        public int? ChartOfAccountId { get; set; }
-        public int? BranchId { get; set; }
-        public int? PurchaseOrderId { get; set; }
-        public int? CurrencyId { get; set; }
         public double CurrencyRate { get; set; }
         public string? Description { get; set; }
         public string? Reference { get; set; }

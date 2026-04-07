@@ -19,6 +19,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .IsRequired()
                 .HasMaxLength(100);
 
+            entity.Property(v => v.paymentId)
+               .HasColumnName("paymentId")
+               .HasColumnType("int")
+               .IsRequired(false);
+
             entity.Property(v => v.PurchaseOrderId)
                 .HasColumnName("PurchaseOrderId")
                 .HasColumnType("int")
@@ -54,6 +59,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("BranchId")
                 .HasColumnType("int")
                 .IsRequired(false);
+
+            entity.HasOne(a => a.Payment)
+                .WithMany()
+                .HasForeignKey(a => a.paymentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(v => v.PurchaseOrder)
                 .WithMany()

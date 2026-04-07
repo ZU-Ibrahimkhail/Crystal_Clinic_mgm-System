@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260407084646_AddedVendorBillandPaymentRelation")]
+    partial class AddedVendorBillandPaymentRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,9 +68,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasDefaultValue(0)
                         .HasColumnName("CurrencyRate");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int?>("CutormerId")
                         .HasColumnType("int")
-                        .HasColumnName("CustomerId");
+                        .HasColumnName("CutormerId");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -131,10 +134,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasDefaultValue(0)
                         .HasColumnName("Status");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int")
-                        .HasColumnName("Type");
-
                     b.Property<int>("VendorBillId")
                         .HasColumnType("int")
                         .HasColumnName("VendorBillId");
@@ -151,7 +150,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CutormerId");
 
                     b.HasIndex("InvoiceNumber")
                         .IsUnique();
@@ -7990,7 +7989,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Patient", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("CutormerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.PurchaseOrder", "PurchaseOrder")
