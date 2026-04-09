@@ -1,5 +1,6 @@
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
+using Crystal_Clinic_Mgm.Domain.Entities.HR.HR;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 
 namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
@@ -7,15 +8,15 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
     public class AccountsPayable : AuditableEntity
     {
         public int Id { get; set; }
-        public int VendorBillId { get; set; }
+        public int? VendorBillId { get; set; }
         public VendorBill? VendorBill { get; set; }
-        public int? CustomerId { get; set; }
-        public Patient? Customer { get; set; }
+        public int? VendorId { get; set; }
+        public Supplier? Vendor { get; set; }
         public int? PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
-        public int VendorId { get; set; }
-        public Supplier? Vendor { get; set; }
+        public int? EmployeeId { get; set; }
         public int? CurrencyId { get; set; }
+        public EmployeeProfile? Employee { get; set; }
         public CurrencyType? Currency { get; set; }
         public int? BranchId { get; set; }
         public Branch? Branch { get; set; }

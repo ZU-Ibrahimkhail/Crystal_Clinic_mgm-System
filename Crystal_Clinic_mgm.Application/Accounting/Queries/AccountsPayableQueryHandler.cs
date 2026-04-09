@@ -35,6 +35,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
 
                 var payables = await query
                     .OrderByDescending(a => a.InvoiceDate)
+                    .Include(x => x.Vendor)
                     .Skip((request.PageNumber - 1) * request.PageSize)
                     .Take(request.PageSize)
                     .Select(a => new AccountsPayableDto

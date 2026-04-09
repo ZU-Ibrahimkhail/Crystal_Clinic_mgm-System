@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408130055_UpdatedPaymentandVendorBillRelation")]
+    partial class UpdatedPaymentandVendorBillRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +34,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Attachment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Attachemnt");
 
@@ -134,11 +138,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("Type");
 
-                    b.Property<int?>("VendorBillId")
+                    b.Property<int>("VendorBillId")
                         .HasColumnType("int")
                         .HasColumnName("VendorBillId");
 
-                    b.Property<int?>("VendorId")
+                    b.Property<int>("VendorId")
                         .HasColumnType("int")
                         .HasColumnName("VendorId");
 
@@ -8000,12 +8004,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.VendorBill", "VendorBill")
                         .WithMany()
                         .HasForeignKey("VendorBillId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Supplier", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Branch");
 

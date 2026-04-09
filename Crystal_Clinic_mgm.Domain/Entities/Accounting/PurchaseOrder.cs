@@ -6,10 +6,10 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
     public class PurchaseOrder : AuditableEntity
     {
         public int Id { get; set; }
-        public int? BranchId { get; set; }
-        public Branch? Branch { get; set; }
         public int VendorId { get; set; }
         public Supplier? Vendor { get; set; }
+        public int? BranchId { get; set; }
+        public Branch? Branch { get; set; }
         public string PONumber { get; set; } = string.Empty;
         public DateTime OrderDate { get; set; }
         public DateTime? ExpectedDeliveryDate { get; set; }

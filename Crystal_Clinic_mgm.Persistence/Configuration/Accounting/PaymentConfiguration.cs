@@ -17,6 +17,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("int")
                 .IsRequired();
 
+            entity.Property(p => p.VendorBillId)
+               .HasColumnName("VendorBillId")
+               .HasColumnType("int")
+               .IsRequired(false);
+
             entity.Property(p => p.PaymentNumber)
                 .HasColumnName("PaymentNumber")
                 .HasColumnType("nvarchar(100)")
@@ -63,6 +68,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.HasOne(p => p.AccountsPayable)
                 .WithMany(a => a.Payments)
                 .HasForeignKey(p => p.AccountsPayableId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(p => p.VendorBill)
+                .WithMany(vb => vb.Payments)
+                .HasForeignKey(p => p.VendorBillId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(p => p.Currency)

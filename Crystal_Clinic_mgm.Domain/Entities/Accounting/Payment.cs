@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Look;
 
 namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
@@ -7,6 +8,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int Id { get; set; }
         public int AccountsPayableId { get; set; }
         public AccountsPayable AccountsPayable { get; set; } = null!;
+        public int? VendorBillId { get; set; }
+        public VendorBill? VendorBill { get; set; }
         public int? CurrencyId { get; set; }
         public CurrencyType? Currency { get; set; }
         public int PaymentMethodId { get; set; }

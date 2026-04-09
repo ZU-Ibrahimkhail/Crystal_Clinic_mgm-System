@@ -168,6 +168,21 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         CreatedOn = DateTime.UtcNow
                     };
 
+                    var lastEntry = await context.JournalEntries
+                        .OrderByDescending(j => j.Id)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    int nextNumber = 1;
+
+                    if (lastEntry != null && !string.IsNullOrWhiteSpace(lastEntry.EntryNumber))
+                    {
+                        var numericPart = lastEntry.EntryNumber.Replace("JE-", "");
+                        if (int.TryParse(numericPart, out int parsed))
+                            nextNumber = parsed + 1;
+                    }
+
+                    journalEntry.EntryNumber = $"JE-{nextNumber:D6}";
+
                     var debitLine = new JournalEntryLine
                     {
                         ChartOfAccountId = expense.ChartOfAccountId.Value,
@@ -179,7 +194,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     };
                     journalEntry.JournalEntryLines.Add(debitLine);
 
-                    // Get cash account from company profile
                     var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
                     if (companyProfile == null)
                         return Result.Fail("Company profile not found. Please initialize the company profile first.");

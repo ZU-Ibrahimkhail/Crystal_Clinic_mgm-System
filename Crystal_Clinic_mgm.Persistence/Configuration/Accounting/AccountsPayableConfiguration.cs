@@ -22,12 +22,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.Property(a => a.VendorBillId)
                 .HasColumnName("VendorBillId")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired(false);
 
-            entity.Property(a => a.CustomerId)
-               .HasColumnName("CustomerId")
-               .HasColumnType("int")
-               .IsRequired(false);
+            entity.Property(a => a.EmployeeId)
+                .HasColumnName("EmployeeId")
+                .HasColumnType("int")
+                .IsRequired(false);
 
             entity.Property(a => a.PurchaseOrderId)
                 .HasColumnName("PurchaseOrderId")
@@ -37,7 +37,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.Property(a => a.VendorId)
                 .HasColumnName("VendorId")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(a => a.InvoiceDate)
                 .HasColumnName("InvoiceDate")
@@ -79,7 +79,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.Property(a => a.Attachment)
                 .HasColumnName("Attachemnt")
                 .HasColumnType("nvarchar(max)")
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(a => a.Reference)
                 .HasColumnName("Refrence")
@@ -112,9 +112,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasForeignKey(a => a.VendorBillId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(a => a.Customer)
+            entity.HasOne(a => a.Employee)
                 .WithMany()
-                .HasForeignKey(a => a.CustomerId)
+                .HasForeignKey(a => a.EmployeeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(a => a.PurchaseOrder)

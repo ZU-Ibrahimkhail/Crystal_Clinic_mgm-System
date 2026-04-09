@@ -24,9 +24,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 var payable = new AccountsPayable
                 {
                     InvoiceNumber = GenerateInvoiceNumber(),
-                    VendorId = request.Dto.VendorId,
-                    CustomerId = request.Dto.CustomerId,
-                    PurchaseOrderId = request.Dto.PurchaseOrderId,
+                    EmployeeId = request.Dto.EmployeeId,
                     InvoiceDate = request.Dto.InvoiceDate,
                     DueDate = request.Dto.DueDate,
                     InvoiceAmount = request.Dto.InvoiceAmount,

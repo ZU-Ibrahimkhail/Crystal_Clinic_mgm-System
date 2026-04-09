@@ -1,3 +1,4 @@
+using Crystal_Clinic_Mgm.Application.Accounting.Queries;
 using Crystal_Clinic_Mgm.Domain;
 
 namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
@@ -10,7 +11,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? ChartOfAccountName { get; set; }
         public int? PurchaseOrderId { get; set; }
         public int? CurrencyId { get; set; }
-        public int VendorId { get; set; }
+        public int? VendorId { get; set; }
         public string VendorName { get; set; } = string.Empty;
         public DateTime InvoiceDate { get; set; }
         public DateTime DueDate { get; set; }
@@ -29,9 +30,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 
     public class CreateAccountsPayableDto
     {
-        public int VendorId { get; set; }
-        public int? PurchaseOrderId { get; set; }
-        public int? CustomerId { get; set; }
+        public int? EmployeeId { get; set; }
         public int? BranchId { get; set; }
         public int? CurrencyId { get; set; }
         public int? ChartOfAccountId { get; set; }

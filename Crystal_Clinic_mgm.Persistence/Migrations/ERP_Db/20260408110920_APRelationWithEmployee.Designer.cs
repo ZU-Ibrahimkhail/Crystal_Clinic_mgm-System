@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408110920_APRelationWithEmployee")]
+    partial class APRelationWithEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,6 +34,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Attachment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Attachemnt");
 
@@ -134,11 +138,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("Type");
 
-                    b.Property<int?>("VendorBillId")
+                    b.Property<int>("VendorBillId")
                         .HasColumnType("int")
                         .HasColumnName("VendorBillId");
 
-                    b.Property<int?>("VendorId")
+                    b.Property<int>("VendorId")
                         .HasColumnType("int")
                         .HasColumnName("VendorId");
 
@@ -1968,17 +1972,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("nvarchar")
                         .HasColumnName("Remarks");
 
-                    b.Property<int?>("VendorBillId")
-                        .HasColumnType("int")
-                        .HasColumnName("VendorBillId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AccountsPayableId");
 
                     b.HasIndex("CurrencyId");
-
-                    b.HasIndex("VendorBillId");
 
                     b.ToTable("Payment", "Accounting");
                 });
@@ -3021,6 +3019,10 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("VendorId");
 
+                    b.Property<int?>("paymentId")
+                        .HasColumnType("int")
+                        .HasColumnName("paymentId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BillNumber")
@@ -3031,6 +3033,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasIndex("PurchaseOrderId");
 
                     b.HasIndex("VendorId");
+
+                    b.HasIndex("paymentId");
 
                     b.ToTable("VendorBill", "Accounting");
                 });
@@ -8000,12 +8004,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.VendorBill", "VendorBill")
                         .WithMany()
                         .HasForeignKey("VendorBillId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Supplier", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Branch");
 
@@ -8381,16 +8387,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.VendorBill", "VendorBill")
-                        .WithMany("Payments")
-                        .HasForeignKey("VendorBillId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.Navigation("AccountsPayable");
 
                     b.Navigation("Currency");
-
-                    b.Navigation("VendorBill");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.ProcedureLog", b =>
@@ -8583,7 +8582,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Accounting.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("paymentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Branch");
+
+                    b.Navigation("Payment");
 
                     b.Navigation("PurchaseOrder");
 
@@ -9558,11 +9564,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.Shareholder", b =>
                 {
                     b.Navigation("Transactions");
-                });
-
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.VendorBill", b =>
-                {
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.AdjustmentCategory", b =>

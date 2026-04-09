@@ -142,6 +142,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 var po = await context.PurchaseOrders
                     .FirstOrDefaultAsync(p => p.Id == request.PurchaseOrderId && !p.IsDeleted, cancellationToken);
 
+                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+
                 if (po == null)
                     return Result.Fail("Purchase Order not found.");
 
@@ -161,7 +163,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     Status = APStatus.Draft,
                     Type = APType.Purchase,
                     ChartOfAccountId = apAccount.Id,
-                    CurrencyId = 1,
+                    CurrencyId = companyProfile?.BaseCurrencyId,
                     CurrencyRate = 1,
                     Attachment = null,
                     Description =  $"AP created from PO #{po.Id}",
@@ -210,12 +212,23 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 if (vendor == null)
                     return Result.Fail("Vendor not found.");
 
+                if (request.Dto.PurchaseOrderId.HasValue)
+                {
+                    var po = await context.PurchaseOrders
+                        .FirstOrDefaultAsync(p => p.Id == request.Dto.PurchaseOrderId, cancellationToken);
+
+                    if (po == null)
+                        return Result.Fail("Purchase Order not found.");
+
+                    if (po.Status != POStatus.Received)
+                        return Result.Fail("Purchase Order must be received before billing.");
+                }
+
                 var billNumber = GenerateBillNumber();
                 var bill = new VendorBill
                 {
                     BillNumber = billNumber,
                     PurchaseOrderId = request.Dto.PurchaseOrderId,
-                    paymentId = request.Dto.PaymentId,
                     VendorId = request.Dto.VendorId,
                     BillDate = request.Dto.BillDate,
                     DueDate = request.Dto.DueDate,
@@ -228,16 +241,21 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 context.VendorBills.Add(bill);
 
+                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                if (companyProfile == null)
+                    return Result.Fail("Company profile not configured.");
 
                 var ap = new AccountsPayable
                 {
-                    VendorBillId = bill.Id,
+                    VendorBill = bill,
                     InvoiceNumber = billNumber,
+                    PurchaseOrderId = bill.PurchaseOrderId,
                     VendorId = bill.VendorId,
                     InvoiceDate = bill.BillDate,
                     DueDate = bill.DueDate,
                     InvoiceAmount = bill.TotalAmount,
                     PaidAmount = 0,
+                    CurrencyId = companyProfile.BaseCurrencyId,
                     BalanceAmount = bill.TotalAmount,
                     Status = APStatus.Pending,
                     BranchId = bill.BranchId,
@@ -245,7 +263,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
-
                 context.AccountsPayables.Add(ap);
 
                 var je = new JournalEntry
@@ -262,8 +279,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
-
-                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
 
                 je.JournalEntryLines.Add(new JournalEntryLine
                 {
@@ -286,6 +301,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 });
+                var totalDebit = je.JournalEntryLines.Sum(x => x.DebitAmount);
+                var totalCredit = je.JournalEntryLines.Sum(x => x.CreditAmount);
+
+                if (totalDebit != totalCredit)
+                    throw new Exception("Journal entry is not balanced.");
 
                 context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
@@ -294,6 +314,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 return Result.Fail($"Error creating Vendor Bill: {ex.Message}");
             }
         }
