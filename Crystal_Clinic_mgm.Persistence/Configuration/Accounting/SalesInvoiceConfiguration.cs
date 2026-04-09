@@ -59,7 +59,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.Property(a => a.Attachment)
                 .HasColumnName("Attachemnt")
                 .HasColumnType("nvarchar(max)")
-                .IsRequired();
+                .IsRequired(false);
+
+            entity.Property(a => a.Notes)
+                .HasColumnName("Notes")
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
 
             entity.Property(s => s.Status)
                 .HasColumnName("Status")

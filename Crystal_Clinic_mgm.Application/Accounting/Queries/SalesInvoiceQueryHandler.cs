@@ -56,8 +56,23 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     DiscountAmount = i.DiscountAmount,
                     NetAmount = i.NetAmount,
                     Status = i.Status,
+                    Notes = i.
                     SalesArea = i.SalesArea,
-                    BranchId = i.BranchId
+                    BranchId = i.BranchId,
+                    Lines = context.SalesInvoiceLines
+                        .Where(l => !l.IsDeleted && l.SalesInvoiceId == i.Id)
+                        .Select(l => new SalesInvoiceLineDto
+                        {
+                            InventoryItemId = l.InventoryItemId,
+                            ServiceId = l.ServiceId,
+                            Description = l.Description,
+                            Quantity = l.Quantity,
+                            UnitPrice = l.UnitPrice,
+                            LineTotal = l.LineTotal,
+                            DiscountAmount = l.DiscountAmount,
+                            TaxAmount = l.TaxAmount
+                        }).ToList()
+
                 }).ToList();
 
                 return Result.Success(new { Data = dtos, Total = total, PageNumber = request.PageNumber, PageSize = request.PageSize });
@@ -103,7 +118,20 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     NetAmount = invoice.NetAmount,
                     Status = invoice.Status,
                     SalesArea = invoice.SalesArea,
-                    BranchId = invoice.BranchId
+                    BranchId = invoice.BranchId,
+                    Lines = invoice.Lines
+                        .Where(l => !l.IsDeleted)
+                        .Select(l => new SalesInvoiceLineDto
+                        {
+                            InventoryItemId = l.InventoryItemId,
+                            ServiceId = l.ServiceId,
+                            Description = l.Description,
+                            Quantity = l.Quantity,
+                            UnitPrice = l.UnitPrice,
+                            LineTotal = l.LineTotal,
+                            DiscountAmount = l.DiscountAmount,
+                            TaxAmount = l.TaxAmount
+                        }).ToList()
                 };
 
                 return Result.Success(dto);
