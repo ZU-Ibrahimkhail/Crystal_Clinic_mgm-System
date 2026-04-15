@@ -48,7 +48,7 @@ app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocal
 //    //--this line is use for Collapes Contoller Name
 //    option.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
 //    option.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
-Constants.CheckPassword = true;
+Constants.CheckPassword = false;
 //});
 //app.UseRouting();
 //app.UseCors("AllowAll");
@@ -74,6 +74,20 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    app.UseSwagger();
+    app.UseSwaggerUI(option =>
+    {
+        option.SwaggerEndpoint("/swagger/Crystal_Clinic_Mgm/swagger.json", "Crystal_Clinic-Market-V1");
+        //--this line is use for Collapes Contoller Name
+        option.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+        option.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
+        Constants.CheckPassword = false;
+    });
+    app.UseRouting();
+    app.UseCors("AllowAll");
+    app.UseStaticFiles();
+    app.UseDefaultFiles();
+    app.UseCors("CorsPolicy");
     app.UseRouting();
     //---Use For Client app to be used here
     //---Use for third Party(React Project))
@@ -110,10 +124,10 @@ try
     //    umscontext.Database.Migrate();
     //}
     //////---Seeding Data-------------------------------
-    //await Crystal_Clinic_Initializer.InitilizeCrystal_Clinic(context);
-    //await UMSintializer.InitializeUMS(userManager);
-    //await NotificationInitializer.InitializeNotifications(umscontext);
-    //await PermissionInitializer.InitializePermissions(umscontext);
+    await Crystal_Clinic_Initializer.InitilizeCrystal_Clinic(context);
+    await UMSintializer.InitializeUMS(userManager);
+    await NotificationInitializer.InitializeNotifications(umscontext);
+    await PermissionInitializer.InitializePermissions(umscontext);
 }
 catch (Exception ex)
 {

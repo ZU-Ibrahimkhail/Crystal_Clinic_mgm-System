@@ -15,13 +15,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal DiscountAmount { get; set; }
         public decimal NetAmount { get; set; }
         public SalesStatus Status { get; set; }
-        public string? Notes { get; set; }
         public string SalesArea { get; set; } = string.Empty;
         public int? BranchId { get; set; }
+        public string BranchName { get; set; } = string.Empty;
+        public string? Notes { get; set; }
         public string? Attachment { get; set; }
         public List<SalesInvoiceLineDto> Lines { get; set; } = new();
-
-
+        public List<SalesReceiptDto> Receipts { get; set; } = new();
     }
 
     public class CreateSalesInvoiceDto

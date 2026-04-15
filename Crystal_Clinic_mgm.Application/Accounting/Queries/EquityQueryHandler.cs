@@ -84,6 +84,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     TotalInvestment = shareholder.TotalInvestment,
                     TotalDrawings = shareholder.TotalDrawings,
                     NetEquity = shareholder.TotalInvestment - shareholder.TotalDrawings,
+                    Attachment = shareholder.Attachment,
                     Transactions = shareholder.Transactions
                         .Where(t => !t.IsDeleted)
                         .OrderByDescending(t => t.TransactionDate)

@@ -212,11 +212,11 @@
         Overdue
     }
 
-    public enum APType{
-        Purchase,
-        Expense,
-        Payroll,
-        Other
+public enum APType{
+    Purchase,
+    Expense,
+    Payroll,
+    Other
 }
 
 public enum SalesStatus

@@ -131,6 +131,20 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                             LineTotal = l.LineTotal,
                             DiscountAmount = l.DiscountAmount,
                             TaxAmount = l.TaxAmount
+                        }).ToList(),
+                    Receipts = invoice.Receipts
+                        .Where(r => !r.IsDeleted)
+                        .Select(r => new SalesReceiptDto
+                        {
+                            Id = r.Id,
+                            SalesInvoiceId = r.SalesInvoiceId,
+                            ReceiptNumber = r.ReceiptNumber,
+                            CustomerId = r.CustomerId,
+                            CustomerName = r.Customer?.name ?? string.Empty,
+                            AmountReceived = r.AmountReceived,
+                            PaymentMethodId = r.PaymentMethodId,
+                            ReceiptDate = r.ReceiptDate,
+                            Reference = r.Reference
                         }).ToList()
                 };
 

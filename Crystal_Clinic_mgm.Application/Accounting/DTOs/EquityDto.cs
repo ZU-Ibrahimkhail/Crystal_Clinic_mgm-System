@@ -67,6 +67,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TotalInvestment { get; set; }
         public decimal TotalDrawings { get; set; }
         public decimal NetEquity { get; set; }
+        public string? Attachment { get; set; }
         public List<EquityTransactionDto> Transactions { get; set; } = new();
     }
 
