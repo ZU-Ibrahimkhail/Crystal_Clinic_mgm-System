@@ -13,7 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
         Task<Result> ApproveExpenseAsync(int expenseId, Guid approverId);
         Task<Result> RejectExpenseAsync(int expenseId, Guid rejectedBy, string reason);
         Task<Result> GetExpenseAsync(int expenseId);
-        Task<Result> GetAllExpensesAsync(ExpenseStatus? status = null, int? branchId = null, int? categoryId = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10);
+        Task<Result> GetAllExpensesAsync(ExpenseStatus? status = null, int? branchId = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10);
         Task<Result> GetPendingApprovalsAsync(int? branchId = null, int page = 1, int pageSize = 10);
     }
 }

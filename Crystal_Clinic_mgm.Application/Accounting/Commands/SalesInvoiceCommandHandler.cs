@@ -157,7 +157,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ReceiptNumber = GenerateReceiptNumber(),
                     CustomerId = invoice.CustomerId,
                     AmountReceived = request.Dto.AmountReceived,
-                    PaymentMethodId = request.Dto.PaymentMethodId,
+                    PaymentMethod = request.Dto.PaymentMethod,
                     ReceiptDate = request.Dto.ReceiptDate,
                     Reference = request.Dto.Reference ?? string.Empty,
                     CreatedBy = loggedInUser.Id,

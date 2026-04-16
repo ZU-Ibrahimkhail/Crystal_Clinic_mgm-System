@@ -11,7 +11,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public int CustomerId { get; set; }
         public Patient? Customer { get; set; }
         public decimal AmountReceived { get; set; }
-        public int PaymentMethodId { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
         public DateTime ReceiptDate { get; set; }
         public string Reference { get; set; } = string.Empty;
     }

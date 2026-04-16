@@ -203,121 +203,137 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(CreateVendorBillCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = await context.Database.BeginTransactionAsync();
+            var strategy = context.Database.CreateExecutionStrategy();
             try
             {
-                var vendor = await context.Supplier
-                    .FirstOrDefaultAsync(v => v.Id == request.Dto.VendorId, cancellationToken);
-
-                if (vendor == null)
-                    return Result.Fail("Vendor not found.");
-
-                if (request.Dto.PurchaseOrderId.HasValue)
+                return await strategy.ExecuteAsync(async () =>
                 {
-                    var po = await context.PurchaseOrders
-                        .FirstOrDefaultAsync(p => p.Id == request.Dto.PurchaseOrderId, cancellationToken);
+                    using var transaction = await context.Database.BeginTransactionAsync();
+                    try
+                    {
+                        var vendor = await context.Supplier
+                            .FirstOrDefaultAsync(v => v.Id == request.Dto.VendorId, cancellationToken);
 
-                    if (po == null)
-                        return Result.Fail("Purchase Order not found.");
+                        if (vendor == null)
+                            throw new Exception("Vendor not found.");
 
-                    if (po.Status != POStatus.Received)
-                        return Result.Fail("Purchase Order must be received before billing.");
-                }
+                        if (request.Dto.PurchaseOrderId.HasValue)
+                        {
+                            var po = await context.PurchaseOrders
+                                .FirstOrDefaultAsync(p => p.Id == request.Dto.PurchaseOrderId, cancellationToken);
 
-                var billNumber = GenerateBillNumber();
-                var bill = new VendorBill
-                {
-                    BillNumber = billNumber,
-                    PurchaseOrderId = request.Dto.PurchaseOrderId,
-                    VendorId = request.Dto.VendorId,
-                    BillDate = request.Dto.BillDate,
-                    DueDate = request.Dto.DueDate,
-                    TotalAmount = request.Dto.TotalAmount,
-                    BranchId = request.Dto.BranchId,
-                    Status = BillStatus.Unpaid,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
+                            if (po == null)
+                                throw new Exception("Purchase Order not found.");
 
-                context.VendorBills.Add(bill);
+                            if (po.Status != POStatus.Received)
+                                throw new Exception("Purchase Order must be received before billing.");
+                        }
 
-                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                if (companyProfile == null)
-                    return Result.Fail("Company profile not configured.");
+                        var billNumber = GenerateBillNumber();
+                        var bill = new VendorBill
+                        {
+                            BillNumber = billNumber,
+                            PurchaseOrderId = request.Dto.PurchaseOrderId,
+                            VendorId = request.Dto.VendorId,
+                            BillDate = request.Dto.BillDate,
+                            DueDate = request.Dto.DueDate,
+                            TotalAmount = request.Dto.TotalAmount,
+                            BranchId = request.Dto.BranchId,
+                            Status = BillStatus.Unpaid,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
 
-                var ap = new AccountsPayable
-                {
-                    VendorBill = bill,
-                    InvoiceNumber = billNumber,
-                    PurchaseOrderId = bill.PurchaseOrderId,
-                    VendorId = bill.VendorId,
-                    InvoiceDate = bill.BillDate,
-                    DueDate = bill.DueDate,
-                    InvoiceAmount = bill.TotalAmount,
-                    PaidAmount = 0,
-                    CurrencyId = companyProfile.BaseCurrencyId,
-                    BalanceAmount = bill.TotalAmount,
-                    Status = APStatus.Pending,
-                    BranchId = bill.BranchId,
-                    Description = $"AP created for Vendor Bill {bill.BillNumber}",
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-                context.AccountsPayables.Add(ap);
+                        context.VendorBills.Add(bill);
 
-                var je = new JournalEntry
-                {
-                    EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
-                    EntryDate = bill.BillDate,
-                    Description = $"Journal Entry for Vendor Bill {bill.BillNumber}",
-                    Status = JournalEntryStatus.Posted,
-                    ReferenceNumber = bill.BillNumber,
-                    ReferenceType = "VendorBill",
-                    BranchId = bill.BranchId,
-                    ApprovedBy = loggedInUser.Id,
-                    ApprovedDate = DateTime.UtcNow,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not configured.");
 
-                je.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId  = companyProfile.PurchaseExpenseAccountId,
-                    Description = $"Debit for Vendor Bill {bill.BillNumber}",
-                    DebitAmount = bill.TotalAmount,
-                    CreditAmount = 0,
-                    CurrencyId = companyProfile.BaseCurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
+                        var ap = new AccountsPayable
+                        {
+                            VendorBill = bill,
+                            InvoiceNumber = billNumber,
+                            Reference = bill.BillNumber,
+                            PurchaseOrderId = bill.PurchaseOrderId,
+                            VendorId = bill.VendorId,
+                            InvoiceDate = bill.BillDate,
+                            DueDate = bill.DueDate,
+                            InvoiceAmount = bill.TotalAmount,
+                            PaidAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            BalanceAmount = bill.TotalAmount,
+                            Status = APStatus.Pending,
+                            BranchId = bill.BranchId,
+                            Description = $"AP created for Vendor Bill {bill.BillNumber}",
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+                        context.AccountsPayables.Add(ap);
+
+                        var je = new JournalEntry
+                        {
+                            EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                            EntryDate = bill.BillDate,
+                            Description = $"Journal Entry for Vendor Bill {bill.BillNumber}",
+                            Status = JournalEntryStatus.Posted,
+                            ReferenceNumber = bill.BillNumber,
+                            ReferenceType = "VendorBill",
+                            BranchId = bill.BranchId,
+                            ApprovedBy = loggedInUser.Id,
+                            ApprovedDate = DateTime.UtcNow,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
+                            Description = $"Debit for Vendor Bill {bill.BillNumber}",
+                            DebitAmount = bill.TotalAmount,
+                            CreditAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                            Description = $"Credit for Vendor Bill {bill.BillNumber}",
+                            DebitAmount = 0,
+                            CreditAmount = bill.TotalAmount,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+                        var totalDebit = je.JournalEntryLines.Sum(x => x.DebitAmount);
+                        var totalCredit = je.JournalEntryLines.Sum(x => x.CreditAmount);
+
+                        if (totalDebit != totalCredit)
+                            throw new Exception("Journal entry is not balanced.");
+
+                        context.JournalEntries.Add(je);
+
+                        await context.SaveChangesAsync(cancellationToken);
+                        await transaction.CommitAsync(cancellationToken);
+
+                        return Result.Success(bill.Id, $"Vendor Bill {billNumber} created successfully.");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
                 });
 
-                je.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId = companyProfile.AccountsPayableAccountId,
-                    Description = $"Credit for Vendor Bill {bill.BillNumber}",
-                    DebitAmount = 0,
-                    CreditAmount = bill.TotalAmount,
-                    CurrencyId = companyProfile.BaseCurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                });
-                var totalDebit = je.JournalEntryLines.Sum(x => x.DebitAmount);
-                var totalCredit = je.JournalEntryLines.Sum(x => x.CreditAmount);
-
-                if (totalDebit != totalCredit)
-                    throw new Exception("Journal entry is not balanced.");
-
-                context.JournalEntries.Add(je);
-                await context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                return Result.Success(bill.Id, $"Vendor Bill {billNumber} created successfully.");
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                await transaction.RollbackAsync();
                 return Result.Fail($"Error creating Vendor Bill: {ex.Message}");
             }
         }
+
 
         private string GenerateBillNumber()
         {

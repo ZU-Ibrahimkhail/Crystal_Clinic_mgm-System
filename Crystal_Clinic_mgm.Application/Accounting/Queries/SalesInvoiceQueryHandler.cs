@@ -105,6 +105,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (invoice == null)
                     return Result.Fail("Sales Invoice not found.");
 
+                var validReceipts = invoice.Receipts
+                    .Where(r => !r.IsDeleted);
+
+                var paidAmount = validReceipts.Sum(r => r.AmountReceived);
+
+                var balanceAmount = invoice.NetAmount - paidAmount;
+
                 var dto = new SalesInvoiceDto
                 {
                     Id = invoice.Id,
@@ -116,6 +123,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     TaxAmount = invoice.TaxAmount,
                     DiscountAmount = invoice.DiscountAmount,
                     NetAmount = invoice.NetAmount,
+                    BalanceAmount = balanceAmount,
                     Status = invoice.Status,
                     SalesArea = invoice.SalesArea,
                     BranchId = invoice.BranchId,
@@ -142,7 +150,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                             CustomerId = r.CustomerId,
                             CustomerName = r.Customer?.name ?? string.Empty,
                             AmountReceived = r.AmountReceived,
-                            PaymentMethodId = r.PaymentMethodId,
+                            PaymentMethod = r.PaymentMethod,
                             ReceiptDate = r.ReceiptDate,
                             Reference = r.Reference
                         }).ToList()
@@ -183,7 +191,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     CustomerId = r.CustomerId,
                     CustomerName = r.Customer?.name ?? string.Empty,
                     AmountReceived = r.AmountReceived,
-                    PaymentMethodId = r.PaymentMethodId,
+                    PaymentMethod = r.PaymentMethod,
                     ReceiptDate = r.ReceiptDate,
                     Reference = r.Reference
                 }).ToList();

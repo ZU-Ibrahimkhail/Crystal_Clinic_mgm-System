@@ -270,7 +270,7 @@
             Get expense by ID
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.ExpenseController.GetExpenses(System.Nullable{Crystal_Clinic_Mgm.Domain.Entities.Accounting.ExpenseStatus},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Int32,System.Int32)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.ExpenseController.GetExpenses(System.Nullable{Crystal_Clinic_Mgm.Domain.Entities.Accounting.ExpenseStatus},System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Int32,System.Int32)">
             <summary>
             Get all expenses with filtering
             </summary>

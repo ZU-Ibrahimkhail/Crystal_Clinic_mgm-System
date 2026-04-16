@@ -14,7 +14,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TotalAmount { get; set; }
         public POStatus Status { get; set; }
         public int? BranchId { get; set; }
+        public string? BranchName { get; set; }
         public string? Attachment { get; set; }
+        public List<POLineDto>? Lines { get; set; }
 
     }
 
@@ -38,7 +40,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
 
     public class POLineDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public int ItemId { get; set; }
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }

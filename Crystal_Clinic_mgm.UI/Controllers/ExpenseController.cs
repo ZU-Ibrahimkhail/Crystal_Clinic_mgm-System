@@ -103,14 +103,13 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         public async Task<IActionResult> GetExpenses(
             [FromQuery] ExpenseStatus? status,
             [FromQuery] int? branchId,
-            [FromQuery] int? categoryId,
             [FromQuery] DateTime? fromDate,
             [FromQuery] DateTime? toDate,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
             var result = await _expenseService.GetAllExpensesAsync(
-                status, branchId, categoryId, fromDate, toDate, page, pageSize);
+                status, branchId, fromDate, toDate, page, pageSize);
             if (result.IsSuccess)
                 return Ok(result.Data);
             return BadRequest(result.Error);

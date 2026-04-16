@@ -46,13 +46,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(query);
         }
 
-        public async Task<Result> GetAllExpensesAsync(ExpenseStatus? status = null, int? branchId = null, int? categoryId = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
+        public async Task<Result> GetAllExpensesAsync(ExpenseStatus? status = null, int? branchId = null, DateTime? fromDate = null, DateTime? toDate = null, int page = 1, int pageSize = 10)
         {
             var query = new GetAllExpensesQuery
             {
                 Status = status,
                 BranchId = branchId,
-                CategoryId = categoryId,
                 FromDate = fromDate,
                 ToDate = toDate,
                 Page = page,

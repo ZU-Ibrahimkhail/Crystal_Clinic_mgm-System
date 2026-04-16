@@ -13,12 +13,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
 
             entity.HasKey(e => e.Id);
 
-            entity.Property(e => e.CategoryId)
-                .HasColumnName("CategoryId")
-                .HasColumnType("int")
-                .IsRequired();
-
-
             entity.Property(e => e.Amount)
                 .HasColumnName("Amount")
                 .HasColumnType("decimal(18, 2)")

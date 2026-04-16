@@ -227,10 +227,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Repositories
             return await query.SumAsync(e => e.Amount, cancellationToken);
         }
 
-        public async Task<IEnumerable<Expense>> GetExpensesByCategoryAsync(int categoryId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Expense>> GetExpensesByCategoryAsync(CancellationToken cancellationToken)
         {
             return await _context.Expenses
-                .Where(e => e.CategoryId == categoryId && !e.IsDeleted)
+                .Where(e => !e.IsDeleted)
                 .OrderByDescending(e => e.ExpenseDate)
                 .ToListAsync(cancellationToken);
         }

@@ -89,14 +89,25 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 var dto = new PurchaseOrderDto
                 {
                     Id = po.Id,
-                    PONumber = po.PONumber,
                     VendorId = po.VendorId,
                     VendorName = po.Vendor?.Name ?? string.Empty,
+                    BranchId = po.BranchId,
+                    BranchName = po.Branch?.EnglishName,
+                    PONumber = po.PONumber,
                     OrderDate = po.OrderDate,
                     ExpectedDeliveryDate = po.ExpectedDeliveryDate,
                     TotalAmount = po.TotalAmount,
                     Status = po.Status,
-                    BranchId = po.BranchId
+                    Attachment = po.Attachment,
+                    Lines = po.Lines.Select(l => new POLineDto
+                    {
+                        Id = l.Id,
+                        ItemId = l.ItemId,
+                        Description = l.ItemDescription,
+                        Quantity = l.Quantity,
+                        UnitPrice = l.UnitPrice,
+                        LineTotal = l.UnitPrice
+                    }).ToList()
                 };
 
                 return Result.Success(dto);

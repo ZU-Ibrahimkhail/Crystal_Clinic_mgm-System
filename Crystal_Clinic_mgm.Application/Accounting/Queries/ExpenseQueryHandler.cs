@@ -31,7 +31,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 var dto = new ExpenseDto
                 {
                     Id = expense.Id,
-                    CategoryId = expense.CategoryId,
                     Amount = expense.Amount,
                     ExpenseDate = expense.ExpenseDate,
                     Description = expense.Description,
@@ -67,7 +66,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
     {
         public ExpenseStatus? Status { get; set; }
         public int? BranchId { get; set; }
-        public int? CategoryId { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public int Page { get; set; } = 1;
@@ -91,9 +89,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (request.BranchId.HasValue)
                     query = query.Where(e => e.BranchId == request.BranchId);
 
-                if (request.CategoryId.HasValue)
-                    query = query.Where(e => e.CategoryId == request.CategoryId);
-
                 if (request.FromDate.HasValue)
                     query = query.Where(e => e.ExpenseDate >= request.FromDate);
 
@@ -109,7 +104,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 var dtos = expenses.Select(e => new ExpenseDto
                 {
                     Id = e.Id,
-                    CategoryId = e.CategoryId,
                     Amount = e.Amount,
                     ExpenseDate = e.ExpenseDate,
                     Description = e.Description,
@@ -171,7 +165,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 var dtos = expenses.Select(e => new ExpenseDto
                 {
                     Id = e.Id,
-                    CategoryId = e.CategoryId,
                     Amount = e.Amount,
                     ExpenseDate = e.ExpenseDate,
                     Description = e.Description,

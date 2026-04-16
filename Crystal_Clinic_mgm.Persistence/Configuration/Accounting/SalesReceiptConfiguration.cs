@@ -33,8 +33,8 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("decimal(18, 2)")
                 .IsRequired();
 
-            entity.Property(s => s.PaymentMethodId)
-                .HasColumnName("PaymentMethodId")
+            entity.Property(s => s.PaymentMethod)
+                .HasColumnName("PaymentMethod")
                 .HasColumnType("int")
                 .IsRequired();
 

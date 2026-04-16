@@ -46,7 +46,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Repositories
 
         #region Expenses
         Task<decimal> GetTotalExpensesByDateRangeAsync(DateTime fromDate, DateTime toDate, int? branchId, CancellationToken cancellationToken);
-        Task<IEnumerable<Expense>> GetExpensesByCategoryAsync(int categoryId, CancellationToken cancellationToken);
+        Task<IEnumerable<Expense>> GetExpensesByCategoryAsync(CancellationToken cancellationToken);
         #endregion
     }
 }
