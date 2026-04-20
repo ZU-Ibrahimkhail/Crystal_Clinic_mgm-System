@@ -166,7 +166,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CurrencyId = companyProfile?.BaseCurrencyId,
                     CurrencyRate = 1,
                     Attachment = null,
-                    Description =  $"AP created from PO #{po.Id}",
+                    Description = $"AP created from PO #{po.Id}",
                     Reference = po.PONumber,
                     BranchId = po.BranchId,
                     CreatedBy = loggedInUser.Id,
@@ -328,13 +328,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 });
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Result.Fail($"Error creating Vendor Bill: {ex.Message}");
             }
         }
-
-
         private string GenerateBillNumber()
         {
             return $"VB-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
@@ -352,283 +350,295 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(UpdateVendorBillCommand request, CancellationToken cancellationToken)
         {
-            using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            var strategy = context.Database.CreateExecutionStrategy();
             try
             {
-                var bill = await context.VendorBills
-                    .FirstOrDefaultAsync(b => b.Id == request.Dto.Id && !b.IsDeleted, cancellationToken);
-
-                if (bill == null)
-                    return Result.Fail("Vendor Bill not found.");
-
-                if (bill.Status != BillStatus.Unpaid)
-                    return Result.Fail("Only unpaid bills can be updated.");
-
-
-                var ap = await context.AccountsPayables
-                    .FirstOrDefaultAsync(a => a.VendorBillId == bill.Id && !a.IsDeleted, cancellationToken);
-                
-                if (ap != null && ap.PaidAmount > 0)
-                    return Result.Fail("Cannot update bill after payment has been made.");
-
-                bill.BillDate = request.Dto.BillDate;
-                bill.DueDate = request.Dto.DueDate;
-                bill.TotalAmount = request.Dto.TotalAmount;
-                bill.ModifiedBy = loggedInUser.Id;
-                bill.ModifiedOn = DateTime.UtcNow;
-
-                context.VendorBills.Update(bill);
-
-                if (ap != null)
+                return await strategy.ExecuteAsync(async () =>
                 {
-                    ap.InvoiceAmount = bill.TotalAmount;
-                    ap.BalanceAmount = ap.InvoiceAmount - ap.PaidAmount;
-                    ap.InvoiceDate = bill.BillDate;
-                    ap.DueDate = bill.DueDate;
-                }
-
-                var existingJe = await context.JournalEntries
-                     .Include(j => j.JournalEntryLines)
-                     .Where(j =>
-                         j.ReferenceNumber == bill.BillNumber &&
-                         j.ReferenceType == "VendorBill" &&
-                         j.Status == JournalEntryStatus.Posted)
-                     .OrderByDescending(j => j.Id)
-                     .FirstOrDefaultAsync(cancellationToken);
-
-                if (existingJe != null)
-                {
-                    existingJe.Status = JournalEntryStatus.Voided;
-                    existingJe.ModifiedBy = loggedInUser.Id;
-                    existingJe.ModifiedOn = DateTime.UtcNow;
-
-                    var reversalJe = new JournalEntry
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
                     {
-                        EntryNumber = $"REV-{existingJe.EntryNumber}",
-                        EntryDate = DateTime.UtcNow,
-                        Description = $"Reversal of {existingJe.EntryNumber}",
-                        Status = JournalEntryStatus.Posted,
-                        ReferenceNumber = bill.BillNumber,
-                        ReferenceType = "VendorBill-Reversal",
-                        BranchId = bill.BranchId,
+                        var bill = await context.VendorBills
+                            .FirstOrDefaultAsync(b => b.Id == request.Dto.Id && !b.IsDeleted, cancellationToken);
+
+                        if (bill == null)
+                            return Result.Fail("Vendor Bill not found.");
+
+                        if (bill.Status != BillStatus.Unpaid)
+                            return Result.Fail("Only unpaid bills can be updated.");
+
+
+                        var ap = await context.AccountsPayables
+                            .FirstOrDefaultAsync(a => a.VendorBillId == bill.Id && !a.IsDeleted, cancellationToken);
+
+                        if (ap != null && ap.PaidAmount > 0)
+                            return Result.Fail("Cannot update bill after payment has been made.");
+
+                        bill.BillDate = request.Dto.BillDate;
+                        bill.DueDate = request.Dto.DueDate;
+                        bill.TotalAmount = request.Dto.TotalAmount;
+                        bill.ModifiedBy = loggedInUser.Id;
+                        bill.ModifiedOn = DateTime.UtcNow;
+
+                        context.VendorBills.Update(bill);
+
+                        if (ap != null)
+                        {
+                            ap.InvoiceAmount = bill.TotalAmount;
+                            ap.BalanceAmount = ap.InvoiceAmount - ap.PaidAmount;
+                            ap.InvoiceDate = bill.BillDate;
+                            ap.DueDate = bill.DueDate;
+                        }
+
+                        var existingJe = await context.JournalEntries
+                             .Include(j => j.JournalEntryLines)
+                             .Where(j =>
+                                 j.ReferenceNumber == bill.BillNumber &&
+                                 j.ReferenceType == "VendorBill" &&
+                                 j.Status == JournalEntryStatus.Posted)
+                             .OrderByDescending(j => j.Id)
+                             .FirstOrDefaultAsync(cancellationToken);
+
+                        if (existingJe != null)
+                        {
+                            existingJe.Status = JournalEntryStatus.Voided;
+                            existingJe.ModifiedBy = loggedInUser.Id;
+                            existingJe.ModifiedOn = DateTime.UtcNow;
+
+                            var reversalJe = new JournalEntry
+                            {
+                                EntryNumber = $"REV-{existingJe.EntryNumber}",
+                                EntryDate = DateTime.UtcNow,
+                                Description = $"Reversal of {existingJe.EntryNumber}",
+                                Status = JournalEntryStatus.Posted,
+                                ReferenceNumber = bill.BillNumber,
+                                ReferenceType = "VendorBill-Reversal",
+                                BranchId = bill.BranchId,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            };
+
+                            foreach (var line in existingJe.JournalEntryLines)
+                            {
+                                reversalJe.JournalEntryLines.Add(new JournalEntryLine
+                                {
+                                    ChartOfAccountId = line.ChartOfAccountId,
+                                    Description = "Reversal entry",
+                                    DebitAmount = line.CreditAmount,   // swapped
+                                    CreditAmount = line.DebitAmount,   // swapped
+                                    CurrencyId = line.CurrencyId,
+                                    CreatedBy = loggedInUser.Id,
+                                    CreatedOn = DateTime.UtcNow
+                                });
+                            }
+                            context.JournalEntries.Add(reversalJe);
+                        }
+
+
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            throw new Exception("Company profile not configured");
+
+                        var newJe = new JournalEntry
+                        {
+                            EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                            EntryDate = bill.BillDate,
+                            Description = $"Updated Vendor Bill {bill.BillNumber}",
+                            Status = JournalEntryStatus.Posted,
+                            ReferenceNumber = bill.BillNumber,
+                            ReferenceType = "VendorBill",
+                            BranchId = bill.BranchId,
+                            ApprovedBy = loggedInUser.Id,
+                            ApprovedDate = DateTime.UtcNow,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        // Debit Expense
+                        newJe.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
+                            Description = $"Debit for updated Vendor Bill {bill.BillNumber}",
+                            DebitAmount = bill.TotalAmount,
+                            CreditAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        // Credit AP
+                        newJe.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                            Description = $"Credit for updated Vendor Bill {bill.BillNumber}",
+                            DebitAmount = 0,
+                            CreditAmount = bill.TotalAmount,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        context.JournalEntries.Add(newJe);
+
+                        await context.SaveChangesAsync(cancellationToken);
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success("Vendor Bill updated successfully.");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error updating Vendor Bill: {ex.Message}");
+            }
+
+        }
+        #endregion
+
+        #region Pay Vendor Bill
+        public class PayVendorBillCommand : IRequest<Result>
+        {
+            public int VendorBillId { get; set; }
+            public decimal PaymentAmount { get; set; }
+            public int PaymentMethodId { get; set; }
+            public string? Reference { get; set; }
+        }
+
+        public class PayVendorBillCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<PayVendorBillCommand, Result>
+        {
+            public async Task<Result> Handle(PayVendorBillCommand request, CancellationToken cancellationToken)
+            {
+                using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var ap = await context.AccountsPayables.FirstOrDefaultAsync(a => a.VendorBillId == request.VendorBillId && !a.IsDeleted, cancellationToken);
+
+                    if (ap == null)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return Result.Fail("Accounts Payable not found.");
+                    }
+
+                    if (request.PaymentAmount <= 0)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return Result.Fail("Invalid payment amount.");
+                    }
+
+                    if (request.PaymentAmount > ap.BalanceAmount)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return Result.Fail("Payment exceeds remaining balance.");
+                    }
+
+                    if (request.PaymentMethodId <= 0)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return Result.Fail("Invalid payment method.");
+                    }
+
+
+                    var rate = ap.CurrencyRate == 0 ? 1 : (decimal)ap.CurrencyRate;
+
+                    var payment = new Payment
+                    {
+                        AccountsPayableId = ap.Id,
+                        PaymentNumber = GeneratePaymentNumber(),
+                        PaymentDate = DateTime.UtcNow,
+                        AmountPaid = request.PaymentAmount,
+                        PaymentMethodId = request.PaymentMethodId,
+                        Reference = request.Reference ?? $"Payment for Bill {ap.InvoiceNumber}",
+                        CurrencyId = ap.CurrencyId,
+                        ExchangeRate = rate,
+                        AmountInBaseCurrency = request.PaymentAmount * rate,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     };
 
-                    foreach (var line in existingJe.JournalEntryLines)
+                    context.Payments.Add(payment);
+
+                    ap.PaidAmount += request.PaymentAmount;
+
+                    ap.BalanceAmount = ap.InvoiceAmount - ap.PaidAmount;
+
+                    if (ap.BalanceAmount == 0)
                     {
-                        reversalJe.JournalEntryLines.Add(new JournalEntryLine
+                        ap.Status = APStatus.Paid;
+                        var bill = await context.VendorBills.FirstOrDefaultAsync(b => b.Id == request.VendorBillId && !b.IsDeleted, cancellationToken);
+                        if (bill == null)
                         {
-                            ChartOfAccountId = line.ChartOfAccountId,
-                            Description = "Reversal entry",
-                            DebitAmount = line.CreditAmount,   // swapped
-                            CreditAmount = line.DebitAmount,   // swapped
-                            CurrencyId = line.CurrencyId,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        });
+                            await transaction.RollbackAsync(cancellationToken);
+                            return Result.Fail("Vendor Bill not found.");
+                        }
+                        bill.Status = BillStatus.Paid;
                     }
-                    context.JournalEntries.Add(reversalJe);
-                }
-
-
-                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                if (companyProfile == null)
-                    throw new Exception("Company profile not configured");
-
-                var newJe = new JournalEntry
-                {
-                    EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
-                    EntryDate = bill.BillDate,
-                    Description = $"Updated Vendor Bill {bill.BillNumber}",
-                    Status = JournalEntryStatus.Posted,
-                    ReferenceNumber = bill.BillNumber,
-                    ReferenceType = "VendorBill",
-                    BranchId = bill.BranchId,
-                    ApprovedBy = loggedInUser.Id,
-                    ApprovedDate = DateTime.UtcNow,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                // Debit Expense
-                newJe.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
-                    Description = $"Debit for updated Vendor Bill {bill.BillNumber}",
-                    DebitAmount = bill.TotalAmount,
-                    CreditAmount = 0,
-                    CurrencyId = companyProfile.BaseCurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                });
-
-                // Credit AP
-                newJe.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId = companyProfile.AccountsPayableAccountId,
-                    Description = $"Credit for updated Vendor Bill {bill.BillNumber}",
-                    DebitAmount = 0,
-                    CreditAmount = bill.TotalAmount,
-                    CurrencyId = companyProfile.BaseCurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                });
-
-                context.JournalEntries.Add(newJe);
-
-                await context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                return Result.Success("Vendor Bill updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                return Result.Fail($"Error updating Vendor Bill: {ex.Message}");
-            }
-        }
-    }
-    #endregion
-    
-    #region Pay Vendor Bill
-    public class PayVendorBillCommand : IRequest<Result>
-    {
-        public int VendorBillId { get; set; }
-        public decimal PaymentAmount { get; set; }
-        public int PaymentMethodId { get; set; }
-        public string? Reference { get; set; }
-    }
-
-    public class PayVendorBillCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<PayVendorBillCommand, Result>
-    {
-        public async Task<Result> Handle(PayVendorBillCommand request, CancellationToken cancellationToken)
-        {
-            using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-            try
-            {
-                var ap = await context.AccountsPayables.FirstOrDefaultAsync(a => a.VendorBillId == request.VendorBillId && !a.IsDeleted, cancellationToken);
-
-                if (ap == null)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    return Result.Fail("Accounts Payable not found.");
-                }
-
-                if (request.PaymentAmount <= 0)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    return Result.Fail("Invalid payment amount.");
-                }
-
-                if (request.PaymentAmount > ap.BalanceAmount)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    return Result.Fail("Payment exceeds remaining balance.");
-                }
-
-                if (request.PaymentMethodId <= 0)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    return Result.Fail("Invalid payment method.");
-                }
-
-
-                var rate = ap.CurrencyRate == 0 ? 1 : (decimal)ap.CurrencyRate;
-
-                var payment = new Payment
-                {
-                    AccountsPayableId = ap.Id,
-                    PaymentNumber = GeneratePaymentNumber(), 
-                    PaymentDate = DateTime.UtcNow,
-                    AmountPaid = request.PaymentAmount,
-                    PaymentMethodId = request.PaymentMethodId,
-                    Reference = request.Reference ?? $"Payment for Bill {ap.InvoiceNumber}",
-                    CurrencyId = ap.CurrencyId,
-                    ExchangeRate = rate,
-                    AmountInBaseCurrency = request.PaymentAmount * rate,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                context.Payments.Add(payment);
-
-                ap.PaidAmount += request.PaymentAmount;
-
-                ap.BalanceAmount = ap.InvoiceAmount - ap.PaidAmount;
-
-                if (ap.BalanceAmount == 0)
-                {
-                    ap.Status = APStatus.Paid;
-                    var bill = await context.VendorBills.FirstOrDefaultAsync(b => b.Id == request.VendorBillId && !b.IsDeleted, cancellationToken);
-                    if (bill == null)
+                    else
                     {
-                        await transaction.RollbackAsync(cancellationToken);
-                        return Result.Fail("Vendor Bill not found.");
+                        ap.Status = APStatus.PartiallyPaid;
                     }
-                    bill.Status = BillStatus.Paid;
+
+                    var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                    if (companyProfile == null)
+                        throw new Exception("Company profile not configured");
+                    var je = new JournalEntry
+                    {
+                        EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                        EntryDate = payment.PaymentDate,
+                        Description = payment.Reference,
+                        Status = JournalEntryStatus.Posted,
+                        ReferenceNumber = payment.PaymentNumber,
+                        ReferenceType = "Vendor Payment",
+                        BranchId = ap.BranchId,
+                        ApprovedBy = loggedInUser.Id,
+                        ApprovedDate = DateTime.UtcNow,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    };
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                        Description = $"Debited AP for payment {payment.PaymentNumber}",
+                        DebitAmount = request.PaymentAmount,
+                        CreditAmount = 0,
+                        CurrencyId = ap.CurrencyId,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.CashAccountId,
+                        Description = $"Credit for payment {payment.PaymentNumber}",
+                        DebitAmount = 0,
+                        CreditAmount = request.PaymentAmount,
+                        CurrencyId = ap.CurrencyId,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    context.JournalEntries.Add(je);
+
+                    await context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
+
+                    return Result.Success("Vendor Bill marked as paid.");
                 }
-                else
+                catch (Exception ex)
                 {
-                    ap.Status = APStatus.PartiallyPaid;
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Result.Fail($"Error processing payment: {ex.Message}");
                 }
-
-                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                if (companyProfile == null)
-                    throw new Exception("Company profile not configured");
-                var je = new JournalEntry
-                {
-                    EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
-                    EntryDate = payment.PaymentDate,
-                    Description = payment.Reference,
-                    Status = JournalEntryStatus.Posted,
-                    ReferenceNumber = payment.PaymentNumber,
-                    ReferenceType = "Vendor Payment",
-                    BranchId = ap.BranchId,
-                    ApprovedBy = loggedInUser.Id,
-                    ApprovedDate = DateTime.UtcNow,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                je.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId = companyProfile.AccountsPayableAccountId,
-                    Description = $"Debited AP for payment {payment.PaymentNumber}",
-                    DebitAmount = request.PaymentAmount,
-                    CreditAmount = 0,
-                    CurrencyId = ap.CurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                });
-
-                je.JournalEntryLines.Add(new JournalEntryLine
-                {
-                    ChartOfAccountId = companyProfile.CashAccountId,
-                    Description = $"Credit for payment {payment.PaymentNumber}",
-                    DebitAmount = 0,
-                    CreditAmount = request.PaymentAmount,
-                    CurrencyId = ap.CurrencyId,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                });
-
-                context.JournalEntries.Add(je);
-
-                await context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-
-                return Result.Success("Vendor Bill marked as paid.");
             }
-            catch (Exception ex)
+            private string GeneratePaymentNumber()
             {
-                await transaction.RollbackAsync(cancellationToken);
-                return Result.Fail($"Error processing payment: {ex.Message}");
+                return $"PMT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
             }
         }
-        private string GeneratePaymentNumber()
-        {
-            return $"PMT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
-        }
+        #endregion
     }
-    #endregion
 }

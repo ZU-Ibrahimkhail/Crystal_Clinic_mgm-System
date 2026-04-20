@@ -159,11 +159,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 {
                     var journalEntry = new JournalEntry
                     {
+                        EntryNumber = GenerateEntryNumber(),
                         Description = $"Expense Approval: {expense.Description}",
                         Status = JournalEntryStatus.Posted,
                         EntryDate = DateTime.UtcNow,
                         CreatedBy = request.ApprovedBy,
-                        CreatedOn = DateTime.UtcNow
+                        CreatedOn = DateTime.UtcNow,
                     };
 
                     var lastEntry = await context.JournalEntries
@@ -218,6 +219,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             {
                 return Result.Fail($"Error approving expense: {ex.Message}");
             }
+
+        }
+        private string GenerateEntryNumber()
+        {
+            return $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
         }
     }
     #endregion
