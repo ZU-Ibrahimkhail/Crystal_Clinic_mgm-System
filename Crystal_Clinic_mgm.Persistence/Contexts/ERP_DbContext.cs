@@ -90,6 +90,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<Brand> Brands { get; set; }
         public DbSet<AdjustmentCategory> AdjustmentCategories { get; set; }
         public DbSet<InventoryKit> InventoryKits { get; set; }
+        public DbSet<VisitKits> VisitKits { get; set; }
         public DbSet<InventoryKitLine> InventoryKitLines { get; set; }
         public DbSet<InventoryReservation> InventoryReservations { get; set; }
         public DbSet<ReservedItem> ReservedItems { get; set; } 
@@ -234,6 +235,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new DuePaymentConfiguration());
             modelBuilder.ApplyConfiguration(new ReservedItemConfiguration());
             modelBuilder.ApplyConfiguration(new InventoryKitLineConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitKitsConfiguration());
             #endregion
 
             modelBuilder.ApplyConfiguration(new DoctorConfiguration());

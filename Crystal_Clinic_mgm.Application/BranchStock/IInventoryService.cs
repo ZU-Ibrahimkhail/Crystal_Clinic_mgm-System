@@ -37,9 +37,29 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         Task<Crystal_Clinic_Mgm.Domain.Entities.Result> PerformStockTakeAsync(StockTakeRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Create Inventory Kit
+        /// </summary>
+        Task<Result> CreateKitAsync(CreateKitRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Detail of Inventory Kit by Id
+        /// </summary>
+        Task<Result> GetKitByIdAsync(int Id, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Gets available inventory kits
         /// </summary>
         Task<IEnumerable<InventoryKit>> GetAvailableKitsAsync(int? branchId = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Update inventory Kit
+        /// </summary>
+        Task<Result> UpdateKitAsync(UpdateKitRequest request, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Delete inventory kit by Id
+        /// </summary>
+        Task<Result> DeleteKitAsync(int Id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Consumes an inventory kit
@@ -70,6 +90,54 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         /// Gets stock valuation report
         /// </summary>
         Task<StockValuationReport> GetStockValuationReportAsync(DateTime? asOfDate = null, int? branchId = null, CancellationToken cancellationToken = default);
+
+        Task<Result> AddKitToVisitAsync(AddKitToVisitRequest request, CancellationToken cancellationToken = default);
+    }
+
+
+    public class AddKitToVisitRequest
+    {
+        public int VisitId { get; set; }
+        public int ServiceSessionId { get; set; }
+        public int KitId { get; set; }
+    }
+
+    public class InventoryKitDto
+    {
+        public int Id { get; set; }
+        public string KitName { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public bool IsFreeForPatient { get; set; }
+        public bool IsActive { get; set; }
+        public int BranchId { get; set; }
+        public List<KitLines> Lines { get; set; } = new List<KitLines>();
+    }
+
+    public class CreateKitRequest
+    {
+        public string? KitName { get; set; }
+        public string? Description { get; set; }
+        public bool IsFreeForPatient { get; set; }
+        public int BranchId { get; set; }
+        public List<KitLines>? Lines { get; set; }
+    }
+
+    public class KitLines
+    {
+        public int KitId { get; set; }
+        public int ItemId { get; set; }
+        public decimal Quantity { get; set; }
+    }
+
+    public class UpdateKitRequest
+    {
+        public int Id { get; set; }
+        public string? KitName { get; set; }
+        public string? Description { get; set; }
+        public int BranchId { get; set; }
+        public bool IsFreeForPatient { get; set; }
+        public bool IsActive { get; set; }
+        public List<KitLines>? Lines { get; set; }
     }
 
     public class MovementRequest

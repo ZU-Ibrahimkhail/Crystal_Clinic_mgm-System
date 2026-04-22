@@ -408,16 +408,6 @@
             Release a reservation without deduction
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetAvailableKits">
-            <summary>
-            Get available inventory kits
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.ConsumeKit(System.Int32,Crystal_Clinic_Mgm.UI.Controllers.KitConsumptionRequest)">
-            <summary>
-            Consume an inventory kit
-            </summary>
-        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetReservationDetails(System.Int32)">
             <summary>
             Get reservation details by ID
@@ -716,6 +706,36 @@
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.SalesController.CalculateTax(Crystal_Clinic_Mgm.UI.Controllers.TaxCalculationRequest)">
             <summary>
             Calculate tax for an amount
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.Create(Crystal_Clinic_Mgm.Application.BranchStock.CreateKitRequest)">
+            <summary>
+            Create Inventory Kit
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.GetAvailableKits">
+            <summary>
+            Get available inventory kits
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.GetKitById(System.Int32)">
+            <summary>
+            Detail of Inventory Kit
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.ConsumeKit(System.Int32,Crystal_Clinic_Mgm.UI.Controllers.KitConsumptionRequest)">
+            <summary>
+            Consume an inventory kit
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.Update(System.Int32,Crystal_Clinic_Mgm.Application.BranchStock.UpdateKitRequest)">
+            <summary>
+            Update Inventory Kit
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.Delete(System.Int32)">
+            <summary>
+            Delete Inventory Kit by Id
             </summary>
         </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.Create(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.CreateServiceCommand)">

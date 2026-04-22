@@ -96,28 +96,6 @@ namespace Crystal_Clinic_Mgm.UI.Controllers
         }
 
         /// <summary>
-        /// Get available inventory kits
-        /// </summary>
-        [HttpGet("kits")]
-        public async Task<IActionResult> GetAvailableKits()
-        {
-            var kits = await _inventoryService.GetAvailableKitsAsync(_loggedInUser.BranchId);
-            return Ok(kits);
-        }
-
-        /// <summary>
-        /// Consume an inventory kit
-        /// </summary>
-        [HttpPost("kits/{kitId}/consume")]
-        public async Task<IActionResult> ConsumeKit(int kitId, [FromBody] KitConsumptionRequest request)
-        {
-            var result = await _inventoryService.ConsumeKitAsync(kitId, request.Quantity, request.ReferenceId);
-            if (result.Success)
-                return Ok(result);
-            return BadRequest(result.ErrorMessage);
-        }
-
-        /// <summary>
         /// Get reservation details by ID
         /// </summary>
         [HttpGet("reservation/{reservationId}")]

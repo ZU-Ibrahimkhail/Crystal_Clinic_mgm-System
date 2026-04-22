@@ -1,9 +1,8 @@
-﻿using Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands;
-using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
-using Crystal_Clinic_Mgm.Domain;
-using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Events;
-using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+using Crystal_Clinic_Mgm.Domain;
+using Crystal_Clinic_Mgm.Domain.Entities;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -1070,6 +1069,225 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             return "No suitable stock batches found";
         }
 
+        public async Task<Domain.Entities.Result> CreateKitAsync(CreateKitRequest request, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var kit = new InventoryKit
+                    {
+                        KitName = request.KitName,
+                        BranchId = request.BranchId,
+                        IsActive = true,
+                        CreatedBy = _loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow,
+                        KitLines = request.Lines.Select(line => new InventoryKitLine
+                        {
+                            ItemId = line.ItemId,
+                            Quantity = line.Quantity
+                        }).ToList()
+                    };
+
+                    await _context.InventoryKits.AddAsync(kit, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
+                    return Domain.Entities.Result.Success("Inventory kit created successfully");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Domain.Entities.Result.Fail("Failed to create inventory kit");
+                }
+            });
+        }
+
+        public async Task<Domain.Entities.Result> GetKitByIdAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var kit = await _context.InventoryKits
+                .Include(k => k.KitLines)
+                .ThenInclude(kl => kl.Item)
+                .FirstOrDefaultAsync(k => k.Id == Id && !k.IsDeleted, cancellationToken);
+
+                if (kit == null)
+                {
+                    return Domain.Entities.Result.Fail("Kit not found");
+                }
+
+                var kitDto = new InventoryKitDto
+                {
+                    Id = kit.Id,
+                    KitName = kit.KitName,
+                    Description = kit.Description,
+                    IsFreeForPatient = kit.IsFreeForPatient,
+                    IsActive = kit.IsActive,
+                    BranchId = kit.BranchId,
+                    Lines = kit.KitLines.Select(kl => new KitLines
+                    {
+                        KitId = kl.KitId,
+                        ItemId = kl.ItemId,
+                        Quantity = kl.Quantity
+                    }).ToList()
+                };
+
+                return Domain.Entities.Result.Success(kitDto);
+            }
+            catch (Exception ex)
+            {
+                return Domain.Entities.Result.Fail("Error retrieving kit: " + ex.Message);
+            }
+        }
+
+        public async Task<Domain.Entities.Result> UpdateKitAsync(UpdateKitRequest request, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var kit = await _context.InventoryKits.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+                    if (kit == null)
+                    {
+                        return Domain.Entities.Result.Fail("Kit not found");
+                    }
+
+                    kit.KitName = request.KitName;
+                    kit.Description = request.Description;
+                    kit.IsFreeForPatient = request.IsFreeForPatient;
+                    kit.IsActive = request.IsActive;
+                    kit.BranchId = request.BranchId;
+
+                    var existingLines = _context.InventoryKitLines.Where(x => x.KitId == request.Id);
+                    _context.InventoryKitLines.RemoveRange(existingLines);
+
+                    kit.KitLines = request.Lines.Select(l => new InventoryKitLine
+                    {
+                        ItemId = l.ItemId,
+                        Quantity = l.Quantity
+                    }).ToList();
+                   
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync(cancellationToken);
+                    return Domain.Entities.Result.Success("Kit updated successfully");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Domain.Entities.Result.Fail("Failed to update kit");
+                }
+            });
+        }
+
+        public async Task<Domain.Entities.Result> DeleteKitAsync(int Id, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var kit = await _context.InventoryKits.FirstOrDefaultAsync(x => x.Id == Id, cancellationToken);
+                    if (kit == null)
+                    {
+                        return Domain.Entities.Result.Fail("Kit not found");
+                    }
+                    kit.IsDeleted = true;
+                    kit.ModifiedBy = _loggedInUser.Id;
+                    kit.ModifiedOn = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
+                    return Domain.Entities.Result.Success("Kit deleted successfully");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Domain.Entities.Result.Fail("Failed to delete kit");
+                }
+            });
+        }
+
+        public async Task<Domain.Entities.Result> AddKitToVisitAsync(AddKitToVisitRequest request, CancellationToken cancellationToken = default)
+        {
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                try
+                {
+                    var visit = await _context.Visit.FindAsync(new object[] { request.VisitId }, cancellationToken);
+                    if (visit == null)
+                        return Result.Fail("Visit not found");
+
+                    var session = await _context.ServiceSessions.FindAsync(new object[] { request.ServiceSessionId }, cancellationToken);
+                    if (session == null || session.visitId != request.VisitId)
+                        return Result.Fail("Invalid service session");
+
+                    var exists = await _context.VisitKits.AnyAsync(vk =>
+                        vk.VisitId == request.VisitId &&
+                        vk.ServiceSessionId == request.ServiceSessionId &&
+                        vk.KitId == request.KitId,
+                        cancellationToken);
+
+                    if (exists)
+                        return Result.Fail("Kit already added");
+
+
+                    var kit = await _context.InventoryKits
+                        .Include(k => k.KitLines)
+                        .FirstOrDefaultAsync(k => k.Id == request.KitId && !k.IsDeleted);
+
+                    if (kit == null)
+                        return Result.Fail("Kit not found");
+
+                    if (!kit.KitLines.Any())
+                        return Result.Fail("Kit has no items");
+
+                    var reservationRequest = new ReservationRequest
+                    {
+                        VisitId = request.VisitId,
+                        ServiceId = request.ServiceSessionId, // naming mismatch, acceptable for now
+                        IdempotencyToken = $"{request.VisitId}-{request.ServiceSessionId}-{request.KitId}",
+                        Items = kit.KitLines.Select(x => new ReservationItem
+                        {
+                            ItemId = x.ItemId,
+                            Quantity = x.Quantity
+                        }).ToList()
+                    };
+
+                    var reservationResult = await ReserveItemsAsync(reservationRequest, cancellationToken);
+                    if (!reservationResult.Success)
+                        return Result.Fail(reservationResult.ErrorMessage);
+                    await CommitReservationAsync(reservationResult.ReservationId, cancellationToken);
+
+                    if (!reservationResult.Success)
+                        return Result.Fail(reservationResult.ErrorMessage);
+
+                    var visitKit = new VisitKits
+                    {
+                        VisitId = request.VisitId,
+                        ServiceSessionId = request.ServiceSessionId,
+                        KitId = request.KitId
+                    };
+
+                    await _context.VisitKits.AddAsync(visitKit, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
+
+                    return Result.Success("Kit added to visit successfully");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Result.Fail("Failed to add kit to visit");
+                }
+            });
+        }
     }
 
     public class MultiLotMovementInfo
