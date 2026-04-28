@@ -1,6 +1,6 @@
-﻿// InventoryController.cs
-using Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory;
+using Crystal_Clinic_Mgm.Application.BranchStock;
 using Crystal_Clinic_Mgm.Application.Common.RBAC;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,72 +8,37 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     [RBAC]
-    public class InventoryController : BaseController
+    public class InventoryController(IInventoryService inventoryService, ILoggedInUser loggedInUser) : BaseController
     {
-
-
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategories()
+        [HttpGet("stock/{itemId}")]
+        public async Task<IActionResult> GetStockLevel(int itemId)
         {
-            var result = await Mediator.Send(new GetItemCategoriesQuery());
+            var result = await inventoryService.GetStockLevelAsync(itemId, loggedInUser.BranchId);
             return Ok(result);
         }
 
-        [HttpGet("items")]
-        public async Task<IActionResult> GetItems([FromQuery] GetItemsQuery query)
+        [HttpPost("stocktake")]
+        public async Task<IActionResult> PerformStockTake([FromBody] StockTakeRequest request)
         {
-            var result = await Mediator.Send(query);
+            request.ProcessedBy = loggedInUser.Id;
+            var result = await inventoryService.PerformStockTakeAsync(request);
+            if (result.Succeeded)
+                return Ok();
+            return BadRequest(result.Error);
+        }
+
+        [HttpGet("expiring")]
+        public async Task<IActionResult> GetExpiringStock([FromQuery] int daysUntilExpiry = 30)
+        {
+            var result = await inventoryService.GetExpiringStockAsync(daysUntilExpiry, loggedInUser.BranchId);
             return Ok(result);
         }
 
-        [HttpPost("categories")]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateItemCategoryCommand command)
+        [HttpGet("valuation")]
+        public async Task<IActionResult> GetValuationReport([FromQuery] DateTime? asOfDate = null)
         {
-            var id = await Mediator.Send(command);
-            return Ok(new { CategoryId = id });
+            var result = await inventoryService.GetStockValuationReportAsync(asOfDate, loggedInUser.BranchId);
+            return Ok(result);
         }
-
-        [HttpPut("categories")]
-        public async Task<IActionResult> UpdateCategory([FromBody] UpdateItemCategoryCommand command)
-        {
-            var id = await Mediator.Send(command);
-            return Ok(new { UpdatedCategoryId = id });
-        }
-
-        [HttpDelete("categories/{categoryId}")]
-        public async Task<IActionResult> DeleteCategory(int categoryId)
-        {
-            var success = await Mediator.Send(new DeleteItemCategoryCommand { CategoryId = categoryId });
-            return success ? Ok("Category deleted.") : NotFound("Category not found.");
-        }
-
-        [HttpPost("items")]
-        public async Task<IActionResult> CreateItem([FromBody] CreateItemCommand command)
-        {
-            var id = await Mediator.Send(command);
-            return Ok(new { ItemId = id });
-        }
-
-        [HttpPut("items")]
-        public async Task<IActionResult> UpdateItem([FromBody] UpdateItemCommand command)
-        {
-            var id = await Mediator.Send(command);
-            return Ok(new { UpdatedItemId = id });
-        }
-
-        [HttpPut("items/add-or-update-image")]
-        public async Task<IActionResult> UpdateItemImage([FromForm] AddImageToItemCommand command)
-        {
-            var id = await Mediator.Send(command);
-            return Ok(new { UpdatedItemId = id });
-        }
-
-        [HttpDelete("items/{itemId}")]
-        public async Task<IActionResult> DeleteItem(int itemId)
-        {
-            var success = await Mediator.Send(new DeleteItemCommand { ItemId = itemId });
-            return success ? Ok("Item deleted.") : NotFound("Item not found.");
-        }
-
     }
 }

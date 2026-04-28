@@ -378,61 +378,6 @@
             <param name="query"></param>
             <returns></returns>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetStockLevel(System.Int32)">
-            <summary>
-            Get stock level for a specific item
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.RegisterMovement(Crystal_Clinic_Mgm.Application.BranchStock.MovementRequest)">
-            <summary>
-            Register a manual stock movement (adjustment)
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.PerformStockTake(Crystal_Clinic_Mgm.Application.BranchStock.StockTakeRequest)">
-            <summary>
-            Perform stock take adjustment
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.ReserveItems(Crystal_Clinic_Mgm.Application.BranchStock.ReservationRequest)">
-            <summary>
-            Reserve items for a clinic service
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.CommitReservation(System.Int32)">
-            <summary>
-            Commit a reservation (deduct the reserved quantities)
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.ReleaseReservation(System.Int32)">
-            <summary>
-            Release a reservation without deduction
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetReservationDetails(System.Int32)">
-            <summary>
-            Get reservation details by ID
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.ListActiveReservations">
-            <summary>
-            List all active reservations for user's branch
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetMovementHistory(System.Nullable{System.Int32},System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
-            <summary>
-            Get stock movement history with optional filters
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetExpiringStock(System.Int32)">
-            <summary>
-            Get expiring stock for user's branch
-            </summary>
-        </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.InventoryController.GetValuationReport(System.Nullable{System.DateTime})">
-            <summary>
-            Get stock valuation report for user's branch
-            </summary>
-        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.AssetTypeController.Create(Crystal_Clinic_Mgm.Application.Look.AssetTypes.Commands.Create.CreateAssetTypeCommand)">
             <summary>
             Create AssetType
@@ -723,7 +668,7 @@
             Detail of Inventory Kit
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.ConsumeKit(System.Int32,Crystal_Clinic_Mgm.UI.Controllers.KitConsumptionRequest)">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.ConsumeKit(System.Int32,Crystal_Clinic_Mgm.UI.Controllers.Stock.KitConsumptionRequest)">
             <summary>
             Consume an inventory kit
             </summary>

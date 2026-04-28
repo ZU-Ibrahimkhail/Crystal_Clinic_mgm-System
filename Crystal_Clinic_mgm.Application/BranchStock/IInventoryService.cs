@@ -119,12 +119,18 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public string? Description { get; set; }
         public bool IsFreeForPatient { get; set; }
         public int BranchId { get; set; }
-        public List<KitLines>? Lines { get; set; }
+        public List<CreateKitLines>? Lines { get; set; }
     }
 
     public class KitLines
     {
         public int KitId { get; set; }
+        public int ItemId { get; set; }
+        public decimal Quantity { get; set; }
+    }
+
+    public class CreateKitLines
+    {
         public int ItemId { get; set; }
         public decimal Quantity { get; set; }
     }

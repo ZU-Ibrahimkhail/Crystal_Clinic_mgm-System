@@ -1,6 +1,6 @@
 ﻿using Crystal_Clinic_Mgm.Application.BranchStock;
 using Crystal_Clinic_Mgm.Application.Common.RBAC;
-using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
+using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     [RBAC]
-    public class KitsController(IInventoryService inventoryService, LoggedInUser loggedInUser) :BaseController
+    public class KitsController(IInventoryService inventoryService, ILoggedInUser loggedInUser) :BaseController
     {
         /// <summary>
         /// Create Inventory Kit
@@ -34,7 +34,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         /// Detail of Inventory Kit
         /// </summary>
         [HttpGet("{KitId}")]
-        public async Task<IActionResult> GetKitById([FromQuery] int KitId)
+        public async Task<IActionResult> GetKitById([FromRoute] int KitId)
         {
             var kits = await inventoryService.GetKitByIdAsync(KitId);
             return Ok(kits);
@@ -88,6 +88,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-       
+    }
+
+    public class KitConsumptionRequest
+    {
+        public int Quantity { get; set; }
+        public string ReferenceId { get; set; } = string.Empty;
     }
 }

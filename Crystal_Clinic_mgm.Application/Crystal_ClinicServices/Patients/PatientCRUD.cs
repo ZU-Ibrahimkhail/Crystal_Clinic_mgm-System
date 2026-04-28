@@ -7,6 +7,33 @@ using Microsoft.EntityFrameworkCore;
 namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
 {
 
+    public class CreatePatientCommand : IRequest<int>
+    {
+        public string Name { get; set; } = string.Empty;
+        public string ContactInfo { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public decimal? age { get; set; }
+    }
+
+    public class CreatePatientHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreatePatientCommand, int>
+    {
+        public async Task<int> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+        {
+            var patient = new Patient
+            {
+                name = request.Name,
+                contactInfo = request.ContactInfo,
+                email = request.Email,
+                age = request.age,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.UtcNow
+            };
+            context.Patient.Add(patient);
+            await context.SaveChangesAsync(cancellationToken);
+            return patient.patientId;
+        }
+    }
+
     public class UpdatePatientCommand : IRequest<bool>
     {
         public int PatientId { get; set; }
@@ -34,7 +61,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.Patients
             return true;
         }
     }
-    
+   
     public class DeletePatientCommand : IRequest<bool>
     {
         public int PatientId { get; set; }

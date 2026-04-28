@@ -3,6 +3,7 @@ using Crystal_Clinic_Mgm.Application.Events;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,15 +30,34 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             _loggedInUser = loggedInUser;
         }
 
+
         public async Task<MovementResult> RegisterMovementAsync(
-             MovementRequest request,
-             CancellationToken cancellationToken = default)
+    MovementRequest request,
+    CancellationToken cancellationToken = default)
+        {
+            try
             {
-                try
-            {
-                var validationResult = await ValidateMovementRequest(request);
+                var item = await _context.Items
+                    .FirstOrDefaultAsync(x => x.ItemId == request.ItemId, cancellationToken);
+
+                var stock = await _context.Stocks
+                    .FirstOrDefaultAsync(x => x.ItemId == request.ItemId, cancellationToken);
+
+                var availableStock = stock?.QuantityRemaining ?? 0;
+
+                var validationResult = ValidateMovementRequest(
+                    request,
+                    item,
+                    availableStock);
+
                 if (!validationResult.IsValid)
-                    return new MovementResult { Success = false, ErrorMessage = validationResult.ErrorMessage };
+                {
+                    return new MovementResult
+                    {
+                        Success = false,
+                        ErrorMessage = validationResult.ErrorMessage
+                    };
+                }
 
                 var (movements, totalQuantity, weightedAverageCost) =
                     await ProcessMultiLotMovement(request, cancellationToken);
@@ -47,14 +67,16 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     var diagnosticMessage =
                         await DiagnoseStockIssue(request.ItemId, request.BranchId, cancellationToken);
 
-                    return new MovementResult { Success = false, ErrorMessage = diagnosticMessage };
+                    return new MovementResult
+                    {
+                        Success = false,
+                        ErrorMessage = diagnosticMessage
+                    };
                 }
-
-                var movementIds = new List<int>();
 
                 foreach (var multiLotMove in movements)
                 {
-                    var movement = new StockMovement
+                    _context.StockMovements.Add(new StockMovement
                     {
                         Date = DateTime.UtcNow,
                         MovementType = request.Type,
@@ -68,9 +90,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                         ReferenceId = request.ReferenceId ?? string.Empty,
                         Notes = $"{request.Notes ?? ""} [Lot: {multiLotMove.LotNumber}]",
                         SourceBranchId = request.BranchId
-                    };
-
-                    _context.StockMovements.Add(movement);
+                    });
                 }
 
                 await _context.SaveChangesAsync(cancellationToken);
@@ -92,7 +112,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error registering inventory movement for item {ItemId}", request.ItemId);
+                _logger.LogError(ex,
+                    "Error registering inventory movement for item {ItemId}",
+                    request.ItemId);
+
                 return new MovementResult
                 {
                     Success = false,
@@ -101,214 +124,178 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
             }
         }
 
-
-        public async Task<ReservationResult> ReserveItemsAsync(ReservationRequest request, CancellationToken cancellationToken = default)
+        public async Task<ReservationResult> ReserveItemsAsync(
+    ReservationRequest request,
+    CancellationToken cancellationToken = default)
         {
-            var strategy = _context.Database.CreateExecutionStrategy();
-
-            return await strategy.ExecuteAsync(async () =>
+            try
             {
-                await using var transaction =
-                    await _context.Database.BeginTransactionAsync(
-                        System.Data.IsolationLevel.Serializable,
+                var existingReservation = await _context.InventoryReservations
+                    .FirstOrDefaultAsync(
+                        r => r.IdempotencyToken == request.IdempotencyToken,
                         cancellationToken);
-                try
+
+                if (existingReservation != null)
                 {
-                    var existingReservation = await _context.InventoryReservations
-                        .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
-
-                    if (existingReservation != null)
+                    if (existingReservation.ExpiresAt > DateTime.UtcNow)
                     {
-                        if (existingReservation.ExpiresAt > DateTime.UtcNow)
-                        {
-                            var existingLots = await GetReservedLots(existingReservation.Id, cancellationToken);
-                            return new ReservationResult
-                            {
-                                Success = true,
-                                ReservationId = existingReservation.Id,
-                                ExpiresAt = existingReservation.ExpiresAt,
-                                ReservedLots = existingLots
-                            };
-                        }
+                        var existingLots = await GetReservedLots(existingReservation.Id, cancellationToken);
 
-                        await ReleaseReservationAsync(existingReservation.Id, cancellationToken);
-                    }
-
-                    var availabilityCheck = await CheckItemsAvailability(request.Items, cancellationToken);
-                    if (!availabilityCheck.IsAvailable)
-                    {
                         return new ReservationResult
                         {
-                            Success = false,
-                            ErrorMessage = "Insufficient stock for one or more items",
-                            Shortages = availabilityCheck.Shortages
+                            Success = true,
+                            ReservationId = existingReservation.Id,
+                            ExpiresAt = existingReservation.ExpiresAt,
+                            ReservedLots = existingLots
                         };
                     }
 
-                    var reservation = new InventoryReservation
+                    await ReleaseReservationAsync(existingReservation.Id, cancellationToken);
+                }
+
+                var availabilityCheck = await CheckItemsAvailability(request.Items, cancellationToken);
+
+                if (!availabilityCheck.IsAvailable)
+                {
+                    return new ReservationResult
                     {
-                        VisitId = request.VisitId,
-                        ServiceId = request.ServiceId,
-                        IdempotencyToken = request.IdempotencyToken,
-                        ExpiresAt = DateTime.UtcNow.AddSeconds(request.TtlSeconds),
-                        RequestedBy = request.RequestedBy ?? _loggedInUser.Id,
-                        Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active,
-                        BranchId = _loggedInUser.BranchId,
-                        CreatedBy = _loggedInUser.Id,
-                        CreatedOn = DateTime.UtcNow
+                        Success = false,
+                        ErrorMessage = "Insufficient stock for one or more items",
+                        Shortages = availabilityCheck.Shortages
                     };
+                }
 
-                    _context.InventoryReservations.Add(reservation);
-                    await _context.SaveChangesAsync(cancellationToken);
+                var reservation = new InventoryReservation
+                {
+                    VisitId = request.VisitId,
+                    ServiceId = request.ServiceId,
+                    IdempotencyToken = request.IdempotencyToken,
+                    ExpiresAt = DateTime.UtcNow.AddSeconds(request.TtlSeconds),
+                    RequestedBy = request.RequestedBy ?? _loggedInUser.Id,
+                    Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active,
+                    BranchId = _loggedInUser.BranchId,
+                    CreatedBy = _loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
 
-                    var reservedItems = new List<ReservedItem>();
-                    foreach (var item in request.Items)
+                _context.InventoryReservations.Add(reservation);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                var reservedItems = new List<ReservedItem>();
+
+                foreach (var item in request.Items)
+                {
+                    var lots = await ReserveItemLots(reservation.Id, item, cancellationToken);
+                    reservedItems.AddRange(lots);
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return new ReservationResult
+                {
+                    Success = true,
+                    ReservationId = reservation.Id,
+                    ExpiresAt = reservation.ExpiresAt,
+                    ReservedLots = reservedItems.Select(ri => new ReservedLot
                     {
-                        var lots = await ReserveItemLots(reservation.Id, item, cancellationToken);
-                        reservedItems.AddRange(lots);
-                    }
+                        StockId = ri.StockId,
+                        ItemId = ri.ItemId,
+                        ReservedQuantity = ri.ReservedQuantity,
+                        UnitCost = ri.UnitCost
+                    })
+                };
+            }
+            catch (DbUpdateException dbex) when (dbex.InnerException?.Message.Contains("UNIQUE") == true)
+            {
+                var retry = await _context.InventoryReservations
+                    .FirstOrDefaultAsync(
+                        r => r.IdempotencyToken == request.IdempotencyToken,
+                        cancellationToken);
 
-                    await _context.SaveChangesAsync(cancellationToken);
-
-                    await transaction.CommitAsync(cancellationToken);
-
-                    _logger.LogInformation("Created reservation {ReservationId} with idempotency token {Token} for visit {VisitId}",
-                    reservation.Id, request.IdempotencyToken, request.VisitId);
-
-
+                if (retry != null && retry.ExpiresAt > DateTime.UtcNow)
+                {
+                    var reservedLots = await GetReservedLots(retry.Id, cancellationToken);
 
                     return new ReservationResult
                     {
                         Success = true,
-                        ReservationId = reservation.Id,
-                        ExpiresAt = reservation.ExpiresAt,
-                        ReservedLots = reservedItems.Select(ri => new ReservedLot
-                        {
-                            StockId = ri.StockId,
-                            ItemId = ri.ItemId,
-                            ReservedQuantity = ri.ReservedQuantity,
-                            UnitCost = ri.UnitCost
-                        })
+                        ReservationId = retry.Id,
+                        ExpiresAt = retry.ExpiresAt,
+                        ReservedLots = reservedLots
                     };
                 }
-                catch (DbUpdateException dbex) when (dbex.InnerException?.Message.Contains("UNIQUE") == true)
+
+                return new ReservationResult
                 {
-                    await transaction.RollbackAsync(cancellationToken);
-                    _logger.LogWarning(dbex, "Duplicate idempotency token detected: {Token}", request.IdempotencyToken);
-
-                    var retry = await _context.InventoryReservations
-                        .FirstOrDefaultAsync(r => r.IdempotencyToken == request.IdempotencyToken, cancellationToken);
-
-                    if (retry != null && retry.ExpiresAt > DateTime.UtcNow)
-                    {
-                        var reservedLots = await GetReservedLots(retry.Id, cancellationToken);
-                        return new ReservationResult
-                        {
-                            Success = true,
-                            ReservationId = retry.Id,
-                            ExpiresAt = retry.ExpiresAt,
-                            ReservedLots = reservedLots
-                        };
-                    }
-
-                    return new ReservationResult
-                    {
-                        Success = false,
-                        ErrorMessage = "Failed to create reservation: duplicate request detected"
-                    };
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync(cancellationToken);
-                    _logger.LogError(ex, "Error creating reservation for visit {VisitId}", request.VisitId);
-
-                    return new ReservationResult
-                    {
-                        Success = false,
-                        ErrorMessage = "Failed to create reservation"
-                    };
-                }
-            });
+                    Success = false,
+                    ErrorMessage = "Duplicate request detected"
+                };
+            }
         }
 
-        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync( int reservationId, CancellationToken cancellationToken = default)
+        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync(
+    int reservationId,
+    CancellationToken cancellationToken = default)
         {
-            var strategy = _context.Database.CreateExecutionStrategy();
-
-            return await strategy.ExecuteAsync(async () =>
+            try
             {
-                await using var transaction =
-                    await _context.Database.BeginTransactionAsync(
-                        System.Data.IsolationLevel.Serializable,
-                        cancellationToken);
+                var reservation = await _context.InventoryReservations
+                    .Include(r => r.ReservedItems)
+                    .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
 
-                try
+                if (reservation == null ||
+                    reservation.Status != Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active)
                 {
-                    // 1️⃣ Load reservation with reserved items
-                    var reservation = await _context.InventoryReservations
-                        .Include(r => r.ReservedItems)
-                        .FirstOrDefaultAsync(r => r.Id == reservationId, cancellationToken);
-
-                    if (reservation == null ||
-                        reservation.Status != Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Active)
-                    {
-                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found or not active");
-                    }
-
-                    if (reservation.ExpiresAt < DateTime.UtcNow)
-                    {
-                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has expired");
-                    }
-
-                    foreach (var reservedItem in reservation.ReservedItems)
-                    {
-                        var movementRequest = new MovementRequest
-                        {
-                            ItemId = reservedItem.ItemId,
-                            StockId = reservedItem.StockId,
-                            Quantity = reservedItem.ReservedQuantity,
-                            Type = MovementType.Out,
-                            Reason = MovementReason.SaleDeduction,
-                            ReferenceId = $"VIS-{reservation.VisitId}",
-                            ProcessedBy = reservation.RequestedBy
-                        };
-
-                        var result = await RegisterMovementAsync(movementRequest, cancellationToken);
-                        if (!result.Success)
-                        {
-                            await transaction.RollbackAsync(cancellationToken);
-                            return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail($"Failed to process movement: {result.ErrorMessage}");
-                        }
-                    }
-
-                    reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed;
-
-                    try
-                    {
-                        await _context.SaveChangesAsync(cancellationToken);
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has been modified by another request. Please retry.");
-                    }
-
-                    // 4️⃣ Commit transaction
-                    await transaction.CommitAsync(cancellationToken);
-
-                    _logger.LogInformation(
-                        "Reservation {ReservationId} committed successfully",
-                        reservationId);
-
-                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation not found or not active");
                 }
-                catch (Exception ex)
+
+                if (reservation.ExpiresAt < DateTime.UtcNow)
                 {
-                    await transaction.RollbackAsync(cancellationToken);
-                    _logger.LogError(ex, "Error committing reservation {ReservationId}", reservationId);
-                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to commit reservation");
+                    return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Reservation has expired");
                 }
-            });
+
+                foreach (var reservedItem in reservation.ReservedItems)
+                {
+                    var movementRequest = new MovementRequest
+                    {
+                        ItemId = reservedItem.ItemId,
+                        StockId = reservedItem.StockId,
+                        Quantity = reservedItem.ReservedQuantity,
+                        Type = MovementType.Out,
+                        Reason = MovementReason.SaleDeduction,
+                        ReferenceId = $"VIS-{reservation.VisitId}",
+                        ProcessedBy = reservation.RequestedBy
+                    };
+
+                    var result = await RegisterMovementAsync(movementRequest, cancellationToken);
+
+                    if (!result.Success)
+                    {
+                        return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(
+                            $"Failed to process movement: {result.ErrorMessage}");
+                    }
+                }
+
+                reservation.Status = Crystal_Clinic_Mgm.Domain.Entities.BranchStock.ReservationStatus.Committed;
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation(
+                    "Reservation {ReservationId} committed successfully",
+                    reservationId);
+
+                return Crystal_Clinic_Mgm.Domain.Entities.Result.Success();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(
+                    "Reservation has been modified by another request. Please retry.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error committing reservation {ReservationId}", reservationId);
+                return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to commit reservation");
+            }
         }
 
         public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> ReleaseReservationAsync(int reservationId, CancellationToken cancellationToken = default)
@@ -464,7 +451,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<KitConsumptionResult> ConsumeKitAsync(int kitId, int quantity, string referenceId, CancellationToken cancellationToken = default)
+        public async Task<KitConsumptionResult> ConsumeKitAsync(
+    int kitId,
+    int quantity,
+    string referenceId,
+    CancellationToken cancellationToken = default)
         {
             var kit = await _context.InventoryKits
                 .Include(k => k.KitLines)
@@ -480,109 +471,97 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 };
             }
 
-            var movements = new List<MovementResult>();
-            decimal totalCost = 0;
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-
-            try
+            return await strategy.ExecuteAsync(async () =>
             {
-                foreach (var kitLine in kit.KitLines)
+                var movements = new List<MovementResult>();
+                decimal totalCost = 0;
+
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync(cancellationToken);
+
+                try
                 {
-                    var requiredQuantity = kitLine.Quantity * quantity;
-
-                    var movementRequest = new MovementRequest
+                    foreach (var kitLine in kit.KitLines)
                     {
-                        ItemId = kitLine.ItemId,
-                        Quantity = requiredQuantity,
-                        Type = MovementType.Out,
-                        Reason = MovementReason.SaleDeduction,
-                        ReferenceId = referenceId,
-                        Notes = $"Kit consumption: {kit.KitName}"
-                    };
+                        var requiredQuantity = kitLine.Quantity * quantity;
 
-                    var result = await RegisterMovementAsync(movementRequest, cancellationToken);
-                    if (!result.Success)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        return new KitConsumptionResult
+                        var movementRequest = new MovementRequest
                         {
-                            Success = false,
-                            ErrorMessage = $"Failed to consume {kitLine.Item?.Name}: {result.ErrorMessage}"
+                            ItemId = kitLine.ItemId,
+                            Quantity = requiredQuantity,
+                            BranchId = 1,
+                            Type = MovementType.Out,
+                            Reason = MovementReason.SaleDeduction,
+                            ReferenceId = referenceId,
+                            Notes = $"Kit consumption: {kit.KitName}"
                         };
+
+                        var result = await RegisterMovementAsync(movementRequest, cancellationToken);
+
+                        if (!result.Success)
+                        {
+                            await transaction.RollbackAsync(cancellationToken);
+
+                            return new KitConsumptionResult
+                            {
+                                Success = false,
+                                ErrorMessage = $"Failed to consume {kitLine.Item?.Name}: {result.ErrorMessage}"
+                            };
+                        }
+
+                        movements.Add(result);
+                        totalCost += result.TotalCost;
                     }
 
-                    movements.Add(result);
-                    totalCost += result.TotalCost;
-                }
-
-                // Publish kit consumption event
-                var consumedItems = new List<ConsumedItem>();
-                for (int i = 0; i < kit.KitLines.Count; i++)
-                {
-                    var kitLine = kit.KitLines.ElementAt(i);
-                    var movement = movements[i];
-
-                    consumedItems.Add(new ConsumedItem
+                    await _mediator.Publish(new InventoryKitConsumedEvent
                     {
-                        ItemId = kitLine.ItemId,
-                        ItemName = kitLine.Item?.Name ?? "",
-                        Quantity = movement.Quantity,
-                        UnitCost = movement.UnitCost,
-                        TotalCost = movement.TotalCost
-                    });
+                        KitId = kitId,
+                        KitName = kit.KitName,
+                        Quantity = quantity,
+                        TotalCost = totalCost,
+                        ReferenceId = referenceId
+                    }, cancellationToken);
+
+                    await transaction.CommitAsync(cancellationToken);
+
+                    return new KitConsumptionResult
+                    {
+                        Success = true,
+                        ItemMovements = movements,
+                        TotalCost = totalCost
+                    };
                 }
-
-                var kitEvent = new InventoryKitConsumedEvent
+                catch (Exception ex)
                 {
-                    KitId = kitId,
-                    KitName = kit.KitName,
-                    Quantity = quantity,
-                    TotalCost = totalCost,
-                    ReferenceId = referenceId,
-                    ConsumedItems = consumedItems
-                };
+                    await transaction.RollbackAsync(cancellationToken);
 
-                await _mediator.Publish(kitEvent, cancellationToken);
+                    _logger.LogError(ex, "Error consuming kit {KitId}", kitId);
 
-                await transaction.CommitAsync(cancellationToken);
-
-                return new KitConsumptionResult
-                {
-                    Success = true,
-                    ItemMovements = movements,
-                    TotalCost = totalCost
-                };
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Error consuming kit {KitId}", kitId);
-
-                return new KitConsumptionResult
-                {
-                    Success = false,
-                    ErrorMessage = "Failed to consume kit"
-                };
-            }
+                    return new KitConsumptionResult
+                    {
+                        Success = false,
+                        ErrorMessage = "Failed to consume kit"
+                    };
+                }
+            });
         }
 
         // Private helper methods
-        private async Task<(bool IsValid, string? ErrorMessage)> ValidateMovementRequest(MovementRequest request)
+        private (bool IsValid, string? ErrorMessage) ValidateMovementRequest(
+            MovementRequest request,
+            Item item,
+            decimal availableStock)
         {
             if (request.Quantity <= 0)
                 return (false, "Quantity must be positive");
 
-            var item = await _context.Items.FindAsync(request.ItemId);
             if (item == null || !item.IsActive)
                 return (false, "Item not found or inactive");
 
-            if (request.Type == MovementType.Out)
-            {
-                var stockLevel = await GetStockLevelAsync(request.ItemId, request.BranchId);
-                if (stockLevel.AvailableQuantity < request.Quantity)
-                    return (false, "Insufficient stock available");
-            }
+            if (availableStock < request.Quantity)
+                return (false, "Insufficient stock available");
 
             return (true, null);
         }
@@ -713,7 +692,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     return (movements, 0, 0);
                 }
 
-                decimal moveQuantity = request.Type == MovementType.Out 
+                decimal moveQuantity = request.Type == MovementType.Out
                     ? Math.Min(remainingToProcess, stock.QuantityRemaining)
                     : remainingToProcess;
 
@@ -1088,7 +1067,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                         KitLines = request.Lines.Select(line => new InventoryKitLine
                         {
                             ItemId = line.ItemId,
-                            Quantity = line.Quantity
+                            Quantity = line.Quantity,
+                            CreatedBy = _loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
                         }).ToList()
                     };
 
@@ -1168,10 +1149,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                     kit.KitLines = request.Lines.Select(l => new InventoryKitLine
                     {
+                        KitId = kit.Id,
                         ItemId = l.ItemId,
-                        Quantity = l.Quantity
+                        Quantity = l.Quantity,
+                        CreatedBy = _loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
                     }).ToList();
-                   
+
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync(cancellationToken);
                     return Domain.Entities.Result.Success("Kit updated successfully");
@@ -1215,28 +1199,36 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public async Task<Domain.Entities.Result> AddKitToVisitAsync(AddKitToVisitRequest request, CancellationToken cancellationToken = default)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
+
             return await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+                await using var transaction =
+                    await _context.Database.BeginTransactionAsync(cancellationToken);
+
                 try
                 {
-                    var visit = await _context.Visit.FindAsync(new object[] { request.VisitId }, cancellationToken);
+                    var visit = await _context.Visit.FindAsync(
+                        new object[] { request.VisitId },
+                        cancellationToken);
+
                     if (visit == null)
                         return Result.Fail("Visit not found");
 
-                    var session = await _context.ServiceSessions.FindAsync(new object[] { request.ServiceSessionId }, cancellationToken);
+                    var session = await _context.ServiceSessions.FindAsync(
+                        new object[] { request.ServiceSessionId },
+                        cancellationToken);
+
                     if (session == null || session.visitId != request.VisitId)
                         return Result.Fail("Invalid service session");
 
                     var exists = await _context.VisitKits.AnyAsync(vk =>
-                        vk.VisitId == request.VisitId &&
-                        vk.ServiceSessionId == request.ServiceSessionId &&
-                        vk.KitId == request.KitId,
+                            vk.VisitId == request.VisitId &&
+                            vk.ServiceSessionId == request.ServiceSessionId &&
+                            vk.KitId == request.KitId,
                         cancellationToken);
 
                     if (exists)
                         return Result.Fail("Kit already added");
-
 
                     var kit = await _context.InventoryKits
                         .Include(k => k.KitLines)
@@ -1248,11 +1240,15 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     if (!kit.KitLines.Any())
                         return Result.Fail("Kit has no items");
 
+                    var serviceSession = await _context.ServiceSessions
+                        .FirstOrDefaultAsync(x => x.Id == request.ServiceSessionId, cancellationToken);
+
                     var reservationRequest = new ReservationRequest
                     {
                         VisitId = request.VisitId,
-                        ServiceId = request.ServiceSessionId, // naming mismatch, acceptable for now
+                        ServiceId = serviceSession.serviceId,
                         IdempotencyToken = $"{request.VisitId}-{request.ServiceSessionId}-{request.KitId}",
+                        RequestedBy = _loggedInUser.Id,
                         Items = kit.KitLines.Select(x => new ReservationItem
                         {
                             ItemId = x.ItemId,
@@ -1260,50 +1256,56 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                         }).ToList()
                     };
 
-                    var reservationResult = await ReserveItemsAsync(reservationRequest, cancellationToken);
-                    if (!reservationResult.Success)
-                        return Result.Fail(reservationResult.ErrorMessage);
-                    await CommitReservationAsync(reservationResult.ReservationId, cancellationToken);
+                    var reservationResult =
+                        await ReserveItemsAsync(reservationRequest, cancellationToken);
 
                     if (!reservationResult.Success)
                         return Result.Fail(reservationResult.ErrorMessage);
+
+                    // ⚠️ MUST be transaction-safe (no BeginTransaction inside)
+                    await CommitReservationAsync(
+                        reservationResult.ReservationId,
+                        cancellationToken);
 
                     var visitKit = new VisitKits
                     {
                         VisitId = request.VisitId,
                         ServiceSessionId = request.ServiceSessionId,
-                        KitId = request.KitId
+                        KitId = request.KitId,
+                        CreatedBy = _loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
                     };
 
                     await _context.VisitKits.AddAsync(visitKit, cancellationToken);
                     await _context.SaveChangesAsync(cancellationToken);
+
                     await transaction.CommitAsync(cancellationToken);
 
                     return Result.Success("Kit added to visit successfully");
                 }
-                catch (Exception ex)
+                catch
                 {
                     await transaction.RollbackAsync(cancellationToken);
                     return Result.Fail("Failed to add kit to visit");
                 }
             });
         }
+
+        public class MultiLotMovementInfo
+        {
+            public int StockId { get; set; }
+            public string LotNumber { get; set; } = string.Empty;
+            public decimal MovedQuantity { get; set; }
+            public decimal UnitCost { get; set; }
+            public decimal RemainingAfter { get; set; }
+        }
+
+        public class AvailabilityCheckResult
+        {
+            public bool IsAvailable { get; set; }
+            public IEnumerable<ShortageItem> Shortages { get; set; } = new List<ShortageItem>();
+        }
+
+
     }
-
-    public class MultiLotMovementInfo
-    {
-        public int StockId { get; set; }
-        public string LotNumber { get; set; } = string.Empty;
-        public decimal MovedQuantity { get; set; }
-        public decimal UnitCost { get; set; }
-        public decimal RemainingAfter { get; set; }
-    }
-
-    public class AvailabilityCheckResult
-    {
-        public bool IsAvailable { get; set; }
-        public IEnumerable<ShortageItem> Shortages { get; set; } = new List<ShortageItem>();
-    }
-
-
 }

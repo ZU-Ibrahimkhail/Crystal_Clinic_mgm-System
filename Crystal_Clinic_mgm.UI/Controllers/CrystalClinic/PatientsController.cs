@@ -9,8 +9,15 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
     [RBAC]
     public class PatientsController : BaseController
     {
-        
 
+        [HttpPost("create")]
+        public async Task<IActionResult> createPatient([FromForm] CreatePatientCommand command)
+        {
+            var patient = await Mediator.Send(command);
+            if (patient == null)
+                return NotFound();
+            return Ok(patient);
+        }
 
         [HttpGet("{patientId}")]
         public async Task<IActionResult> GetPatientById(int patientId)
