@@ -10,7 +10,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
     public class PatientsController : BaseController
     {
 
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<IActionResult> createPatient([FromForm] CreatePatientCommand command)
         {
             var patient = await Mediator.Send(command);

@@ -113,19 +113,22 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     ReferenceNumber = entry.ReferenceNumber,
                     ReferenceType = entry.ReferenceType,
                     BranchId = entry.BranchId,
+                    Attachment = entry.Attachment,
                     Lines = entry.JournalEntryLines
                         .Where(l => !l.IsDeleted)
                         .Select(l => new JournalEntryLineDto
-                    {
-                        Id = l.Id,
-                        ChartOfAccountId = l.ChartOfAccountId,
-                        Description = l.Description,
-                        DebitAmount = l.DebitAmount,
-                        CreditAmount = l.CreditAmount,
-                        CurrencyId = l.CurrencyId,
-                        ExchangeRate = l.ExchangeRate,
-                        AmountInBaseCurrency = l.AmountInBaseCurrency
-                    }).ToList()
+                        {
+                            AccountCode = l.ChartOfAccount.AccountCode,
+                            AccountName = l.ChartOfAccount.AccountName,
+                            Id = l.Id,
+                            ChartOfAccountId = l.ChartOfAccountId,
+                            Description = l.Description,
+                            DebitAmount = l.DebitAmount,
+                            CreditAmount = l.CreditAmount,
+                            CurrencyId = l.CurrencyId,
+                            ExchangeRate = l.ExchangeRate,
+                            AmountInBaseCurrency = l.AmountInBaseCurrency
+                        }).ToList()
                 };
 
                 return Result.Success(dto);

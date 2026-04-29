@@ -10,42 +10,6 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
     [RBAC]
     public class ItemCategoryController : BaseController
     {
-        // ----- Item Category Endpoints -----
-
-        // GET: api/Stock/ItemCategory/categories
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategories()
-        {
-            var categories = await Mediator.Send(new GetItemCategoriesQuery());
-            return Ok(categories);
-        }
-
-        // POST: api/Stock/ItemCategory/category/create
-        [HttpPost("category/create")]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateItemCategoryCommand command)
-        {
-            var categoryId = await Mediator.Send(command);
-            return Ok(new { CategoryId = categoryId });
-        }
-
-        // PUT: api/Stock/ItemCategory/category/update
-        [HttpPut("category/update")]
-        public async Task<IActionResult> UpdateCategory([FromBody] UpdateItemCategoryCommand command)
-        {
-            var updatedId = await Mediator.Send(command);
-            if (updatedId == 0) return NotFound("Category not found or deleted.");
-            return Ok(new { UpdatedCategoryId = updatedId });
-        }
-
-        // DELETE: api/Stock/ItemCategory/category/delete/{categoryId}
-        [HttpDelete("category/delete/{categoryId}")]
-        public async Task<IActionResult> DeleteCategory(int categoryId)
-        {
-            var success = await Mediator.Send(new DeleteItemCategoryCommand { CategoryId = categoryId });
-            return success ? Ok("Category deleted.") : NotFound("Category not found or already deleted.");
-        }
-
-        // ----- Item Endpoints -----
 
         // GET: api/Stock/ItemCategory/items
         // Accepts query params mapped to GetItemsQuery (SearchText, BranchId, PageSize, LastItemId, CategoryId)

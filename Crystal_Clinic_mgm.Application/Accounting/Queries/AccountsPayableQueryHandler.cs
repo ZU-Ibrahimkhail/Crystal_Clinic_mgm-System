@@ -115,8 +115,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     Id = payable.Id,
                     InvoiceNumber = payable.InvoiceNumber,
                     ChartOfAccountId = payable.ChartOfAccountId,
-                    ChartOfAccountName = payable.ChartOfAccount.AccountName,
-                    //PurchaseOrderId = payable.PurchaseOrderId,
+                    ChartOfAccountName = payable.ChartOfAccount?.AccountName ?? "",
+                    //PurchaseOrderId = payable.PurchaseOrderId ?? 0,
                     CurrencyId = payable.CurrencyId,
                     VendorId = payable.VendorId,
                     InvoiceDate = payable.InvoiceDate,
@@ -126,13 +126,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     BalanceAmount = payable.BalanceAmount,
                     Status = payable.Status,
                     BranchId = payable.BranchId,
-                    VendorName = payable.Vendor!.Name,
+                    VendorName = payable.Vendor?.Name ?? "",
                     CurrencyRate = payable.CurrencyRate,
                     Attachment = payable.Attachment,
                     Description = payable.Description,
                     Reference = payable.Reference,
                     Payments = payments
-
                 };
 
                 return Result.Success(dto);

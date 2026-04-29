@@ -132,7 +132,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     ChartOfAccountId = receivable.ChartOfAccountId,
                     CurrencyId = receivable.CurrencyId,
                     Receipts = receipts,
-                    
                 };
 
                 return Result.Success(dto);

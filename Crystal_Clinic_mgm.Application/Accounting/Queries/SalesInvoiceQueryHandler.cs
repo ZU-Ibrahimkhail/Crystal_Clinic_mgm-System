@@ -127,6 +127,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     Status = invoice.Status,
                     SalesArea = invoice.SalesArea,
                     BranchId = invoice.BranchId,
+                    Attachment = invoice.Attachment,
                     Lines = invoice.Lines
                         .Where(l => !l.IsDeleted)
                         .Select(l => new SalesInvoiceLineDto

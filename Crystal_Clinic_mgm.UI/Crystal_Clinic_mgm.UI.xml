@@ -477,6 +477,24 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ItemCategoryController.CreateCategory(Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory.CreateItemCategoryCommand)">
+            <summary>
+            Create a new item category
+            POST: api/Stock/ItemCategory/category/create
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ItemCategoryController.UpdateCategory(Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory.UpdateItemCategoryCommand)">
+            <summary>
+            Update an existing item category
+            PUT: api/Stock/ItemCategory/category/update
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.ItemCategoryController.DeleteCategory(System.Int32)">
+            <summary>
+            Soft-delete an item category
+            DELETE: api/Stock/ItemCategory/category/delete/{categoryId}
+            </summary>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Look.CurrencyTypeController.Create(Crystal_Clinic_Mgm.Application.Look.CurrencyTypes.Commands.Create.CreateCurrencyTypeCommand)">
             <summary>
             Create CurrencyType
