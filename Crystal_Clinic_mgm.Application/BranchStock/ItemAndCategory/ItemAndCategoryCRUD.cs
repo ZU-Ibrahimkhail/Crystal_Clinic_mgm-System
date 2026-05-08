@@ -89,6 +89,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public decimal ReorderLevel { get; set; }
         public int CategoryId { get; set; }
         public int BranchId { get; set; }
+        public bool IsFixedAsset { get; set; } = false;
 
     }
 
@@ -108,6 +109,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
                 UseableStock = request.UseableStock,
                 ReorderLevel = request.ReorderLevel,
                 CategoryId = request.CategoryId,
+                IsFixedAsset = request.IsFixedAsset,
                 CreatedBy = loggedInUser.Id,
                 CreatedOn = DateTime.Now
             };
@@ -130,7 +132,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public decimal ReorderLevel { get; set; }
         public int CategoryId { get; set; }
         public int BranchId { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public int ItemId { get; set; }
     }
     public class UpdateItemWithUnitsHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateItemCommand, int>

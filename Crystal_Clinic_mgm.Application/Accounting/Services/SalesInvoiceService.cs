@@ -27,13 +27,14 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(command, cancellationToken);
         }
 
-        public async Task<Result> GetAllSalesInvoicesAsync(int? customerId = null, int? status = null, int? branchId = null, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
+        public async Task<Result> GetAllSalesInvoicesAsync(int? visitId = null, int? customerId = null, int? status = null, int? branchId = null, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var query = new GetAllSalesInvoicesQuery
             {
                 CustomerId = customerId,
                 Status = (SalesStatus?)status,
                 BranchId = branchId,
+                VisitId = visitId,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };

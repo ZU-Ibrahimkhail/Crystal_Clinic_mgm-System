@@ -16,5 +16,11 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public CurrencyType? Currency { get; set; }
         public decimal ExchangeRate { get; set; } = 1;
         public decimal AmountInBaseCurrency { get; set; } = 0;
+        
+        public int? EquityTransactionId { get; set; }
+        public int? ExpenseId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? SalesReceiptId { get; set; }
+        public int? ReceiptId { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look
         public DateTime? LastNRVAssessment { get; set; }
         public decimal NRVAmount { get; set; } // Net Realizable Value
         public decimal WriteDownAmount { get; set; } // Accumulated write-downs
+        public bool IsFixedAsset { get; set; } = false; // If true, creates fixed asset entries instead of stock records
 
         // Foreign Keys
         public int? BranchId { get; set; }

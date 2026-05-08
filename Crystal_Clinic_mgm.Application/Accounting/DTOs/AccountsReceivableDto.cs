@@ -19,7 +19,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public double CurrencyRate { get; set; }
         public string? Description { get; set; }
         public string? Reference { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public int? ChartOfAccountId { get; set; }
         public int? CurrencyId { get; set; }
         public List<ReceiptDto> Receipts { get; set; } = new();
@@ -38,7 +38,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public double  CurrencyRate { get; set; }
         public string? Description { get; set; }
         public string? Reference { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
     }
 
     public class ReceiptDto
@@ -63,6 +63,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string? Reference { get; set; }
         public int? CurrencyId { get; set; }
         public decimal? ExchangeRate { get; set; }
-        public string Attachment { get; set; } = "";
+        public string Attachment { get; set; } = string.Empty;
     }
 }

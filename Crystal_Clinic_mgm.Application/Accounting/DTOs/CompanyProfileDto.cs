@@ -15,4 +15,8 @@ public class CompanyProfileDto
     public int SalesRevenueAccountId { get; set; }
     public int InventoryAccountId { get; set; }
     public int PurchaseExpenseAccountId { get; set; }
+    public int? EquityAccountId { get; set; }
+    public int? FixedAssetAccountId { get; set; }
+    public int? DepreciationExpenseAccountId { get; set; }
+    public int? AccumulatedDepreciationAccountId { get; set; }
 }

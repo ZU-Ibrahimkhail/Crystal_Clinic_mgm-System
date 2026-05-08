@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public double CurrencyRate { get; set; }
         public string? Description { get; set; }
         public string? Reference { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
     }
 }

@@ -23,6 +23,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("CustomerId")
                 .HasColumnType("int")
                 .IsRequired();
+            
+            entity.Property(s => s.VisitId)
+                .HasColumnName("VisitId")
+                .HasColumnType("int")
+                .IsRequired(false);
 
             entity.Property(s => s.InvoiceDate)
                 .HasColumnName("InvoiceDate")
@@ -86,6 +91,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
             entity.HasOne(s => s.Customer)
                 .WithMany()
                 .HasForeignKey(s => s.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            entity.HasOne(s => s.Visit)
+                .WithMany()
+                .HasForeignKey(s => s.VisitId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(s => s.Branch)

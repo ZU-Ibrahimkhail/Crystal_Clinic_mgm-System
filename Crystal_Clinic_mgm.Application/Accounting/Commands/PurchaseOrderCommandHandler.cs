@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +57,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             Quantity = lineDto.Quantity,
                             UnitPrice = lineDto.UnitPrice,
                             LineTotal = lineDto.Quantity * lineDto.UnitPrice,
+                            ItemExpiry = lineDto.ItemExpiry,
+                            BarCode = lineDto.BarCode,
+                            ExpectedSalePrice = lineDto.ExpectedSalePrice,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.Now
                         };
@@ -99,10 +103,22 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     .FirstOrDefaultAsync(p => p.Id == request.Dto.Id && !p.IsDeleted, cancellationToken);
 
                 if (po == null)
-                    return Result.Fail("Purchase Order not found.");
+                    return Result.Fail($"Purchase Order with ID {request.Dto.Id} not found.");
 
-                if (po.Status != POStatus.Open)
-                    return Result.Fail("Only open POs can be updated.");
+                if (po.Status == POStatus.Cancelled)
+                    return Result.Fail($"Cannot update cancelled Purchase Order. PO# {po.PONumber} is in {po.Status} status.");
+
+                if (po.Status == POStatus.Received)
+                    return Result.Fail($"Cannot update received Purchase Order. PO# {po.PONumber} is in {po.Status} status. A bill has been created for this PO.");
+
+                if (po.Status != POStatus.Draft && po.Status != POStatus.Open)
+                    return Result.Fail($"Cannot update Purchase Order with status '{po.Status}'. Only Draft and Open POs can be updated.");
+
+                if (request.Dto.OrderDate > request.Dto.ExpectedDeliveryDate)
+                    return Result.Fail("Order date cannot be after expected delivery date.");
+
+                if (request.Dto.OrderDate < DateTime.Now.Date)
+                    return Result.Fail("Order date cannot be in the past.");
 
                 po.OrderDate = request.Dto.OrderDate;
                 po.ExpectedDeliveryDate = request.Dto.ExpectedDeliveryDate;
@@ -112,7 +128,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 context.PurchaseOrders.Update(po);
                 await context.SaveChangesAsync(cancellationToken);
 
-                return Result.Success("Purchase Order updated successfully.");
+                return Result.Success($"Purchase Order {po.PONumber} updated successfully.");
             }
             catch (Exception ex)
             {
@@ -141,6 +157,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     try
                     {
                         var po = await context.PurchaseOrders
+                            .Include(p => p.Lines)
                             .FirstOrDefaultAsync(p => p.Id == request.PurchaseOrderId && !p.IsDeleted, cancellationToken);
 
                         if (po == null)
@@ -149,6 +166,19 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
                         if (companyProfile == null)
                             return Result.Fail("Company profile not configured.");
+
+                        // Load items to check if they are fixed assets
+                        var itemIds = po.Lines.Select(l => l.ItemId).Distinct().ToList();
+                        var items = await context.Items
+                            .Where(i => itemIds.Contains(i.ItemId))
+                            .ToDictionaryAsync(i => i.ItemId, cancellationToken);
+
+                        // Separate lines by type
+                        var inventoryLines = po.Lines.Where(l => !items.ContainsKey(l.ItemId) || !items[l.ItemId].IsFixedAsset).ToList();
+                        var fixedAssetLines = po.Lines.Where(l => items.ContainsKey(l.ItemId) && items[l.ItemId].IsFixedAsset).ToList();
+
+                        var inventoryTotal = inventoryLines.Sum(l => l.LineTotal);
+                        var fixedAssetTotal = fixedAssetLines.Sum(l => l.LineTotal);
 
                         po.Status = POStatus.Received;
                         po.ModifiedBy = loggedInUser.Id;
@@ -179,58 +209,38 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         context.AccountsPayables.Add(aP);
                         context.PurchaseOrders.Update(po);
 
-                        var je = new JournalEntry
+                        // Create Stock records only for inventory items (NOT for fixed assets)
+                        if (inventoryLines.Any())
                         {
-                            EntryNumber = LedgerPostingService.GenerateJournalEntryNumber(),
-                            EntryDate = DateTime.UtcNow,
-                            Description = $"Goods received for PO {po.PONumber}",
-                            Status = JournalEntryStatus.Posted,
-                            ReferenceNumber = po.PONumber,
-                            ReferenceType = "PurchaseOrder",
-                            BranchId = po.BranchId,
-                            ApprovedBy = loggedInUser.Id,
-                            ApprovedDate = DateTime.UtcNow,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        };
+                            foreach (var line in inventoryLines)
+                            {
+                                var stock = new Stock
+                                {
+                                    ItemId = line.ItemId,
+                                    Quantity = (int)line.Quantity,
+                                    QuantityRemaining = (int)line.Quantity,
+                                    SupplierId = po.VendorId,
+                                    BranchId = po.BranchId,
+                                    PurchasePrice = line.UnitPrice,
+                                    SellPrice = line.ExpectedSalePrice ?? 0,
+                                    PurchaseDate = DateTime.UtcNow,
+                                    ExpiryDate = line.ItemExpiry ?? DateTime.MaxValue,
+                                    BarCode = line.BarCode ?? string.Empty,
+                                    BatchNumber = string.Empty,
+                                    PurchaseOrderId = po.Id,
+                                    IsExpired = false,
+                                    CreatedBy = loggedInUser.Id,
+                                    CreatedOn = DateTime.UtcNow
+                                };
 
-                        je.JournalEntryLines.Add(new JournalEntryLine
-                        {
-                            ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
-                            Description = $"DR Purchase/Inventory - PO {po.PONumber}",
-                            DebitAmount = po.TotalAmount,
-                            CreditAmount = 0,
-                            CurrencyId = companyProfile.BaseCurrencyId,
-                            ExchangeRate = 1,
-                            AmountInBaseCurrency = po.TotalAmount,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        });
+                                context.Stocks.Add(stock);
+                            }
 
-                        je.JournalEntryLines.Add(new JournalEntryLine
-                        {
-                            ChartOfAccountId = companyProfile.AccountsPayableAccountId,
-                            Description = $"CR Accounts Payable - PO {po.PONumber}",
-                            DebitAmount = 0,
-                            CreditAmount = po.TotalAmount,
-                            CurrencyId = companyProfile.BaseCurrencyId,
-                            ExchangeRate = 1,
-                            AmountInBaseCurrency = po.TotalAmount,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        });
-
-                        if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
-                            throw new InvalidOperationException("Journal entry is not balanced.");
-
-                        context.JournalEntries.Add(je);
-                        await context.SaveChangesAsync(cancellationToken);
-
-                        await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
-                        await context.SaveChangesAsync(cancellationToken);
+                            await context.SaveChangesAsync(cancellationToken);
+                        }
 
                         await transaction.CommitAsync(cancellationToken);
-                        return Result.Success("Purchase Order marked as received.");
+                        return Result.Success("Purchase Order marked as received. Stock records and AP created. GL entry will be created when Vendor Bill is issued.");
                     }
                     catch
                     {
@@ -286,6 +296,18 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                             if (po.Status != POStatus.Received)
                                 throw new Exception("Purchase Order must be received before billing.");
+
+                            var existingBillsTotal = await context.VendorBills
+                                .Where(b => b.PurchaseOrderId == request.Dto.PurchaseOrderId && !b.IsDeleted)
+                                .SumAsync(b => b.TotalAmount, cancellationToken);
+
+                            decimal totalBillsAfterCreate = existingBillsTotal + request.Dto.TotalAmount;
+
+                            if (totalBillsAfterCreate > po.TotalAmount)
+                            {
+                                decimal allowedAmount = po.TotalAmount - existingBillsTotal;
+                                throw new Exception($"Bill amount exceeds Purchase Order limit. PO Total: {po.TotalAmount}, Already Billed: {existingBillsTotal}, Allowed Amount: {allowedAmount}, Requested: {request.Dto.TotalAmount}");
+                            }
                         }
 
                         var billNumber = GenerateBillNumber();
@@ -309,26 +331,93 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         if (companyProfile == null)
                             return Result.Fail("Company profile not configured.");
 
-                        var ap = new AccountsPayable
+                        // Try to reuse AP from PO Receive (Bill-Driven Accounting)
+                        AccountsPayable ap = null;
+                        if (bill.PurchaseOrderId.HasValue)
                         {
-                            VendorBill = bill,
-                            InvoiceNumber = billNumber,
-                            Reference = bill.BillNumber,
-                            PurchaseOrderId = bill.PurchaseOrderId,
-                            VendorId = bill.VendorId,
-                            InvoiceDate = bill.BillDate,
-                            DueDate = bill.DueDate,
-                            InvoiceAmount = bill.TotalAmount,
-                            PaidAmount = 0,
-                            CurrencyId = companyProfile.BaseCurrencyId,
-                            BalanceAmount = bill.TotalAmount,
-                            Status = APStatus.Pending,
-                            BranchId = bill.BranchId,
-                            Description = $"AP created for Vendor Bill {bill.BillNumber}",
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        };
-                        context.AccountsPayables.Add(ap);
+                            ap = await context.AccountsPayables
+                                .FirstOrDefaultAsync(a => a.PurchaseOrderId == bill.PurchaseOrderId && 
+                                                         a.VendorBillId == null && 
+                                                         !a.IsDeleted, cancellationToken);
+                        }
+
+                        // If no existing AP from PO, create a new one (for standalone bills)
+                        if (ap == null)
+                        {
+                            ap = new AccountsPayable
+                            {
+                                VendorBill = bill,
+                                InvoiceNumber = billNumber,
+                                Reference = bill.BillNumber,
+                                PurchaseOrderId = bill.PurchaseOrderId,
+                                VendorId = bill.VendorId,
+                                InvoiceDate = bill.BillDate,
+                                DueDate = bill.DueDate,
+                                InvoiceAmount = bill.TotalAmount,
+                                PaidAmount = 0,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                BalanceAmount = bill.TotalAmount,
+                                Status = APStatus.Pending,
+                                BranchId = bill.BranchId,
+                                Description = $"AP created for Vendor Bill {bill.BillNumber}",
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            };
+                            context.AccountsPayables.Add(ap);
+                        }
+                        else
+                        {
+                            // Reuse existing AP, link it to bill, update amounts
+                            ap.VendorBill = bill;
+                            ap.InvoiceNumber = billNumber;
+                            ap.Reference = bill.BillNumber;
+                            ap.InvoiceDate = bill.BillDate;
+                            ap.DueDate = bill.DueDate;
+                            ap.InvoiceAmount = bill.TotalAmount;
+                            ap.BalanceAmount = bill.TotalAmount;
+                            ap.Status = APStatus.Pending;
+                            ap.Description = $"AP for Vendor Bill {bill.BillNumber}";
+                            ap.ModifiedBy = loggedInUser.Id;
+                            ap.ModifiedOn = DateTime.UtcNow;
+                            context.AccountsPayables.Update(ap);
+                        }
+
+                        // Load PO lines to determine if bill is for inventory or fixed assets
+                        var inventoryTotal = bill.TotalAmount;
+                        var fixedAssetTotal = 0m;
+
+                        if (bill.PurchaseOrderId.HasValue)
+                        {
+                            var poLines = await context.POLines
+                                .Where(l => l.PurchaseOrderId == bill.PurchaseOrderId)
+                                .Select(l => new { l.ItemId, l.LineTotal })
+                                .ToListAsync(cancellationToken);
+
+                            if (poLines.Any())
+                            {
+                                var itemIds = poLines.Select(l => l.ItemId).Distinct().ToList();
+                                var items = await context.Items
+                                    .Where(i => itemIds.Contains(i.ItemId))
+                                    .ToDictionaryAsync(i => i.ItemId, cancellationToken);
+
+                                // Calculate totals by type (proportional to bill amount if partial billing)
+                                var inventoryLineTotal = poLines
+                                    .Where(l => !items.ContainsKey(l.ItemId) || !items[l.ItemId].IsFixedAsset)
+                                    .Sum(l => l.LineTotal);
+
+                                var fixedAssetLineTotal = poLines
+                                    .Where(l => items.ContainsKey(l.ItemId) && items[l.ItemId].IsFixedAsset)
+                                    .Sum(l => l.LineTotal);
+
+                                if (inventoryLineTotal + fixedAssetLineTotal > 0)
+                                {
+                                    // Allocate bill amount proportionally
+                                    decimal allocationRatio = bill.TotalAmount / (inventoryLineTotal + fixedAssetLineTotal);
+                                    inventoryTotal = inventoryLineTotal * allocationRatio;
+                                    fixedAssetTotal = fixedAssetLineTotal * allocationRatio;
+                                }
+                            }
+                        }
 
                         var je = new JournalEntry
                         {
@@ -345,31 +434,65 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             CreatedOn = DateTime.UtcNow
                         };
 
-                        je.JournalEntryLines.Add(new JournalEntryLine
+                        // Add journal entry for inventory items
+                        if (inventoryTotal > 0)
                         {
-                            ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
-                            Description = $"Debit for Vendor Bill {bill.BillNumber}",
-                            DebitAmount = bill.TotalAmount,
-                            CreditAmount = 0,
-                            CurrencyId = companyProfile.BaseCurrencyId,
-                            ExchangeRate = 1,
-                            AmountInBaseCurrency = bill.TotalAmount,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        });
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
+                                Description = $"DR Purchase/Inventory - Vendor Bill {bill.BillNumber}",
+                                DebitAmount = inventoryTotal,
+                                CreditAmount = 0,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = inventoryTotal,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            });
 
-                        je.JournalEntryLines.Add(new JournalEntryLine
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                                Description = $"CR Accounts Payable - Inventory - Vendor Bill {bill.BillNumber}",
+                                DebitAmount = 0,
+                                CreditAmount = inventoryTotal,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = inventoryTotal,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            });
+                        }
+
+                        // Add journal entry for fixed assets
+                        if (fixedAssetTotal > 0 && companyProfile.FixedAssetAccountId.HasValue)
                         {
-                            ChartOfAccountId = companyProfile.AccountsPayableAccountId,
-                            Description = $"Credit for Vendor Bill {bill.BillNumber}",
-                            DebitAmount = 0,
-                            CreditAmount = bill.TotalAmount,
-                            CurrencyId = companyProfile.BaseCurrencyId,
-                            ExchangeRate = 1,
-                            AmountInBaseCurrency = bill.TotalAmount,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        });
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = companyProfile.FixedAssetAccountId.Value,
+                                Description = $"DR Fixed Asset - Vendor Bill {bill.BillNumber}",
+                                DebitAmount = fixedAssetTotal,
+                                CreditAmount = 0,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = fixedAssetTotal,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            });
+
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                                Description = $"CR Accounts Payable - Fixed Asset - Vendor Bill {bill.BillNumber}",
+                                DebitAmount = 0,
+                                CreditAmount = fixedAssetTotal,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = fixedAssetTotal,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            });
+                        }
 
                         if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
                             throw new Exception("Journal entry is not balanced.");
@@ -438,6 +561,29 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                         if (ap != null && ap.PaidAmount > 0)
                             return Result.Fail("Cannot update bill after payment has been made.");
+
+                        if (bill.PurchaseOrderId.HasValue)
+                        {
+                            var po = await context.PurchaseOrders
+                                .FirstOrDefaultAsync(p => p.Id == bill.PurchaseOrderId, cancellationToken);
+
+                            if (po != null)
+                            {
+                                var otherBillsTotal = await context.VendorBills
+                                    .Where(b => b.PurchaseOrderId == bill.PurchaseOrderId && 
+                                               b.Id != bill.Id && 
+                                               !b.IsDeleted)
+                                    .SumAsync(b => b.TotalAmount, cancellationToken);
+
+                                decimal totalBillsAfterUpdate = otherBillsTotal + request.Dto.TotalAmount;
+
+                                if (totalBillsAfterUpdate > po.TotalAmount)
+                                {
+                                    decimal allowedAmount = po.TotalAmount - otherBillsTotal;
+                                    return Result.Fail($"Bill amount exceeds Purchase Order limit. PO Total: {po.TotalAmount}, Other Bills Total: {otherBillsTotal}, Allowed Amount: {allowedAmount}, Requested: {request.Dto.TotalAmount}");
+                                }
+                            }
+                        }
 
                         bill.BillDate = request.Dto.BillDate;
                         bill.DueDate = request.Dto.DueDate;
@@ -644,6 +790,28 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         if (companyProfile == null)
                             return Result.Fail("Company profile not configured.");
 
+                        var paymentMethod = (PaymentMethod)request.PaymentMethodId;
+                        
+                        int cashAccountId;
+                        if (paymentMethod == PaymentMethod.Cash)
+                        {
+                            if (companyProfile.CashAccountId > 0)
+                                return Result.Fail("Cash account not configured in company profile.");
+                            cashAccountId = companyProfile.CashAccountId;
+                        }
+                        else if (paymentMethod == PaymentMethod.BankTransfer || 
+                                 paymentMethod == PaymentMethod.CreditCard || 
+                                 paymentMethod == PaymentMethod.Check)
+                        {
+                            if (companyProfile.BankAccountId > 0)
+                                return Result.Fail("Bank account not configured in company profile.");
+                            cashAccountId = companyProfile.BankAccountId;
+                        }
+                        else
+                        {
+                            return Result.Fail($"Unsupported payment method: {paymentMethod}");
+                        }
+
                         var je = new JournalEntry
                         {
                             EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString()[..8].ToUpper()}",
@@ -653,6 +821,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ReferenceNumber = payment.PaymentNumber,
                             ReferenceType = "Vendor Payment",
                             BranchId = ap.BranchId,
+                            PaymentId = payment.Id,
                             ApprovedBy = loggedInUser.Id,
                             ApprovedDate = DateTime.UtcNow,
                             CreatedBy = loggedInUser.Id,
@@ -666,17 +835,21 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = request.PaymentAmount,
                             CreditAmount = 0,
                             CurrencyId = ap.CurrencyId,
+                            ExchangeRate = rate,
+                            AmountInBaseCurrency = request.PaymentAmount * rate,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.UtcNow
                         });
 
                         je.JournalEntryLines.Add(new JournalEntryLine
                         {
-                            ChartOfAccountId = companyProfile.CashAccountId,
+                            ChartOfAccountId = cashAccountId,
                             Description = $"Credit for payment {payment.PaymentNumber}",
                             DebitAmount = 0,
                             CreditAmount = request.PaymentAmount,
                             CurrencyId = ap.CurrencyId,
+                            ExchangeRate = rate,
+                            AmountInBaseCurrency = request.PaymentAmount * rate,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.UtcNow
                         });

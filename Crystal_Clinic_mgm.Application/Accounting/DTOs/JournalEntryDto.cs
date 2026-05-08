@@ -13,7 +13,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string ReferenceNumber { get; set; } = string.Empty;
         public string ReferenceType { get; set; } = string.Empty;
         public int? BranchId { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
+        public int? EquityTransactionId { get; set; }
+        public int? ExpenseId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? SalesReceiptId { get; set; }
+        public int? ReceiptId { get; set; }
         public List<JournalEntryLineDto> Lines { get; set; } = new();
     }
 
@@ -38,7 +43,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public string ReferenceNumber { get; set; } = string.Empty;
         public string ReferenceType { get; set; } = string.Empty;
         public int? BranchId { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
+        public int? EquityTransactionId { get; set; }
+        public int? ExpenseId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? SalesReceiptId { get; set; }
+        public int? ReceiptId { get; set; }
         public List<CreateJournalEntryLineDto> Lines { get; set; } = new();
     }
 
@@ -50,6 +60,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal CreditAmount { get; set; }
         public int? CurrencyId { get; set; }
         public decimal ExchangeRate { get; set; } = 1;
+        public int? EquityTransactionId { get; set; }
+        public int? ExpenseId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? SalesReceiptId { get; set; }
+        public int? ReceiptId { get; set; }
     }
 
     public class PostJournalEntryDto

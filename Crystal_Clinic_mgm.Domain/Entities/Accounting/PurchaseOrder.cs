@@ -15,7 +15,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public DateTime? ExpectedDeliveryDate { get; set; }
         public decimal TotalAmount { get; set; }
         public POStatus Status { get; set; } = POStatus.Open;
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public ICollection<POLine> Lines { get; set; } = new List<POLine>();
     }
 }

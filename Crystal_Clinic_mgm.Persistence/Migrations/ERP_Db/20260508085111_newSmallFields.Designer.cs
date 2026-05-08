@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260508085111_newSmallFields")]
+    partial class newSmallFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2693,10 +2696,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("decimal(18, 2)")
                         .HasColumnName("TotalAmount");
 
-                    b.Property<int?>("VisitId")
-                        .HasColumnType("int")
-                        .HasColumnName("VisitId");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
@@ -2705,8 +2704,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     b.HasIndex("InvoiceNumber")
                         .IsUnique();
-
-                    b.HasIndex("VisitId");
 
                     b.ToTable("SalesInvoice", "Accounting");
                 });
@@ -2745,10 +2742,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("IsDeleted");
-
-                    b.Property<int?>("KitId")
-                        .HasColumnType("int")
-                        .HasColumnName("KitId");
 
                     b.Property<decimal>("LineTotal")
                         .HasColumnType("decimal(18, 2)")
@@ -8764,16 +8757,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", "Visit")
-                        .WithMany()
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Branch");
 
                     b.Navigation("Customer");
-
-                    b.Navigation("Visit");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Accounting.SalesInvoiceLine", b =>

@@ -25,7 +25,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         /// Get available inventory kits
         /// </summary>
         [HttpGet()]
-        public async Task<IActionResult> GetAvailableKits([FromQuery] int pagesize, [FromQuery] int pagenumber)
+        public async Task<IActionResult> GetAvailableKits([FromQuery] int pagesize = 0, [FromQuery] int pagenumber = 10)
         {
             var kits = await ikitService.GetAvailableKitsAsync(loggedInUser.BranchId, pagesize, pagenumber);
             return Ok(kits);

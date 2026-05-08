@@ -20,7 +20,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int? BranchId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public string? Notes { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public List<SalesInvoiceLineDto> Lines { get; set; } = new();
         public List<SalesReceiptDto> Receipts { get; set; } = new();
     }
@@ -28,6 +28,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
     public class CreateSalesInvoiceDto
     {
         public int CustomerId { get; set; }
+        public int? VisitId { get; set; }
         public DateTime InvoiceDate { get; set; }
         public DateTime? DueDate { get; set; }
         public string SalesArea { get; set; } = string.Empty;
@@ -35,7 +36,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal TaxAmount { get; set; }
         public decimal DiscountAmount { get; set; }
         public string? Notes { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public List<SalesInvoiceLineDto> Lines { get; set; } = new();
     }
 
@@ -53,6 +54,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int? ItemId { get; set; }
         public int? ServiceId { get; set; }
         public int? InventoryItemId { get; set; }
+        public int? KitId { get; set; }
         public string Description { get; set; } = string.Empty;
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }

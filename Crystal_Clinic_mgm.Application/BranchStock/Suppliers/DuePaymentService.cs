@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
-        public List<string>? Attachment { get; set; }
+        public List<string>? Attachment { get; set; } = [];
     }
     public class CreateDuePaymentCommandValidator : AbstractValidator<CreateDuePaymentCommand>
     {
@@ -121,7 +121,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.Suppliers
         public decimal AmountInDueCurrency { get; set; }
         public DateTime PaymentDate { get; set; }
         public string? Remarks { get; set; }
-        public List<string>? Attachment { get; set; }
+        public List<string>? Attachment { get; set; } = [];
     }
     public class UpdateDuePaymentHandler(ERP_DbContext context, ILoggedInUser loggedInUser)
         : IRequestHandler<UpdateDuePaymentCommand, bool>

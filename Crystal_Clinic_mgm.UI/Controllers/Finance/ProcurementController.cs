@@ -51,14 +51,15 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
         [HttpPut("PurchaseOrder/{id}")]
         public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] UpdatePurchaseOrderDto dto)
         {
+            dto.Id = id; // Ensure the ID from the URL is set in the DTO for validation
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new { success = false, message = "Invalid request data.", errors = ModelState });
 
             if (dto.Id != id)
-                return BadRequest("ID mismatch");
+                return BadRequest(new { success = false, message = "ID mismatch: URL ID does not match request body ID." });
 
             var result = await _procurementService.UpdatePurchaseOrderAsync(dto);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(new { success = false, error = result.Error });
         }
 
         [HttpPost("PurchaseOrder/{id}/Receive")]
@@ -105,13 +106,13 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
         public async Task<IActionResult> UpdateVendorBill(int id, [FromBody] UpdateVendorBillDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new { success = false, message = "Invalid request data.", errors = ModelState });
 
             if (dto.Id != id)
-                return BadRequest("ID mismatch");
+                return BadRequest(new { success = false, message = "ID mismatch: URL ID does not match request body ID." });
 
             var result = await _procurementService.UpdateVendorBillAsync(dto);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return result.IsSuccess ? Ok(result) : BadRequest(new { success = false, error = result.Error });
         }
 
         //[HttpPost("VendorBill/{id}/MarkAsPaid")]

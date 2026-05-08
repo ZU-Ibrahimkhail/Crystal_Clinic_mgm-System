@@ -32,10 +32,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             [FromQuery] int? customerId = null,
             [FromQuery] int? status = null,
             [FromQuery] int? branchId = null,
+            [FromQuery] int? visitId = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
-            var result = await _salesInvoiceService.GetAllSalesInvoicesAsync(customerId, status, branchId, pageNumber, pageSize);
+            var result = await _salesInvoiceService.GetAllSalesInvoicesAsync(visitId,customerId, status, branchId, pageNumber, pageSize);
             return result.IsSuccess ? Ok(result) : NotFound(result);
         }
 

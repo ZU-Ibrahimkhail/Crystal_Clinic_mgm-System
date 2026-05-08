@@ -21,6 +21,10 @@ public class CompanyProfile : AuditableEntity
     public int SalesRevenueAccountId { get; set; }
     public int InventoryAccountId { get; set; }
     public int PurchaseExpenseAccountId { get; set; }
+    public int? EquityAccountId { get; set; }
+    public int? FixedAssetAccountId { get; set; }
+    public int? DepreciationExpenseAccountId { get; set; }
+    public int? AccumulatedDepreciationAccountId { get; set; }
     public bool IsInitialized { get; set; } = false;
     public ChartOfAccounts CashAccount { get; set; } = null!;
     public ChartOfAccounts BankAccount { get; set; } = null!;
@@ -29,4 +33,8 @@ public class CompanyProfile : AuditableEntity
     public ChartOfAccounts SalesRevenueAccount { get; set; } = null!;
     public ChartOfAccounts InventoryAccount { get; set; } = null!;
     public ChartOfAccounts PurchaseExpenseAccount { get; set; } = null!;
+    public ChartOfAccounts? EquityAccount { get; set; }
+    public ChartOfAccounts? FixedAssetAccount { get; set; }
+    public ChartOfAccounts? DepreciationExpenseAccount { get; set; }
+    public ChartOfAccounts? AccumulatedDepreciationAccount { get; set; }
 }

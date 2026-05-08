@@ -13,6 +13,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
         public JournalEntryStatus? Status { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
+        public int? EquityTransactionId { get; set; }
+        public int? ExpenseId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? SalesReceiptId { get; set; }
+        public int? ReceiptId { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;
     }
@@ -35,6 +40,21 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 if (request.ToDate.HasValue)
                     query = query.Where(j => j.EntryDate <= request.ToDate);
 
+                if (request.EquityTransactionId.HasValue)
+                    query = query.Where(j => j.EquityTransactionId == request.EquityTransactionId);
+
+                if (request.ExpenseId.HasValue)
+                    query = query.Where(j => j.ExpenseId == request.ExpenseId);
+
+                if (request.PaymentId.HasValue)
+                    query = query.Where(j => j.PaymentId == request.PaymentId);
+
+                if (request.SalesReceiptId.HasValue)
+                    query = query.Where(j => j.SalesReceiptId == request.SalesReceiptId);
+
+                if (request.ReceiptId.HasValue)
+                    query = query.Where(j => j.ReceiptId == request.ReceiptId);
+
                 var totalCount = await query.CountAsync(cancellationToken);
 
                 var entries = await query
@@ -52,6 +72,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                         ReferenceNumber = j.ReferenceNumber,
                         ReferenceType = j.ReferenceType,
                         BranchId = j.BranchId,
+                        EquityTransactionId = j.EquityTransactionId,
+                        ExpenseId = j.ExpenseId,
+                        PaymentId = j.PaymentId,
+                        SalesReceiptId = j.SalesReceiptId,
+                        ReceiptId = j.ReceiptId,
                         Lines = j.JournalEntryLines.Select(l => new JournalEntryLineDto
                         {
                             Id = l.Id,

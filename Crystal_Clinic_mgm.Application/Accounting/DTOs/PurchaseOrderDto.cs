@@ -15,7 +15,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public POStatus Status { get; set; }
         public int? BranchId { get; set; }
         public string? BranchName { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public List<POLineDto>? Lines { get; set; }
 
     }
@@ -26,7 +26,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public DateTime OrderDate { get; set; }
         public DateTime? ExpectedDeliveryDate { get; set; }
         public int? BranchId { get; set; }
-        public string? Attachment { get; set; }
+        public string? Attachment { get; set; } = string.Empty;
         public List<POLineDto> Lines { get; set; } = new();
     }
 
@@ -46,6 +46,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }
+        public DateTime? ItemExpiry { get; set; }
+        public string? BarCode { get; set; } = string.Empty;
+        public decimal? ExpectedSalePrice { get; set; }
     }
 
     public class VendorBillDto

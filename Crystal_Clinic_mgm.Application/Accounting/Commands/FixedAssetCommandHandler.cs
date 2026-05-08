@@ -41,6 +41,53 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 context.FixedAssets.Add(asset);
                 await context.SaveChangesAsync(cancellationToken);
 
+                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                if (companyProfile == null)
+                    return Result.Fail("Company profile not configured.");
+
+                if (!companyProfile.FixedAssetAccountId.HasValue)
+                    return Result.Fail("Fixed Asset account not configured in company profile.");
+
+                var je = new JournalEntry
+                {
+                    EntryNumber = $"JE-FA-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                    EntryDate = request.Dto.AcquisitionDate,
+                    Description = $"Fixed Asset acquisition - {request.Dto.Name}",
+                    Status = JournalEntryStatus.Posted,
+                    ReferenceNumber = request.Dto.AssetCode,
+                    ReferenceType = "Fixed Asset",
+                    BranchId = request.Dto.BranchId,
+                    ApprovedBy = loggedInUser.Id,
+                    ApprovedDate = DateTime.UtcNow,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                je.JournalEntryLines.Add(new JournalEntryLine
+                {
+                    ChartOfAccountId = companyProfile.FixedAssetAccountId.Value,
+                    Description = $"Acquisition of {request.Dto.Name}",
+                    DebitAmount = request.Dto.PurchaseValue,
+                    CreditAmount = 0,
+                    AmountInBaseCurrency = request.Dto.PurchaseValue,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                });
+
+                je.JournalEntryLines.Add(new JournalEntryLine
+                {
+                    ChartOfAccountId = companyProfile.BankAccountId,
+                    Description = $"Payment for {request.Dto.Name}",
+                    DebitAmount = 0,
+                    CreditAmount = request.Dto.PurchaseValue,
+                    AmountInBaseCurrency = request.Dto.PurchaseValue,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                });
+
+                context.JournalEntries.Add(je);
+                await context.SaveChangesAsync(cancellationToken);
+
                 return Result.Success(asset.Id, "Fixed Asset created successfully.");
             }
             catch (Exception ex)
@@ -121,6 +168,56 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 asset.ModifiedOn = DateTime.UtcNow;
 
                 context.FixedAssets.Update(asset);
+                await context.SaveChangesAsync(cancellationToken);
+
+                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                if (companyProfile == null)
+                    return Result.Fail("Company profile not configured.");
+
+                if (!companyProfile.DepreciationExpenseAccountId.HasValue)
+                    return Result.Fail("Depreciation Expense account not configured in company profile.");
+
+                if (!companyProfile.AccumulatedDepreciationAccountId.HasValue)
+                    return Result.Fail("Accumulated Depreciation account not configured in company profile.");
+
+                var je = new JournalEntry
+                {
+                    EntryNumber = $"JE-DEPR-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                    EntryDate = DateTime.UtcNow,
+                    Description = $"Depreciation - {asset.Name}",
+                    Status = JournalEntryStatus.Posted,
+                    ReferenceNumber = asset.AssetCode,
+                    ReferenceType = "Depreciation",
+                    BranchId = asset.BranchId,
+                    ApprovedBy = loggedInUser.Id,
+                    ApprovedDate = DateTime.UtcNow,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                je.JournalEntryLines.Add(new JournalEntryLine
+                {
+                    ChartOfAccountId = companyProfile.DepreciationExpenseAccountId.Value,
+                    Description = $"Monthly depreciation for {asset.Name}",
+                    DebitAmount = request.DepreciationAmount,
+                    CreditAmount = 0,
+                    AmountInBaseCurrency = request.DepreciationAmount,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                });
+
+                je.JournalEntryLines.Add(new JournalEntryLine
+                {
+                    ChartOfAccountId = companyProfile.AccumulatedDepreciationAccountId.Value,
+                    Description = $"Accumulated depreciation for {asset.Name}",
+                    DebitAmount = 0,
+                    CreditAmount = request.DepreciationAmount,
+                    AmountInBaseCurrency = request.DepreciationAmount,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                });
+
+                context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success("Depreciation recorded successfully.");

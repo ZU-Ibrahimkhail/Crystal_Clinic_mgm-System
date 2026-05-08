@@ -11,6 +11,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
     public class GetAllSalesInvoicesQuery : IRequest<Result>
     {
         public int? CustomerId { get; set; }
+        public int? VisitId { get; set; }
         public SalesStatus? Status { get; set; }
         public int? BranchId { get; set; }
         public int PageNumber { get; set; } = 1;
@@ -27,6 +28,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     .Include(i => i.Lines)
                     .Include(i => i.Receipts)
                     .Where(i => !i.IsDeleted);
+                
+                if (request.VisitId.HasValue)
+                    query = query.Where(i => i.VisitId == request.VisitId.Value);
+
 
                 if (request.CustomerId.HasValue)
                     query = query.Where(i => i.CustomerId == request.CustomerId.Value);

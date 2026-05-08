@@ -106,6 +106,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 if (shareholder == null)
                     return Result.Fail("Shareholder not found.");
 
+                var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                if (companyProfile == null)
+                    return Result.Fail("Company profile not configured.");
+
                 var transaction = new EquityTransaction
                 {
                     ShareholderId = request.Dto.ShareholderId,
@@ -132,6 +136,76 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 context.EquityTransactions.Add(transaction);
                 context.Shareholders.Update(shareholder);
+                await context.SaveChangesAsync(cancellationToken);
+
+                var je = new JournalEntry
+                {
+                    EntryNumber = $"JE-EQ-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                    EntryDate = request.Dto.TransactionDate,
+                    Description = $"Equity {(request.Dto.Type == EquityTransactionType.Investment ? "Investment" : "Drawing")} - {shareholder.Name}",
+                    Status = JournalEntryStatus.Posted,
+                    ReferenceNumber = request.Dto.Reference ?? $"EQ-{transaction.Id}",
+                    ReferenceType = request.Dto.Type == EquityTransactionType.Investment ? "Equity Investment" : "Equity Drawing",
+                    EquityTransactionId = transaction.Id,
+                    ApprovedBy = loggedInUser.Id,
+                    ApprovedDate = DateTime.UtcNow,
+                    CreatedBy = loggedInUser.Id,
+                    CreatedOn = DateTime.UtcNow
+                };
+
+                if (!companyProfile.EquityAccountId.HasValue)
+                    return Result.Fail("Equity account not configured in company profile.");
+
+                if (request.Dto.Type == EquityTransactionType.Investment)
+                {
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.CashAccountId,
+                        Description = $"Cash received from {shareholder.Name}",
+                        DebitAmount = request.Dto.Amount,
+                        CreditAmount = 0,
+                        AmountInBaseCurrency = request.Dto.Amount,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.EquityAccountId.Value,
+                        Description = $"Capital contribution from {shareholder.Name}",
+                        DebitAmount = 0,
+                        CreditAmount = request.Dto.Amount,
+                        AmountInBaseCurrency = request.Dto.Amount,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+                }
+                else if (request.Dto.Type == EquityTransactionType.Drawing)
+                {
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.EquityAccountId.Value,
+                        Description = $"Dividend/Drawing paid to {shareholder.Name}",
+                        DebitAmount = request.Dto.Amount,
+                        CreditAmount = 0,
+                        AmountInBaseCurrency = request.Dto.Amount,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.CashAccountId,
+                        Description = $"Cash paid to {shareholder.Name}",
+                        DebitAmount = 0,
+                        CreditAmount = request.Dto.Amount,
+                        AmountInBaseCurrency = request.Dto.Amount,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+                }
+
+                context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
 
                 return Result.Success(transaction.Id, "Equity transaction recorded successfully.");

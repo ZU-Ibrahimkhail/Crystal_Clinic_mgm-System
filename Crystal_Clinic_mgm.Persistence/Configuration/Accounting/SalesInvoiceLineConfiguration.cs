@@ -26,6 +26,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnName("InventoryItemId")
                 .HasColumnType("int")
                 .IsRequired(false);
+            
+            entity.Property(s => s.KitId)
+                .HasColumnName("KitId")
+                .HasColumnType("int")
+                .IsRequired(false);
 
             entity.Property(s => s.Description)
                 .HasColumnName("Description")

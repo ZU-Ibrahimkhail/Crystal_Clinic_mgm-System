@@ -30,6 +30,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             [FromQuery] JournalEntryStatus? status = null,
             [FromQuery] DateTime? fromDate = null,
             [FromQuery] DateTime? toDate = null,
+            [FromQuery] int? equityTransactionId = null,
+            [FromQuery] int? expenseId = null,
+            [FromQuery] int? paymentId = null,
+            [FromQuery] int? salesReceiptId = null,
+            [FromQuery] int? receiptId = null,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 20)
         {
@@ -38,6 +43,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
                 Status = status,
                 FromDate = fromDate,
                 ToDate = toDate,
+                EquityTransactionId = equityTransactionId,
+                ExpenseId = expenseId,
+                PaymentId = paymentId,
+                SalesReceiptId = salesReceiptId,
+                ReceiptId = receiptId,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };

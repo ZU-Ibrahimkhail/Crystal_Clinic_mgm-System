@@ -251,58 +251,158 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(RecordPaymentCommand request, CancellationToken cancellationToken)
         {
-            try
+            var strategy = context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                var payable = await context.AccountsPayables
-                    .FirstOrDefaultAsync(a => a.Id == request.Dto.AccountsPayableId && !a.IsDeleted, cancellationToken);
+                await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-                if (payable == null)
-                    return Result.Fail("Accounts Payable not found.");
-
-                if (request.Dto.AmountPaid > payable.BalanceAmount)
-                    return Result.Fail("Payment amount exceeds outstanding balance.");
-
-                decimal exchangeRate;
-                int currencyId = request.Dto.CurrencyId ?? payable.CurrencyId ?? 1;
-                const int BaseCurrencyId = 1;
-
-                if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
+                try
                 {
-                    exchangeRate = request.Dto.ExchangeRate.Value;
+                    var payable = await context.AccountsPayables
+                        .FirstOrDefaultAsync(a => a.Id == request.Dto.AccountsPayableId && !a.IsDeleted, cancellationToken);
+
+                    if (payable == null)
+                        return Result.Fail("Accounts Payable not found.");
+
+                    if (request.Dto.AmountPaid <= 0)
+                        return Result.Fail("Invalid payment amount.");
+
+                    if (request.Dto.AmountPaid > payable.BalanceAmount)
+                        return Result.Fail("Payment amount exceeds outstanding balance.");
+
+                    if (request.Dto.PaymentMethodId <= 0)
+                        return Result.Fail("Invalid payment method.");
+
+                    decimal exchangeRate;
+                    int currencyId = request.Dto.CurrencyId ?? payable.CurrencyId ?? 1;
+                    const int BaseCurrencyId = 1;
+
+                    if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
+                    {
+                        exchangeRate = request.Dto.ExchangeRate.Value;
+                    }
+                    else
+                    {
+                        exchangeRate = await context.GetExchangeRate(currencyId, BaseCurrencyId, cancellationToken);
+                    }
+
+                    var paymentNumber = GeneratePaymentNumber();
+                    var payment = new Payment
+                    {
+                        AccountsPayableId = request.Dto.AccountsPayableId,
+                        PaymentNumber = paymentNumber,
+                        PaymentDate = request.Dto.PaymentDate,
+                        AmountPaid = request.Dto.AmountPaid,
+                        PaymentMethodId = request.Dto.PaymentMethodId,
+                        CurrencyId = currencyId,
+                        ExchangeRate = exchangeRate,
+                        AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    };
+
+                    context.Payments.Add(payment);
+
+                    payable.PaidAmount += request.Dto.AmountPaid;
+                    payable.BalanceAmount -= request.Dto.AmountPaid;
+
+                    if (payable.BalanceAmount == 0)
+                    {
+                        payable.Status = APStatus.Paid;
+                    }
+                    else
+                    {
+                        payable.Status = APStatus.PartiallyPaid;
+                    }
+
+                    context.AccountsPayables.Update(payable);
+
+                    var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+
+                    if (companyProfile == null)
+                        return Result.Fail("Company profile not configured.");
+
+                    var paymentMethod = (PaymentMethod)request.Dto.PaymentMethodId;
+
+                    int cashAccountId;
+                    if (paymentMethod == PaymentMethod.Cash)
+                    {
+                        if (companyProfile.CashAccountId > 0)
+                            return Result.Fail("Cash account not configured in company profile.");
+                        cashAccountId = companyProfile.CashAccountId;
+                    }
+                    else if (paymentMethod == PaymentMethod.BankTransfer ||
+                             paymentMethod == PaymentMethod.CreditCard ||
+                             paymentMethod == PaymentMethod.Check)
+                    {
+                        if (companyProfile.BankAccountId > 0)
+                            return Result.Fail("Bank account not configured in company profile.");
+                        cashAccountId = companyProfile.BankAccountId;
+                    }
+                    else
+                    {
+                        return Result.Fail($"Unsupported payment method: {paymentMethod}");
+                    }
+
+                    var je = new JournalEntry
+                    {
+                        EntryNumber = $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
+                        EntryDate = payment.PaymentDate,
+                        Description = $"Payment for {payable.InvoiceNumber} - {paymentNumber}",
+                        Status = JournalEntryStatus.Posted,
+                        ReferenceNumber = paymentNumber,
+                        ReferenceType = "Vendor Payment",
+                        BranchId = payable.BranchId,
+                        PaymentId = payment.Id,
+                        ApprovedBy = loggedInUser.Id,
+                        ApprovedDate = DateTime.UtcNow,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    };
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = companyProfile.AccountsPayableAccountId,
+                        Description = $"Debit AP for payment {paymentNumber}",
+                        DebitAmount = request.Dto.AmountPaid,
+                        CreditAmount = 0,
+                        CurrencyId = currencyId,
+                        ExchangeRate = exchangeRate,
+                        AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    je.JournalEntryLines.Add(new JournalEntryLine
+                    {
+                        ChartOfAccountId = cashAccountId,
+                        Description = $"Credit for payment {paymentNumber}",
+                        DebitAmount = 0,
+                        CreditAmount = request.Dto.AmountPaid,
+                        CurrencyId = currencyId,
+                        ExchangeRate = exchangeRate,
+                        AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
+                        CreatedBy = loggedInUser.Id,
+                        CreatedOn = DateTime.UtcNow
+                    });
+
+                    if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
+                        throw new InvalidOperationException("Journal entry is not balanced.");
+
+                    context.JournalEntries.Add(je);
+
+                    await context.SaveChangesAsync(cancellationToken);
+                    await transaction.CommitAsync(cancellationToken);
+
+                    return Result.Success(payment.Id, "Payment recorded successfully.");
                 }
-                else
+                catch (Exception ex)
                 {
-                    exchangeRate = await context.GetExchangeRate(currencyId, BaseCurrencyId, cancellationToken);
+                    await transaction.RollbackAsync(cancellationToken);
+                    return Result.Fail($"Error recording payment: {ex.Message}");
                 }
-
-                var payment = new Payment
-                {
-                    AccountsPayableId = request.Dto.AccountsPayableId,
-                    PaymentNumber = GeneratePaymentNumber(),
-                    PaymentDate = request.Dto.PaymentDate,
-                    AmountPaid = request.Dto.AmountPaid,
-                    PaymentMethodId = request.Dto.PaymentMethodId,
-                    CurrencyId = currencyId,
-                    ExchangeRate = exchangeRate,
-                    AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
-
-                payable.PaidAmount += request.Dto.AmountPaid;
-                payable.BalanceAmount -= request.Dto.AmountPaid;
-                payable.Status = payable.BalanceAmount == 0 ? APStatus.Paid : APStatus.PartiallyPaid;
-
-                context.Payments.Add(payment);
-                context.AccountsPayables.Update(payable);
-                await context.SaveChangesAsync(cancellationToken);
-
-                return Result.Success(payment.Id, "Payment recorded successfully.");
-            }
-            catch (Exception ex)
-            {
-                return Result.Fail($"Error recording payment: {ex.Message}");
-            }
+            });
         }
 
         private string GeneratePaymentNumber()

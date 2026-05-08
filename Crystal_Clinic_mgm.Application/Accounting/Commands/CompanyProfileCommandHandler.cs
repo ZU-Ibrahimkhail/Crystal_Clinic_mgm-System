@@ -56,6 +56,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         profile.InventoryAccountId = systemAccounts.InventoryId;
                         profile.PurchaseExpenseAccountId = systemAccounts.ExpenseId;
                         profile.BankAccountId = systemAccounts.BankAcountId;
+                        profile.EquityAccountId = systemAccounts.EquityId;
+                        profile.FixedAssetAccountId = systemAccounts.FixedAssetId;
+                        profile.DepreciationExpenseAccountId = systemAccounts.DepreciationExpenseId;
+                        profile.AccumulatedDepreciationAccountId = systemAccounts.AccumulatedDepreciationId;
 
                         context.CompanyProfile.Add(profile);
                         await context.SaveChangesAsync(cancellationToken);
@@ -86,6 +90,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             public int InventoryId { get; set; }
             public int ExpenseId { get; set; }
             public int BankAcountId { get; set; }
+            public int EquityId { get; set; }
+            public int FixedAssetId { get; set; }
+            public int DepreciationExpenseId { get; set; }
+            public int AccumulatedDepreciationId { get; set; }
         }
 
         private async Task<SystemAccountsResult> SeedChartOfAccounts(ERP_DbContext context, CancellationToken ct)
@@ -126,8 +134,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 AddAccount(accounts, "5102", "Medical Supplies", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
                 AddAccount(accounts, "5103", "Utilities", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expenseAccount);
                 AddAccount(accounts, "5200", "Administrative Expenses", AccountType.Expense, AccountCategory.AdministrativeExpense, NormalBalanceType.Debit, expensesGroup);
+                var deprecationExpenseAccount = AddAccount(accounts, "5301", "Depreciation Expense", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, expensesGroup);
                 AddAccount(accounts, "5300", "Financial Expenses", AccountType.Expense, AccountCategory.FinancialExpense, NormalBalanceType.Debit, expensesGroup);
                 var bankAccount = AddAccount(accounts, "1105", "Bank Account", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, currentAssets);
+                
+                var equityCapital = AddAccount(accounts, "3101", "Share Capital", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, equity);
+                var fixedAssetsGroup = AddAccount(accounts, "1210", "Equipment", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, fixedAssets);
+                var accumulatedDepreciationAccount = AddAccount(accounts, "1211", "Accumulated Depreciation - Equipment", AccountType.ContraAsset, AccountCategory.FixedAsset, NormalBalanceType.Credit, fixedAssets);
 
                 return new SystemAccountsResult
                 {
@@ -137,7 +150,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     APId = aPAccount.Id,
                     RevenueId = revenueAccount.Id,
                     ExpenseId = expenseAccount.Id,
-                    BankAcountId = bankAccount.Id
+                    BankAcountId = bankAccount.Id,
+                    EquityId = equityCapital.Id,
+                    FixedAssetId = fixedAssetsGroup.Id,
+                    DepreciationExpenseId = deprecationExpenseAccount.Id,
+                    AccumulatedDepreciationId = accumulatedDepreciationAccount.Id
                 };
             });
         }
@@ -176,28 +193,95 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(UpdateCompanyProfileCommand request, CancellationToken cancellationToken)
         {
+            var strategy = context.Database.CreateExecutionStrategy();
+
             try
             {
-                var profile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                if (profile == null)
-                    return Result.Fail("Company profile not found. Please initialize it first.");
+                return await strategy.ExecuteAsync(async () =>
+                {
+                    await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
-                profile.Name = request.Dto.Name;
-                profile.PhoneNumber = request.Dto.PhoneNumber;
-                profile.Email = request.Dto.Email;
-                profile.BaseCurrencyId = request.Dto.BaseCurrencyId;
-                profile.ModifiedBy = loggedInUser.Id;
-                profile.ModifiedOn = DateTime.UtcNow;
+                    try
+                    {
+                        var profile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (profile == null)
+                            return Result.Fail("Company profile not found. Please initialize it first.");
 
-                context.CompanyProfile.Update(profile);
-                await context.SaveChangesAsync(cancellationToken);
+                        profile.Name = request.Dto.Name;
+                        profile.PhoneNumber = request.Dto.PhoneNumber;
+                        profile.Email = request.Dto.Email;
+                        profile.BaseCurrencyId = request.Dto.BaseCurrencyId;
+                        profile.ModifiedBy = loggedInUser.Id;
+                        profile.ModifiedOn = DateTime.UtcNow;
 
-                return Result.Success("Company profile updated successfully.");
+                        await ValidateAndPopulateMissingAccounts(profile, cancellationToken);
+
+                        context.CompanyProfile.Update(profile);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+
+                        return Result.Success("Company profile updated successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        throw;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 return Result.Fail($"Error updating company profile: {ex.Message}");
             }
+        }
+
+        private async Task ValidateAndPopulateMissingAccounts(CompanyProfile profile, CancellationToken cancellationToken)
+        {
+            profile.CashAccountId = await GetOrCreateAccount(profile.CashAccountId, "1101", "Cash and Cash Equivalents", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, cancellationToken);
+            profile.BankAccountId = await GetOrCreateAccount(profile.BankAccountId, "1105", "Bank Account", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, cancellationToken);
+            profile.AccountsReceivableAccountId = await GetOrCreateAccount(profile.AccountsReceivableAccountId, "1102", "Accounts Receivable", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, cancellationToken);
+            profile.AccountsPayableAccountId = await GetOrCreateAccount(profile.AccountsPayableAccountId, "2101", "Accounts Payable", AccountType.Liability, AccountCategory.CurrentLiability, NormalBalanceType.Credit, cancellationToken);
+            profile.SalesRevenueAccountId = await GetOrCreateAccount(profile.SalesRevenueAccountId, "4100", "Service Revenue", AccountType.Revenue, AccountCategory.ServiceRevenue, NormalBalanceType.Credit, cancellationToken);
+            profile.InventoryAccountId = await GetOrCreateAccount(profile.InventoryAccountId, "1103", "Inventory", AccountType.Asset, AccountCategory.CurrentAsset, NormalBalanceType.Debit, cancellationToken);
+            profile.PurchaseExpenseAccountId = await GetOrCreateAccount(profile.PurchaseExpenseAccountId, "5100", "Operating Expenses", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, cancellationToken);
+            profile.EquityAccountId = await GetOrCreateAccount(profile.EquityAccountId, "3101", "Share Capital", AccountType.Equity, AccountCategory.Capital, NormalBalanceType.Credit, cancellationToken);
+            profile.FixedAssetAccountId = await GetOrCreateAccount(profile.FixedAssetAccountId, "1210", "Equipment", AccountType.Asset, AccountCategory.FixedAsset, NormalBalanceType.Debit, cancellationToken);
+            profile.DepreciationExpenseAccountId = await GetOrCreateAccount(profile.DepreciationExpenseAccountId, "5301", "Depreciation Expense", AccountType.Expense, AccountCategory.OperatingExpense, NormalBalanceType.Debit, cancellationToken);
+            profile.AccumulatedDepreciationAccountId = await GetOrCreateAccount(profile.AccumulatedDepreciationAccountId, "1211", "Accumulated Depreciation - Equipment", AccountType.ContraAsset, AccountCategory.FixedAsset, NormalBalanceType.Credit, cancellationToken);
+        }
+
+        private async Task<int> GetOrCreateAccount(int? existingAccountId, string code, string name, AccountType type, AccountCategory category, NormalBalanceType balance, CancellationToken cancellationToken)
+        {
+            if (existingAccountId.HasValue && existingAccountId.Value > 0)
+            {
+                var accountExists = await context.ChartOfAccounts.AnyAsync(a => a.Id == existingAccountId.Value && !a.IsDeleted, cancellationToken);
+                if (accountExists)
+                    return existingAccountId.Value;
+            }
+
+            var existingAccount = await context.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == code && !a.IsDeleted, cancellationToken);
+            if (existingAccount != null)
+                return existingAccount.Id;
+
+            var newAccount = new ChartOfAccounts
+            {
+                AccountCode = code,
+                AccountName = name,
+                AccountType = type,
+                AccountCategory = category,
+                NormalBalance = balance,
+                IsSystemAccount = true,
+                IsActive = true,
+                ParentAccountId = null,
+                CreatedBy = loggedInUser.Id,
+                CreatedOn = DateTime.UtcNow
+            };
+
+            context.ChartOfAccounts.Add(newAccount);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return newAccount.Id;
         }
     }
     #endregion
@@ -239,7 +323,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     AccountsPayableAccountId = profile.AccountsPayableAccountId,
                     SalesRevenueAccountId = profile.SalesRevenueAccountId,
                     InventoryAccountId = profile.InventoryAccountId,
-                    PurchaseExpenseAccountId = profile.PurchaseExpenseAccountId
+                    PurchaseExpenseAccountId = profile.PurchaseExpenseAccountId,
+                    EquityAccountId = profile.EquityAccountId,
+                    FixedAssetAccountId = profile.FixedAssetAccountId,
+                    DepreciationExpenseAccountId = profile.DepreciationExpenseAccountId,
+                    AccumulatedDepreciationAccountId = profile.AccumulatedDepreciationAccountId
                 };
 
                 return Result.Success(dto);

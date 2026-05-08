@@ -30,48 +30,77 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 var invoiceNumber = GenerateInvoiceNumber();
                 
+                decimal invoiceSubtotal = 0;
+                
+                if (request.Dto.Lines.Any())
+                {
+                    foreach (var lineDto in request.Dto.Lines)
+                    {
+                        var baseLineAmount = lineDto.Quantity * lineDto.UnitPrice;
+                        invoiceSubtotal += baseLineAmount;
+                    }
+                }
+                
                 var invoice = new SalesInvoice
                 {
                     InvoiceNumber = invoiceNumber,
                     CustomerId = request.Dto.CustomerId,
+                    VisitId = request.Dto.VisitId,
                     InvoiceDate = request.Dto.InvoiceDate,
                     DueDate = request.Dto.DueDate,
                     SalesArea = request.Dto.SalesArea,
                     BranchId = request.Dto.BranchId,
                     Status = SalesStatus.Draft,
                     Attachment = request.Dto.Attachment,
+                    TotalAmount = invoiceSubtotal,
+                    DiscountAmount = request.Dto.DiscountAmount,
+                    TaxAmount = request.Dto.TaxAmount,
+                    NetAmount = invoiceSubtotal - request.Dto.DiscountAmount + request.Dto.TaxAmount,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
 
                 context.SalesInvoices.Add(invoice);
                 await context.SaveChangesAsync(cancellationToken);
+                
                 if (request.Dto.Lines.Any())
                 {
                     foreach (var lineDto in request.Dto.Lines)
                     {
+                        var baseLineAmount = lineDto.Quantity * lineDto.UnitPrice;
+                        
+                        var lineDiscount = lineDto.DiscountAmount;
+                        var lineTax = lineDto.TaxAmount;
+                        
+                        if (lineDiscount < 0)
+                            lineDiscount = 0;
+                        
+                        if (lineDiscount > baseLineAmount)
+                            lineDiscount = baseLineAmount;
+                        
+                        if (lineTax < 0)
+                            lineTax = 0;
+                        
+                        var calculatedLineTotal = baseLineAmount - lineDiscount + lineTax;
+                        
                         var line = new SalesInvoiceLine
                         {
                             SalesInvoiceId = invoice.Id,
                             ServiceId = lineDto.ServiceId,
                             InventoryItemId = lineDto.InventoryItemId,
+                            KitId = lineDto.KitId,
                             Description = lineDto.Description,
                             Quantity = lineDto.Quantity,
                             UnitPrice = lineDto.UnitPrice,
-                            LineTotal = lineDto.Quantity * lineDto.UnitPrice,
-                            DiscountAmount = lineDto.DiscountAmount,
-                            TaxAmount = lineDto.TaxAmount,
+                            LineTotal = calculatedLineTotal,
+                            DiscountAmount = lineDiscount,
+                            TaxAmount = lineTax,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.UtcNow
                         };
                         invoice.Lines.Add(line);
                     }
 
-                    invoice.TotalAmount = invoice.Lines.Sum(l => l.LineTotal);
-                    invoice.DiscountAmount = invoice.Lines.Sum(l => l.DiscountAmount);
-                    invoice.TaxAmount = invoice.Lines.Sum(l => l.TaxAmount);
-                    invoice.NetAmount = invoice.TotalAmount - invoice.DiscountAmount + invoice.TaxAmount;
-                    context.Update(invoice);
                     await context.SaveChangesAsync(cancellationToken);
                 }
 
@@ -273,6 +302,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                         context.SalesReceipts.Add(receipt);
                         context.SalesInvoices.Update(invoice);
+                        await context.SaveChangesAsync(cancellationToken);
 
                         var ar = await context.AccountsReceivables
                             .FirstOrDefaultAsync(a => a.Reference == invoice.InvoiceNumber && !a.IsDeleted, cancellationToken);
@@ -285,11 +315,30 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ar.ModifiedBy = loggedInUser.Id;
                             ar.ModifiedOn = DateTime.UtcNow;
                             context.AccountsReceivables.Update(ar);
+                            await context.SaveChangesAsync(cancellationToken);
                         }
 
-                        var cashAccountId = request.Dto.PaymentMethod == PaymentMethod.BankTransfer
-                            ? companyProfile.BankAccountId
-                            : companyProfile.CashAccountId;
+                        var paymentMethod = request.Dto.PaymentMethod;
+                        
+                        int cashAccountId;
+                        if (paymentMethod == PaymentMethod.Cash)
+                        {
+                            if (companyProfile.CashAccountId > 0)
+                                return Result.Fail("Cash account not configured in company profile.");
+                            cashAccountId = companyProfile.CashAccountId;
+                        }
+                        else if (paymentMethod == PaymentMethod.BankTransfer || 
+                                 paymentMethod == PaymentMethod.CreditCard || 
+                                 paymentMethod == PaymentMethod.Check)
+                        {
+                            if (companyProfile.BankAccountId > 0)
+                                return Result.Fail("Bank account not configured in company profile.");
+                            cashAccountId = companyProfile.BankAccountId;
+                        }
+                        else
+                        {
+                            return Result.Fail($"Unsupported payment method: {paymentMethod}");
+                        }
 
                         var je = new JournalEntry
                         {
@@ -300,6 +349,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ReferenceNumber = receiptNumber,
                             ReferenceType = "SalesReceipt",
                             BranchId = invoice.BranchId,
+                            SalesReceiptId = receipt.Id,
                             ApprovedBy = loggedInUser.Id,
                             ApprovedDate = DateTime.UtcNow,
                             CreatedBy = loggedInUser.Id,
