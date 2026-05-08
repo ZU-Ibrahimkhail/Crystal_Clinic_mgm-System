@@ -1,21 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
+﻿using Crystal_Clinic_Mgm.Application.BranchStock;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
-using Crystal_Clinic_Mgm.Application.Common.Services.Repositories;
 using Crystal_Clinic_Mgm.Application.Common.SignalR;
 using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Common.Message;
+using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
-using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
-using Microsoft.Extensions.Logging;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 
 namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 {
@@ -289,6 +285,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 throw new KeyNotFoundException($"Visit with ID {request.VisitId} not found.");
             }
 
+            var instruments = context.VisitInstrument.Where(x => x.VisitId == request.VisitId);
+
             return new VisitDto
             {
                 VisitId = visit.visitId,
@@ -309,6 +307,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     Name = m.stock.Item.Name,
                     Dosage = m.dosage,
                     Quantity = m.quantity,
+                    IsIsInvoiceGenerated = instruments.Any(x => x.VisitId == visit.visitId),
                     Price = m.price,
                     BatchNumber = m.stock.BatchNumber
                 }).ToList(),
@@ -318,6 +317,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     ServiceName = s.service?.Name ?? "",
                     TotalSessions = s.totalSessions,
                     CompletedSessions = s.completedSessions,
+                    IsInvoiceGenerated = instruments.Any(x => x.VisitId == visit.visitId),
                     AddedSessions = s.sessions.Count,
                     PricePerSession = s.pricePerSession,
                     TotalPrice = s.totalPrice,
@@ -350,7 +350,8 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
 
     #region Get Visit List
 
-    public class GetVisitListQuery : IRequest<VisitListDto>
+    public class
+        GetVisitListQuery : IRequest<VisitListDto>
     {
         public string? Search { get; set; }
         public int? PatientId { get; set; }
@@ -445,6 +446,106 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
     }
 
     #endregion
+
+    #region Get Visit Kits List
+    public class GetVistKitListQuery : IRequest<Result>
+    {
+        public int VisitId { get; set; }
+        public int pageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+    }
+
+    public class GetVistKitListQueryHander(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetVistKitListQuery, Result>
+    {
+        public async Task<Result> Handle(GetVistKitListQuery request, CancellationToken cancellationToken)
+        {
+            var query = context.VisitKits
+                .Where(k => request.VisitId == k.VisitId)
+                .Include(v => v.Visit)
+                .Include(v => v.InventoryKit)
+                    .ThenInclude(ik => ik.KitLines)
+                        .ThenInclude(kl => kl.Item)
+                .Include(v => v.ServiceSessions)
+                .AsQueryable();
+
+            query = query
+                .OrderBy(v => v.Id)
+                .Skip((request.pageNumber - 1) * request.PageSize)
+                .Take(request.PageSize);
+
+            var instruments = context.VisitInstrument.Where(x => x.VisitId == request.VisitId);
+
+            var visitKits = await query.Select(vk => new InventoryKitDto
+            {
+                Id = vk.Id,
+                KitName = vk.InventoryKit.KitName,
+                Description = vk.InventoryKit.Description,
+                IsFreeForPatient = vk.InventoryKit.IsFreeForPatient,
+                IsActive = vk.InventoryKit.IsActive,
+                IsInvoiceGenerated = instruments.Any(x => x.KitId == vk.Id),
+                TotalAmount = vk.InventoryKit.KitLines
+                    .Sum(kl => kl.Quantity * kl.Item.UnitCost),
+                BranchId = vk.InventoryKit.BranchId,
+                Lines = vk.InventoryKit.KitLines.Select(kl => new KitLines
+                {
+                    KitId = kl.KitId,
+                    ItemId = kl.ItemId,
+                    Quantity = kl.Quantity,
+                }).ToList()
+            })
+            .ToListAsync(cancellationToken);
+            return Result.Success(visitKits);
+        }
+    }
+
+    #endregion
+
+    #region Get Visit Reserve Item List
+    public class GetVisitReserveItemsListQuery : IRequest<Result>
+    {
+        public int VisitId { get; set; }
+        public int pageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 20;
+    }
+    public class GetVisitReserveItemsListQueryHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<GetVisitReserveItemsListQuery, Result>
+    {
+        public async Task<Result> Handle(GetVisitReserveItemsListQuery request, CancellationToken cancellationToken)
+        {
+            var query = await context.InventoryReservations
+                .Where(ir => ir.VisitId == request.VisitId)
+                .Include(ir => ir.Service)
+                .Include(ir => ir.ReservedItems)
+                .ThenInclude(ri => ri.Item)
+                .ToListAsync();
+
+            var visitInstruments = context.VisitInstrument.Where(x => x.VisitId == request.VisitId).ToList();
+
+            var reservations = query.Select(r => new ReservationDetail
+            {
+                Id = r.Id,
+                VisitId = r.VisitId,
+                ServiceId = r.ServiceId,
+                ServiceName = r.Service != null ? r.Service.Name : "",
+                TotalAmount = r.ReservedItems.Sum(x => x.UnitCost * x.ReservedQuantity),
+                ExpiresAt = r.ExpiresAt,
+                RequestedBy = r.RequestedBy,
+                ReservedItems = r.ReservedItems.Select(x => new ReservedItemDetail
+                {
+                    ItemId = x.ItemId,
+                    IsInvoiceGenerated = visitInstruments.Any(y => y.ItemId == x.ItemId),
+                    ItemName = x.Item != null ? x.Item.Name : "Item not found",
+                    UnitCost = x.UnitCost,
+                    ReservedQuantity = x.ReservedQuantity,
+                }).ToList()
+            }).ToList();
+
+            return Result.Success(reservations);
+
+        }
+    }
+    #endregion
+
+
 
     #region Add Medications to Visit
 
@@ -721,7 +822,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                         {
                             var user = ums_dbContext.Users.FirstOrDefault(x => x.EmployeeId == employeeId);
                             if (user != null)
-                            { 
+                            {
                                 notificationRepository.AddNotification(user.Id, Constants.NotificationMessage.NewServiceSessionRecord, Constants.ApplicationModule.Clinic, user.BranchId ?? 0, item.Id, null);
                                 await signal.PushAsync(user.Id, Constants.NotificationMessage.NewServiceSessionRecord);
                             }
@@ -1056,6 +1157,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public int MedicationId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Dosage { get; set; } = string.Empty;
+        public bool IsIsInvoiceGenerated { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public string BatchNumber { get; set; } = string.Empty;
@@ -1067,6 +1169,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public string ServiceName { get; set; } = string.Empty;
         public int TotalSessions { get; set; }
         public int CompletedSessions { get; set; }
+        public bool IsInvoiceGenerated { get; set; }
         public decimal PricePerSession { get; set; }
         public decimal TotalPrice { get; set; }
         public int CurrencyTypeId { get; set; }
@@ -1093,7 +1196,5 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public decimal RefundAmountInAFN { get; set; }
 
     }
-
     #endregion
-
 }

@@ -98,6 +98,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             {
                 var entry = await context.JournalEntries
                     .Include(j => j.JournalEntryLines)
+                    .ThenInclude(i => i.ChartOfAccount)
                     .FirstOrDefaultAsync(j => j.Id == request.Id && !j.IsDeleted, cancellationToken);
 
                 if (entry == null)

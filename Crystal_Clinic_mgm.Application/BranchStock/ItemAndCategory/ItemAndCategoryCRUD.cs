@@ -130,6 +130,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public decimal ReorderLevel { get; set; }
         public int CategoryId { get; set; }
         public int BranchId { get; set; }
+        public string? Attachment { get; set; }
         public int ItemId { get; set; }
     }
     public class UpdateItemWithUnitsHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateItemCommand, int>
@@ -150,6 +151,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             item.CategoryId = request.CategoryId;
             item.ModifiedBy = loggedInUser.Id;
             item.ModifiedOn = DateTime.Now;
+            item.ImagePath = request.Attachment;
             context.Items.Update(item);
             await context.SaveChangesAsync(cancellationToken);
 

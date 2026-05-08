@@ -1,6 +1,7 @@
 using Crystal_Clinic_Mgm.Application.BranchStock;
 using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Application.CrystalClinic.Visits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +46,13 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             if (result.Id == 0)
                 return NotFound();
             return Ok(result);
+        }
+
+        [HttpGet("visit-reservation")]
+        public async Task<IActionResult> GetReservationItemsList([FromQuery] GetVisitReserveItemsListQuery query)
+        {
+            var visitKits = await Mediator.Send(query);
+            return Ok(visitKits);
         }
 
         [HttpGet("active")]

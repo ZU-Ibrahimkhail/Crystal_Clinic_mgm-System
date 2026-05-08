@@ -1,11 +1,9 @@
-﻿using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
-using Crystal_Clinic_Mgm.Common.AppConfig;
+﻿using Crystal_Clinic_Mgm.Common.AppConfig;
 using Crystal_Clinic_Mgm.Common.Storage;
 using Crystal_Clinic_Mgm.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static QRCoder.PayloadGenerator;
 
 public class CreateAttachmentCommand : IRequest<JsonResult>
 {
@@ -30,6 +28,7 @@ public class CreateAttachmentCommandHandler : IRequestHandler<CreateAttachmentCo
                 AttachmentType.AccountReceivable => "AccountReceivable",
                 AttachmentType.AccountPayable => "AccountPayable",
                 AttachmentType.VendorBill => "VendorBill",
+                AttachmentType.Item => "Item",
                 AttachmentType.JournalEntry => "JournalEntry",
                 _ => "Others"
             };

@@ -676,7 +676,7 @@
             Create Inventory Kit
             </summary>
         </member>
-        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.GetAvailableKits">
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.KitsController.GetAvailableKits(System.Int32,System.Int32)">
             <summary>
             Get available inventory kits
             </summary>

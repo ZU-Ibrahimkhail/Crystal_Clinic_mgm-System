@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
 {
     [Authorize]
     [RBAC]
-    public class KitsController(IInventoryService inventoryService, ILoggedInUser loggedInUser) :BaseController
+    public class KitsController(IKitService ikitService, IInventoryService inventoryService, ILoggedInUser loggedInUser) :BaseController
     {
         /// <summary>
         /// Create Inventory Kit
@@ -16,7 +16,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateKitRequest request)
         {
-            var result = await inventoryService.CreateKitAsync(request);
+            var result = await ikitService.CreateKitAsync(request);
             if (result.Succeeded) return Ok(result);
             return BadRequest(result.Error);
         }
@@ -25,9 +25,9 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         /// Get available inventory kits
         /// </summary>
         [HttpGet()]
-        public async Task<IActionResult> GetAvailableKits()
+        public async Task<IActionResult> GetAvailableKits([FromQuery] int pagesize, [FromQuery] int pagenumber)
         {
-            var kits = await inventoryService.GetAvailableKitsAsync(loggedInUser.BranchId);
+            var kits = await ikitService.GetAvailableKitsAsync(loggedInUser.BranchId, pagesize, pagenumber);
             return Ok(kits);
         }
         /// <summary>
@@ -36,7 +36,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         [HttpGet("{KitId}")]
         public async Task<IActionResult> GetKitById([FromRoute] int KitId)
         {
-            var kits = await inventoryService.GetKitByIdAsync(KitId);
+            var kits = await ikitService.GetKitByIdAsync(KitId);
             return Ok(kits);
         }
 
@@ -46,7 +46,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         [HttpPost("{kitId}/consume")]
         public async Task<IActionResult> ConsumeKit(int kitId, [FromBody] KitConsumptionRequest request)
         {
-            var result = await inventoryService.ConsumeKitAsync(kitId, request.Quantity, request.ReferenceId);
+            var result = await ikitService.ConsumeKitAsync(kitId, request.Quantity, request.ReferenceId);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result.ErrorMessage);
@@ -73,7 +73,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             if (request.Id != KitId)
                 return BadRequest("ID mismatch");
 
-            var result = await inventoryService.UpdateKitAsync(request);
+            var result = await ikitService.UpdateKitAsync(request);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
@@ -84,7 +84,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         [HttpDelete("{KitId}")]
         public async Task<IActionResult> Delete(int KitId)
         {
-            var result = await inventoryService.DeleteKitAsync(KitId);
+            var result = await ikitService.DeleteKitAsync(KitId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 

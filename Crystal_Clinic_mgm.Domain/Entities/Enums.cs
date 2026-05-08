@@ -17,7 +17,8 @@
         PurchaseOrder,
         PatientDocument,
         SalesInvoice,
-        VendorBill
+        VendorBill,
+        Item
     }
 
     public enum ReturnStatus

@@ -47,12 +47,21 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
         }
 
 
+
+
         // Get Visit List
         [HttpGet("list")]
         public async Task<IActionResult> GetVisitList([FromQuery] GetVisitListQuery query)
         {
             var visitList = await Mediator.Send(query);
             return Ok(visitList);
+        }
+
+        [HttpGet("visit-kits")]
+        public async Task<IActionResult> GetKitsVisitsList([FromQuery] GetVistKitListQuery query)
+        {
+            var visitKits = await Mediator.Send(query);
+            return Ok(visitKits);
         }
 
 

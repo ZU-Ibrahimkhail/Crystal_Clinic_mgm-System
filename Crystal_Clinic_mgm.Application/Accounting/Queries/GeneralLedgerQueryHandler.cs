@@ -62,38 +62,63 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
         public DateTime AsOfDate { get; set; }
     }
 
-    public class GetTrialBalanceQueryHandler(ERP_DbContext context, IAccountingRepository accountingRepository) : IRequestHandler<GetTrialBalanceQuery, Result>
+    public class GetTrialBalanceQueryHandler(ERP_DbContext context) : IRequestHandler<GetTrialBalanceQuery, Result>
     {
         public async Task<Result> Handle(GetTrialBalanceQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var trialBalance = new List<TrialBalanceDto>();
-                var accounts = await context.ChartOfAccounts
-                    .Where(c => c.IsActive && !c.IsDeleted)
+                var glQuery = context.GeneralLedgers
+                    .Where(g => g.TransactionDate <= request.AsOfDate && !g.IsDeleted);
+
+                if (request.BranchId.HasValue)
+                    glQuery = glQuery.Where(g => g.BranchId == request.BranchId);
+
+                var aggregated = await glQuery
+                    .GroupBy(g => g.ChartOfAccountId)
+                    .Select(g => new
+                    {
+                        ChartOfAccountId = g.Key,
+                        TotalDebit = g.Sum(x => x.DebitAmount),
+                        TotalCredit = g.Sum(x => x.CreditAmount)
+                    })
                     .ToListAsync(cancellationToken);
 
-                foreach (var account in accounts)
+                var accountIds = aggregated.Select(a => a.ChartOfAccountId).ToList();
+
+                var accounts = await context.ChartOfAccounts
+                    .Where(c => accountIds.Contains(c.Id) && !c.IsDeleted)
+                    .ToDictionaryAsync(c => c.Id, cancellationToken);
+
+                var trialBalance = new List<TrialBalanceDto>();
+
+                foreach (var row in aggregated)
                 {
-                    var balance = await accountingRepository.GetAccountBalanceAsync(
-                        account.Id, 
-                        request.AsOfDate, 
-                        cancellationToken);
+                    if (!accounts.TryGetValue(row.ChartOfAccountId, out var account))
+                        continue;
 
-                    if (balance != 0)
+                    decimal balance = account.NormalBalance == NormalBalanceType.Debit
+                        ? row.TotalDebit - row.TotalCredit
+                        : row.TotalCredit - row.TotalDebit;
+
+                    if (balance == 0)
+                        continue;
+
+                    var tb = new TrialBalanceDto
                     {
-                        var tb = new TrialBalanceDto
-                        {
-                            AccountId = account.Id,
-                            AccountCode = account.AccountCode,
-                            AccountName = account.AccountName,
-                            AccountType = account.AccountType,
-                            DebitBalance = account.NormalBalance == NormalBalanceType.Debit && balance > 0 ? balance : 0,
-                            CreditBalance = account.NormalBalance == NormalBalanceType.Credit && balance > 0 ? balance : 0
-                        };
+                        AccountId = account.Id,
+                        AccountCode = account.AccountCode,
+                        AccountName = account.AccountName,
+                        AccountType = account.AccountType,
+                        DebitBalance = balance > 0 && account.NormalBalance == NormalBalanceType.Debit ? balance
+                                     : balance < 0 && account.NormalBalance == NormalBalanceType.Credit ? Math.Abs(balance)
+                                     : 0,
+                        CreditBalance = balance > 0 && account.NormalBalance == NormalBalanceType.Credit ? balance
+                                      : balance < 0 && account.NormalBalance == NormalBalanceType.Debit ? Math.Abs(balance)
+                                      : 0
+                    };
 
-                        trialBalance.Add(tb);
-                    }
+                    trialBalance.Add(tb);
                 }
 
                 var result = new

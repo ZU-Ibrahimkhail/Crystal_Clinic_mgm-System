@@ -1,0 +1,77 @@
+﻿using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
+{
+    public class VisitInstrumentConfiguration : IEntityTypeConfiguration<VisitInstrument>
+    {
+        public void Configure(EntityTypeBuilder<VisitInstrument> entity)
+        {
+            // Table & Key
+            entity.ToTable(nameof(VisitInstrument), "CrystalClinic");
+            entity.HasKey(e => e.Id);
+
+            // Visit FK (required) - cascade when visit deleted
+            entity.Property(e => e.VisitId)
+                .HasColumnName("VisitId")
+                .HasColumnType("int")
+                .IsRequired();
+            entity.HasOne(e => e.Visit)
+                .WithMany()
+                .HasForeignKey(e => e.VisitId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Optional InventoryKit
+            entity.Property(e => e.KitId)
+                .HasColumnName("KitId")
+                .HasColumnType("int")
+                .IsRequired(false);
+            entity.HasOne(e => e.InventoryKit)
+                .WithMany()
+                .HasForeignKey(e => e.KitId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Optional ServiceSessions
+            entity.Property(e => e.ServiceSessionsId)
+                .HasColumnName("ServiceSessionsId")
+                .HasColumnType("int")
+                .IsRequired(false);
+            entity.HasOne(e => e.ServiceSessions)
+                .WithMany()
+                .HasForeignKey(e => e.ServiceSessionsId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Optional Item
+            entity.Property(e => e.ItemId)
+                .HasColumnName("ItemId")
+                .HasColumnType("int")
+                .IsRequired(false);
+            entity.HasOne(e => e.Item)
+                .WithMany()
+                .HasForeignKey(e => e.ItemId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
+            entity.Property(e => e.Price)
+                .HasColumnName("Price")
+                .HasColumnType("decimal(18,2)")
+                .HasDefaultValue(0m)
+                .IsRequired();
+
+            entity.Property(e => e.IsFreeForPatient)
+                .HasColumnName("IsFreeForPatient")
+                .HasColumnType("bit")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            entity.Property(e => e.Count)
+                .HasColumnName("Count")
+                .HasColumnType("int")
+                .IsRequired();
+
+            // Auditable fields (IsDeleted, CreatedBy, CreatedOn, etc.)
+            EntityConfiguration<VisitInstrument>.AuditableEntityConfigurations(entity);
+        }
+    }
+}

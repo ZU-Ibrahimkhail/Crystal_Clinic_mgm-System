@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
+using Crystal_Clinic_Mgm.Application.Accounting.Services;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
@@ -100,25 +101,112 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(IssueSalesInvoiceCommand request, CancellationToken cancellationToken)
         {
+            var strategy = context.Database.CreateExecutionStrategy();
             try
             {
-                var invoice = await context.SalesInvoices
-                    .FirstOrDefaultAsync(i => i.Id == request.SalesInvoiceId && !i.IsDeleted, cancellationToken);
+                return await strategy.ExecuteAsync(async () =>
+                {
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        var invoice = await context.SalesInvoices
+                            .FirstOrDefaultAsync(i => i.Id == request.SalesInvoiceId && !i.IsDeleted, cancellationToken);
 
-                if (invoice == null)
-                    return Result.Fail("Sales Invoice not found.");
+                        if (invoice == null)
+                            return Result.Fail("Sales Invoice not found.");
 
-                if (invoice.Status != SalesStatus.Draft)
-                    return Result.Fail("Only draft invoices can be issued.");
+                        if (invoice.Status != SalesStatus.Draft)
+                            return Result.Fail("Only draft invoices can be issued.");
 
-                invoice.Status = SalesStatus.Issued;
-                invoice.ModifiedBy = loggedInUser.Id;
-                invoice.ModifiedOn = DateTime.UtcNow;
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not configured.");
 
-                context.SalesInvoices.Update(invoice);
-                await context.SaveChangesAsync(cancellationToken);
+                        invoice.Status = SalesStatus.Issued;
+                        invoice.ModifiedBy = loggedInUser.Id;
+                        invoice.ModifiedOn = DateTime.UtcNow;
+                        context.SalesInvoices.Update(invoice);
 
-                return Result.Success("Sales Invoice issued successfully.");
+                        var ar = new AccountsReceivable
+                        {
+                            InvoiceNumber = invoice.InvoiceNumber,
+                            CustomerId = invoice.CustomerId,
+                            InvoiceDate = invoice.InvoiceDate,
+                            DueDate = invoice.DueDate ?? invoice.InvoiceDate.AddDays(30),
+                            InvoiceAmount = invoice.NetAmount,
+                            BalanceAmount = invoice.NetAmount,
+                            PaidAmount = 0,
+                            Status = ARStatus.Open,
+                            ChartOfAccountId = companyProfile.AccountsReceivableAccountId,
+                            BranchId = invoice.BranchId,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            CurrencyRate = 1,
+                            Description = $"AR for Sales Invoice {invoice.InvoiceNumber}",
+                            Reference = invoice.InvoiceNumber,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+                        context.AccountsReceivables.Add(ar);
+
+                        var je = new JournalEntry
+                        {
+                            EntryNumber = LedgerPostingService.GenerateJournalEntryNumber(),
+                            EntryDate = invoice.InvoiceDate,
+                            Description = $"Sales Invoice issued: {invoice.InvoiceNumber}",
+                            Status = JournalEntryStatus.Posted,
+                            ReferenceNumber = invoice.InvoiceNumber,
+                            ReferenceType = "SalesInvoice",
+                            BranchId = invoice.BranchId,
+                            ApprovedBy = loggedInUser.Id,
+                            ApprovedDate = DateTime.UtcNow,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.AccountsReceivableAccountId,
+                            Description = $"DR Accounts Receivable - {invoice.InvoiceNumber}",
+                            DebitAmount = invoice.NetAmount,
+                            CreditAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = invoice.NetAmount,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.SalesRevenueAccountId,
+                            Description = $"CR Sales Revenue - {invoice.InvoiceNumber}",
+                            DebitAmount = 0,
+                            CreditAmount = invoice.NetAmount,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = invoice.NetAmount,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
+                            throw new InvalidOperationException("Journal entry is not balanced.");
+
+                        context.JournalEntries.Add(je);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success("Sales Invoice issued successfully.");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -138,45 +226,130 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(RecordSalesReceiptCommand request, CancellationToken cancellationToken)
         {
+            var strategy = context.Database.CreateExecutionStrategy();
             try
             {
-                var invoice = await context.SalesInvoices
-                    .Include(i => i.Receipts)
-                    .FirstOrDefaultAsync(i => i.Id == request.Dto.SalesInvoiceId && !i.IsDeleted, cancellationToken);
-
-                if (invoice == null)
-                    return Result.Fail("Sales Invoice not found.");
-
-                var totalReceived = invoice.Receipts.Sum(r => r.AmountReceived) + request.Dto.AmountReceived;
-                if (totalReceived > invoice.NetAmount)
-                    return Result.Fail("Receipt amount exceeds invoice total.");
-
-                var receipt = new SalesReceipt
+                return await strategy.ExecuteAsync(async () =>
                 {
-                    SalesInvoiceId = request.Dto.SalesInvoiceId,
-                    ReceiptNumber = GenerateReceiptNumber(),
-                    CustomerId = invoice.CustomerId,
-                    AmountReceived = request.Dto.AmountReceived,
-                    PaymentMethod = request.Dto.PaymentMethod,
-                    ReceiptDate = request.Dto.ReceiptDate,
-                    Reference = request.Dto.Reference ?? string.Empty,
-                    CreatedBy = loggedInUser.Id,
-                    CreatedOn = DateTime.UtcNow
-                };
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        var invoice = await context.SalesInvoices
+                            .Include(i => i.Receipts)
+                            .FirstOrDefaultAsync(i => i.Id == request.Dto.SalesInvoiceId && !i.IsDeleted, cancellationToken);
 
-                if (totalReceived == invoice.NetAmount)
-                    invoice.Status = SalesStatus.Paid;
-                else
-                    invoice.Status = SalesStatus.Partial;
+                        if (invoice == null)
+                            return Result.Fail("Sales Invoice not found.");
 
-                invoice.ModifiedBy = loggedInUser.Id;
-                invoice.ModifiedOn = DateTime.UtcNow;
+                        var totalReceived = invoice.Receipts.Sum(r => r.AmountReceived) + request.Dto.AmountReceived;
+                        if (totalReceived > invoice.NetAmount)
+                            return Result.Fail("Receipt amount exceeds invoice total.");
 
-                context.SalesReceipts.Add(receipt);
-                context.SalesInvoices.Update(invoice);
-                await context.SaveChangesAsync(cancellationToken);
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not configured.");
 
-                return Result.Success(receipt.Id, "Sales Receipt recorded successfully.");
+                        var receiptNumber = GenerateReceiptNumber();
+                        var receipt = new SalesReceipt
+                        {
+                            SalesInvoiceId = request.Dto.SalesInvoiceId,
+                            ReceiptNumber = receiptNumber,
+                            CustomerId = invoice.CustomerId,
+                            AmountReceived = request.Dto.AmountReceived,
+                            PaymentMethod = request.Dto.PaymentMethod,
+                            ReceiptDate = request.Dto.ReceiptDate,
+                            Reference = request.Dto.Reference ?? string.Empty,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        if (totalReceived == invoice.NetAmount)
+                            invoice.Status = SalesStatus.Paid;
+                        else
+                            invoice.Status = SalesStatus.Partial;
+
+                        invoice.ModifiedBy = loggedInUser.Id;
+                        invoice.ModifiedOn = DateTime.UtcNow;
+
+                        context.SalesReceipts.Add(receipt);
+                        context.SalesInvoices.Update(invoice);
+
+                        var ar = await context.AccountsReceivables
+                            .FirstOrDefaultAsync(a => a.Reference == invoice.InvoiceNumber && !a.IsDeleted, cancellationToken);
+
+                        if (ar != null)
+                        {
+                            ar.PaidAmount += request.Dto.AmountReceived;
+                            ar.BalanceAmount -= request.Dto.AmountReceived;
+                            ar.Status = ar.BalanceAmount <= 0 ? ARStatus.Paid : ARStatus.PartiallyPaid;
+                            ar.ModifiedBy = loggedInUser.Id;
+                            ar.ModifiedOn = DateTime.UtcNow;
+                            context.AccountsReceivables.Update(ar);
+                        }
+
+                        var cashAccountId = request.Dto.PaymentMethod == PaymentMethod.BankTransfer
+                            ? companyProfile.BankAccountId
+                            : companyProfile.CashAccountId;
+
+                        var je = new JournalEntry
+                        {
+                            EntryNumber = LedgerPostingService.GenerateJournalEntryNumber(),
+                            EntryDate = request.Dto.ReceiptDate,
+                            Description = $"Sales Receipt recorded: {receiptNumber}",
+                            Status = JournalEntryStatus.Posted,
+                            ReferenceNumber = receiptNumber,
+                            ReferenceType = "SalesReceipt",
+                            BranchId = invoice.BranchId,
+                            ApprovedBy = loggedInUser.Id,
+                            ApprovedDate = DateTime.UtcNow,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = cashAccountId,
+                            Description = $"DR Cash/Bank - {receiptNumber}",
+                            DebitAmount = request.Dto.AmountReceived,
+                            CreditAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = request.Dto.AmountReceived,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.AccountsReceivableAccountId,
+                            Description = $"CR Accounts Receivable - {receiptNumber}",
+                            DebitAmount = 0,
+                            CreditAmount = request.Dto.AmountReceived,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = request.Dto.AmountReceived,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
+                            throw new InvalidOperationException("Journal entry is not balanced.");
+
+                        context.JournalEntries.Add(je);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success(receipt.Id, "Sales Receipt recorded successfully.");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
             }
             catch (Exception ex)
             {

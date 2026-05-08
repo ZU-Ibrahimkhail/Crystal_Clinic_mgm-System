@@ -107,6 +107,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
         public DbSet<SupplierDue> SupplierDue { get; set; }
         public DbSet<DuePayment> DuePayment { get; set; }
         public DbSet<CallList> CallList { get; set; }
+        public DbSet<VisitInstrument> VisitInstrument { get; set; }
 
         #region Accounting
         public DbSet<CompanyProfile> CompanyProfile { get; set; }
@@ -247,6 +248,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Contexts
             modelBuilder.ApplyConfiguration(new CurrencyExchangeRateConfiguration());
             modelBuilder.ApplyConfiguration(new CallListConfiguration());
             modelBuilder.ApplyConfiguration(new ServiceSessionsConfiguration());
+            modelBuilder.ApplyConfiguration(new VisitInstrumentConfiguration());
 
             #region Accounting Configuration
             modelBuilder.ApplyConfiguration(new CompanyProfileConfiguration());

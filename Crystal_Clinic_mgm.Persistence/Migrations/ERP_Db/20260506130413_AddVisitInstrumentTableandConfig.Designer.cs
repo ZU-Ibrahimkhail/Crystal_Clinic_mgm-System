@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506130413_AddVisitInstrumentTableandConfig")]
+    partial class AddVisitInstrumentTableandConfig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5080,10 +5083,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Count")
-                        .HasColumnType("int")
-                        .HasColumnName("Count");
-
                     b.Property<Guid>("CreatedBy")
                         .HasMaxLength(50)
                         .HasColumnType("UNIQUEIDENTIFIER")
@@ -5097,11 +5096,11 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("bit")
                         .HasColumnName("IsDeleted");
 
-                    b.Property<bool>("IsFreeForPatient")
+                    b.Property<bool>("IsInvoiceGenerated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
-                        .HasColumnName("IsFreeForPatient");
+                        .HasColumnName("IsInvoiceGenerated");
 
                     b.Property<int?>("ItemId")
                         .HasColumnType("int")
@@ -5120,12 +5119,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("DateTime")
                         .HasColumnName("ModifiedOn");
 
-                    b.Property<decimal>("Price")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("Price");
-
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar")
@@ -5134,6 +5127,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<int?>("ServiceSessionsId")
                         .HasColumnType("int")
                         .HasColumnName("ServiceSessionsId");
+
+                    b.Property<decimal>("TotalCost")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("TotalCost");
 
                     b.Property<int>("VisitId")
                         .HasColumnType("int")

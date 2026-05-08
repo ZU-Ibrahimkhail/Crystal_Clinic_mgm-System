@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
+using Crystal_Clinic_Mgm.Application.Accounting.Services;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
@@ -140,90 +141,99 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
     {
         public async Task<Result> Handle(ApproveExpenseCommand request, CancellationToken cancellationToken)
         {
+            var strategy = context.Database.CreateExecutionStrategy();
             try
             {
-                var expense = await context.Expenses
-                    .FirstOrDefaultAsync(e => e.Id == request.ExpenseId && !e.IsDeleted, cancellationToken);
-
-                if (expense == null)
-                    return Result.Fail("Expense not found");
-
-                if (expense.Status != ExpenseStatus.Submitted)
-                    return Result.Fail("Only submitted expenses can be approved");
-
-                expense.Status = ExpenseStatus.Approved;
-                expense.ApprovedBy = request.ApprovedBy;
-                expense.ApprovedDate = DateTime.UtcNow;
-
-                if (expense.ChartOfAccountId.HasValue)
+                return await strategy.ExecuteAsync(async () =>
                 {
-                    var journalEntry = new JournalEntry
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
                     {
-                        EntryNumber = GenerateEntryNumber(),
-                        Description = $"Expense Approval: {expense.Description}",
-                        Status = JournalEntryStatus.Posted,
-                        EntryDate = DateTime.UtcNow,
-                        CreatedBy = request.ApprovedBy,
-                        CreatedOn = DateTime.UtcNow,
-                    };
+                        var expense = await context.Expenses
+                            .FirstOrDefaultAsync(e => e.Id == request.ExpenseId && !e.IsDeleted, cancellationToken);
 
-                    var lastEntry = await context.JournalEntries
-                        .OrderByDescending(j => j.Id)
-                        .FirstOrDefaultAsync(cancellationToken);
+                        if (expense == null)
+                            return Result.Fail("Expense not found");
 
-                    int nextNumber = 1;
+                        if (expense.Status != ExpenseStatus.Submitted)
+                            return Result.Fail("Only submitted expenses can be approved");
 
-                    if (lastEntry != null && !string.IsNullOrWhiteSpace(lastEntry.EntryNumber))
-                    {
-                        var numericPart = lastEntry.EntryNumber.Replace("JE-", "");
-                        if (int.TryParse(numericPart, out int parsed))
-                            nextNumber = parsed + 1;
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not found. Please initialize the company profile first.");
+
+                        expense.Status = ExpenseStatus.Approved;
+                        expense.ApprovedBy = request.ApprovedBy;
+                        expense.ApprovedDate = DateTime.UtcNow;
+                        context.Expenses.Update(expense);
+
+                        if (expense.ChartOfAccountId.HasValue)
+                        {
+                            var je = new JournalEntry
+                            {
+                                EntryNumber = LedgerPostingService.GenerateJournalEntryNumber(),
+                                Description = $"Expense Approval: {expense.Description}",
+                                Status = JournalEntryStatus.Posted,
+                                EntryDate = DateTime.UtcNow,
+                                ReferenceNumber = expense.Id.ToString(),
+                                ReferenceType = "Expense",
+                                ApprovedBy = request.ApprovedBy,
+                                ApprovedDate = DateTime.UtcNow,
+                                CreatedBy = request.ApprovedBy,
+                                CreatedOn = DateTime.UtcNow
+                            };
+
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = expense.ChartOfAccountId.Value,
+                                DebitAmount = expense.Amount,
+                                CreditAmount = 0,
+                                Description = expense.Description,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = expense.Amount,
+                                CreatedBy = request.ApprovedBy,
+                                CreatedOn = DateTime.UtcNow
+                            });
+
+                            je.JournalEntryLines.Add(new JournalEntryLine
+                            {
+                                ChartOfAccountId = companyProfile.CashAccountId,
+                                DebitAmount = 0,
+                                CreditAmount = expense.Amount,
+                                Description = expense.Description,
+                                CurrencyId = companyProfile.BaseCurrencyId,
+                                ExchangeRate = 1,
+                                AmountInBaseCurrency = expense.Amount,
+                                CreatedBy = request.ApprovedBy,
+                                CreatedOn = DateTime.UtcNow
+                            });
+
+                            if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
+                                throw new InvalidOperationException("Journal entry is not balanced.");
+
+                            context.JournalEntries.Add(je);
+                            await context.SaveChangesAsync(cancellationToken);
+
+                            await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+                        await transaction.CommitAsync(cancellationToken);
+
+                        return Result.Success(new { id = expense.Id, status = ExpenseStatus.Approved });
                     }
-
-                    journalEntry.EntryNumber = $"JE-{nextNumber:D6}";
-
-                    var debitLine = new JournalEntryLine
+                    catch
                     {
-                        ChartOfAccountId = expense.ChartOfAccountId.Value,
-                        DebitAmount = expense.Amount,
-                        CreditAmount = 0,
-                        Description = expense.Description,
-                        CreatedBy = request.ApprovedBy,
-                        CreatedOn = DateTime.UtcNow
-                    };
-                    journalEntry.JournalEntryLines.Add(debitLine);
-
-                    var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
-                    if (companyProfile == null)
-                        return Result.Fail("Company profile not found. Please initialize the company profile first.");
-
-                    var creditLine = new JournalEntryLine
-                    {
-                        ChartOfAccountId = companyProfile.CashAccountId,
-                        DebitAmount = 0,
-                        CreditAmount = expense.Amount,
-                        Description = expense.Description,
-                        CreatedBy = request.ApprovedBy,
-                        CreatedOn = DateTime.UtcNow
-                    };
-                    journalEntry.JournalEntryLines.Add(creditLine);
-
-                    context.JournalEntries.Add(journalEntry);
-                }
-
-                await context.SaveChangesAsync(cancellationToken);
-
-                return Result.Success(new { id = expense.Id, status = ExpenseStatus.Approved });
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 return Result.Fail($"Error approving expense: {ex.Message}");
             }
-
-        }
-        private string GenerateEntryNumber()
-        {
-            return $"JE-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
         }
     }
     #endregion

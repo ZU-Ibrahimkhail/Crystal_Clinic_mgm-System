@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260506125249_AddVisitInstrumentTable")]
+    partial class AddVisitInstrumentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5072,86 +5075,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.ToTable("Visit", "CrystalClinic");
                 });
 
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitInstrument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int")
-                        .HasColumnName("Count");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("UNIQUEIDENTIFIER")
-                        .HasColumnName("CreatedBy");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("DateTime")
-                        .HasColumnName("CreatedOn");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit")
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<bool>("IsFreeForPatient")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsFreeForPatient");
-
-                    b.Property<int?>("ItemId")
-                        .HasColumnType("int")
-                        .HasColumnName("ItemId");
-
-                    b.Property<int?>("KitId")
-                        .HasColumnType("int")
-                        .HasColumnName("KitId");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasMaxLength(50)
-                        .HasColumnType("UNIQUEIDENTIFIER")
-                        .HasColumnName("ModifiedBy");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("DateTime")
-                        .HasColumnName("ModifiedOn");
-
-                    b.Property<decimal>("Price")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("Price");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar")
-                        .HasColumnName("Remarks");
-
-                    b.Property<int?>("ServiceSessionsId")
-                        .HasColumnType("int")
-                        .HasColumnName("ServiceSessionsId");
-
-                    b.Property<int>("VisitId")
-                        .HasColumnType("int")
-                        .HasColumnName("VisitId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("KitId");
-
-                    b.HasIndex("ServiceSessionsId");
-
-                    b.HasIndex("VisitId");
-
-                    b.ToTable("VisitInstrument", "CrystalClinic");
-                });
-
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitMedication", b =>
                 {
                     b.Property<int>("medicationId")
@@ -9156,38 +9079,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitInstrument", b =>
-                {
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKit", "InventoryKit")
-                        .WithMany()
-                        .HasForeignKey("KitId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.ServiceSessions", "ServiceSessions")
-                        .WithMany()
-                        .HasForeignKey("ServiceSessionsId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", "Visit")
-                        .WithMany()
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("InventoryKit");
-
-                    b.Navigation("Item");
-
-                    b.Navigation("ServiceSessions");
-
-                    b.Navigation("Visit");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitMedication", b =>

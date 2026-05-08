@@ -37,31 +37,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         Task<Crystal_Clinic_Mgm.Domain.Entities.Result> PerformStockTakeAsync(StockTakeRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Create Inventory Kit
-        /// </summary>
-        Task<Result> CreateKitAsync(CreateKitRequest request, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Get Detail of Inventory Kit by Id
-        /// </summary>
-        Task<Result> GetKitByIdAsync(int Id, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Gets available inventory kits
-        /// </summary>
-        Task<IEnumerable<InventoryKit>> GetAvailableKitsAsync(int? branchId = null, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Update inventory Kit
-        /// </summary>
-        Task<Result> UpdateKitAsync(UpdateKitRequest request, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Delete inventory kit by Id
-        /// </summary>
-        Task<Result> DeleteKitAsync(int Id, CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Consumes an inventory kit
         /// </summary>
         Task<KitConsumptionResult> ConsumeKitAsync(int kitId, int quantity, string referenceId, CancellationToken cancellationToken = default);
@@ -93,7 +68,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
         Task<Result> AddKitToVisitAsync(AddKitToVisitRequest request, CancellationToken cancellationToken = default);
     }
-
+    public class KitConsumptionResult
+    {
+        public bool Success { get; set; }
+        public string? ErrorMessage { get; set; }
+        public IEnumerable<MovementResult> ItemMovements { get; set; } = new List<MovementResult>();
+        public decimal TotalCost { get; set; }
+    }
 
     public class AddKitToVisitRequest
     {
@@ -101,51 +82,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public int ServiceSessionId { get; set; }
         public int KitId { get; set; }
     }
-
-    public class InventoryKitDto
-    {
-        public int Id { get; set; }
-        public string KitName { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public bool IsFreeForPatient { get; set; }
-        public bool IsActive { get; set; }
-        public int BranchId { get; set; }
-        public List<KitLines> Lines { get; set; } = new List<KitLines>();
-    }
-
-    public class CreateKitRequest
-    {
-        public string? KitName { get; set; }
-        public string? Description { get; set; }
-        public bool IsFreeForPatient { get; set; }
-        public int BranchId { get; set; }
-        public List<CreateKitLines>? Lines { get; set; }
-    }
-
-    public class KitLines
-    {
-        public int KitId { get; set; }
-        public int ItemId { get; set; }
-        public decimal Quantity { get; set; }
-    }
-
-    public class CreateKitLines
-    {
-        public int ItemId { get; set; }
-        public decimal Quantity { get; set; }
-    }
-
-    public class UpdateKitRequest
-    {
-        public int Id { get; set; }
-        public string? KitName { get; set; }
-        public string? Description { get; set; }
-        public int BranchId { get; set; }
-        public bool IsFreeForPatient { get; set; }
-        public bool IsActive { get; set; }
-        public List<KitLines>? Lines { get; set; }
-    }
-
+        
     public class MovementRequest
     {
         public int ItemId { get; set; }
@@ -243,19 +180,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public Guid? ProcessedBy { get; set; }
     }
 
-    public class KitConsumptionResult
-    {
-        public bool Success { get; set; }
-        public string? ErrorMessage { get; set; }
-        public IEnumerable<MovementResult> ItemMovements { get; set; } = new List<MovementResult>();
-        public decimal TotalCost { get; set; }
-    }
-
     public class ReservationDetail
     {
         public int Id { get; set; }
         public int VisitId { get; set; }
         public int ServiceId { get; set; }
+        public string? ServiceName { get; set; }
+        public decimal TotalAmount { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime ExpiresAt { get; set; }
         public Guid RequestedBy { get; set; }
@@ -268,6 +199,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public int ItemId { get; set; }
         public string ItemName { get; set; } = string.Empty;
         public int StockId { get; set; }
+        public bool IsInvoiceGenerated { get; set; }
         public string LotNumber { get; set; } = string.Empty;
         public decimal ReservedQuantity { get; set; }
         public decimal UnitCost { get; set; }
