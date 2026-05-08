@@ -5,6 +5,7 @@ using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Common.Message;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.AssetMS;
+using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using FluentValidation;
@@ -301,6 +302,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 TotalAmount = visit.totalAmount,
                 PaidAmount = visit.paidAmount,
                 RemainingAmount = visit.remainingAmount,
+                visitKits = context.VisitKits.Where(x => x.VisitId == visit.visitId).Include(v=>v.InventoryKit).Include(k=>k.ServiceSessions).ToList(),
                 Medications = visit.Medications.Select(m => new VisitMedicationDto
                 {
                     MedicationId = m.medicationId,
@@ -1142,6 +1144,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public List<VisitMedicationDto> Medications { get; set; } = [];
         public List<VisitServiceDto> Services { get; set; } = [];
         public List<VisitPaymentDto> Payments { get; set; } = [];
+        public List<VisitKits> visitKits { get; set; } = [];
         public Dictionary<string, decimal> CurrencyTotals { get; set; } = new(); // e.g., {"AFN": 500, "USD": 100, "EUR": 50}
 
     }
