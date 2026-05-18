@@ -17,7 +17,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
 
             entity.Property(vk => vk.ServiceSessionId)
                 .HasColumnName("ServiceSessionId")
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(vk => vk.KitId)
                 .HasColumnName("KitId")
@@ -36,6 +36,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
             entity.HasOne(vk => vk.ServiceSessions)
                 .WithMany()
                 .HasForeignKey(vk => vk.ServiceSessionId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deleting ServiceSessions if VisitKits exists
 
             entity.HasIndex(vk => new { vk.VisitId, vk.ServiceSessionId, vk.KitId }).IsUnique();

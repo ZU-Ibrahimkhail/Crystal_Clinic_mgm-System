@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260513105523_ServiceIdnullable")]
+    partial class ServiceIdnullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3866,7 +3869,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int?>("ServiceId")
+                    b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -9006,7 +9009,9 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                 {
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("ServiceId");
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.Visit", "Visit")
                         .WithMany()

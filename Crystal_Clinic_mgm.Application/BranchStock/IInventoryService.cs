@@ -79,7 +79,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     public class AddKitToVisitRequest
     {
         public int VisitId { get; set; }
-        public int ServiceSessionId { get; set; }
+        public int? ServiceSessionId { get; set; }
         public int KitId { get; set; }
     }
         
@@ -110,7 +110,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     public class ReservationRequest
     {
         public int VisitId { get; set; }
-        public int ServiceId { get; set; }
+        public int? ServiceId { get; set; }
         public IEnumerable<ReservationItem> Items { get; set; } = new List<ReservationItem>();
         public string IdempotencyToken { get; set; } = string.Empty;
         public int TtlSeconds { get; set; } = 300; // 5 minutes default
@@ -184,7 +184,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     {
         public int Id { get; set; }
         public int VisitId { get; set; }
-        public int ServiceId { get; set; }
+        public int? ServiceId { get; set; }
         public string? ServiceName { get; set; }
         public decimal TotalAmount { get; set; }
         public string Status { get; set; } = string.Empty;

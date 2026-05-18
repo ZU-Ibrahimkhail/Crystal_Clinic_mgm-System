@@ -21,7 +21,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
             entity.Property(ir => ir.ServiceId)
                 .HasColumnName("ServiceId")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(ir => ir.IdempotencyToken)
                 .HasColumnName("IdempotencyToken")
@@ -62,6 +62,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
             entity.HasOne(ir => ir.Service)
                 .WithMany()
                 .HasForeignKey(ir => ir.ServiceId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasMany(ir => ir.ReservedItems)

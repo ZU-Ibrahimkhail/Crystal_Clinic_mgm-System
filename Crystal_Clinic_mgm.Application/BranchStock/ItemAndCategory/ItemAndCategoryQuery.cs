@@ -46,6 +46,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
         public string BaseUnit { get; set; } = string.Empty;
         public decimal CurrentStock { get; set; }
         public decimal? UseableStock { get; set; } = 0;
+        public decimal? TotalQuantity { get; set; } 
+        public decimal? UsableQuantity { get; set; } 
+        public decimal? ReservedQuantity { get; set; } 
+        public decimal? AvailabeQuantity { get; set; }
         public decimal ReorderLevel { get; set; }
         public int BranchId { get; set; }
         public int CategoryId { get; set; }
@@ -56,7 +60,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
     {
         public async Task<GetItemsResponse> Handle(GetItemsQuery request, CancellationToken cancellationToken)
         {
-            var query = context.Items.Where(x => !x.IsDeleted && x.BranchId == request.BranchId)
+            var query = context.Items
+                .Where(x => !x.IsDeleted)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(request.SearchText))
@@ -76,22 +81,60 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
 
             var items = await query
                 .OrderBy(i => i.ItemId)
-                .Take(request.PageSize).Include(i => i.Category)
+                .Take(request.PageSize)
+                .Include(i => i.Category)
                 .Select(i => new ItemDto
                 {
                     ItemId = i.ItemId,
                     Name = i.Name,
                     Description = i.Description,
-                    ImagePath = i.ImagePath,
+                    ImagePath = i.ImagePath ?? string.Empty,
                     BaseUnit = i.BaseUnit,
                     UseableStock = i.UseableStock,
                     ReorderLevel = i.ReorderLevel,
                     BranchId = i.BranchId ?? 0,
                     CategoryId = i.CategoryId ?? 0,
-                    CategoryName = i.Category!.Name ?? "",
+                    CategoryName = i.Category != null ? i.Category.Name : string.Empty,
                     CurrentStock = i.CurrentStock,
                 })
                 .ToListAsync(cancellationToken);
+
+            if (items.Count == 0)
+                return new GetItemsResponse { Items = items };
+
+            var itemIds = items.Select(i => i.ItemId).ToList();
+
+            var stockAggregates = await context.Stocks
+                .Where(s => !s.IsDeleted && s.ItemId != null && itemIds.Contains(s.ItemId.Value) && s.BranchId == request.BranchId)
+                .GroupBy(s => s.ItemId)
+                .Select(g => new
+                {
+                    ItemId = g.Key,
+                    TotalQuantity = g.Sum(s => (decimal)s.Quantity),
+                    UsableQuantity = g.Sum(s => s.QuantityRemaining),
+                })
+                .ToListAsync(cancellationToken);
+
+            var reservedAggregates = await context.ReservedItems
+                .Where(ri => itemIds.Contains(ri.ItemId) && ri.Reservation!.BranchId == request.BranchId)
+                .GroupBy(ri => ri.ItemId)
+                .Select(g => new
+                {
+                    ItemId = g.Key,
+                    ReservedQuantity = g.Sum(ri => ri.ReservedQuantity),
+                })
+                .ToListAsync(cancellationToken);
+
+            foreach (var item in items)
+            {
+                var stockData = stockAggregates.FirstOrDefault(s => s.ItemId == item.ItemId);
+                var reservedData = reservedAggregates.FirstOrDefault(r => r.ItemId == item.ItemId);
+
+                item.TotalQuantity = stockData?.TotalQuantity ?? 0;
+                item.UsableQuantity = stockData?.UsableQuantity ?? 0;
+                item.ReservedQuantity = reservedData?.ReservedQuantity ?? 0;
+                item.AvailabeQuantity = item.UsableQuantity - item.ReservedQuantity;
+            }
 
             return new GetItemsResponse
             {
@@ -100,8 +143,22 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock.ItemAndCategory
             };
         }
 
+        private async Task<decimal> GetReservedQuantity(int itemId, int? branchId, CancellationToken cancellationToken)
+        {
+            var query = context.ReservedItems
+                .Where(ri => ri.ItemId == itemId);
+
+            if (branchId.HasValue)
+            {
+                query = query.Where(ri => ri.Reservation!.BranchId == branchId.Value);
+            }
+
+            return await query.SumAsync(ri => ri.ReservedQuantity, cancellationToken);
+        }
 
     }
+
+
 
     #endregion
 }

@@ -10,7 +10,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public int BranchId { get; set; } = 1;
         public int visitServiceId { get; set; }
         public int visitId { get; set; }
-        public int serviceId { get; set; }
+        public int? serviceId { get; set; }
         public string serviceName { get; set; } = string.Empty;
         public string patientName { get; set; } = string.Empty;
         public string contactInfo { get; set; } = string.Empty;

@@ -31,7 +31,7 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Crystal_Clinic
             entity.Property(ss => ss.serviceId)
                 .HasColumnName("ServiceId")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(ss => ss.serviceName)
                 .HasColumnName("ServiceName")

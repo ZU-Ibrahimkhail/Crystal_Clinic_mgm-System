@@ -207,7 +207,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int Id { get; set; }
         public int visitServiceId { get; set; }
         public int visitId { get; set; }
-        public int serviceId { get; set; }
+        public int? serviceId { get; set; }
         public string serviceName { get; set; } = string.Empty;
         public string patientName { get; set; } = string.Empty;
         public string contactInfo { get; set; } = string.Empty;
@@ -250,7 +250,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var services = context.Doctor.Where(d => !d.IsDeleted && d.employeeId == loggedInUser.EmployeeId).Select(doctor => ParseHelper.ParseServices(doctor.services)).FirstOrDefault() ?? [];
             if (services.Count > 0)
             {
-                query = query.Where(x => services.Contains(x.serviceId));
+                query = query.Where(x => x.serviceId.HasValue && services.Contains(x.serviceId.Value));
             }
 
             query = query
@@ -263,7 +263,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 Id = s.Id,
                 visitServiceId = s.visitServiceId,
                 visitId = s.visitId,
-                serviceId = s.serviceId,
+                serviceId = s.serviceId,    
                 serviceName = s.serviceName,
                 patientName = s.patientName,
                 contactInfo = s.contactInfo,
@@ -283,7 +283,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int Id { get; set; } = session.Id;
         public int VisitServiceId { get; set; } = session.visitServiceId;
         public int VisitId { get; set; } = session.visitId;
-        public int ServiceId { get; set; } = session.serviceId;
+        public int ServiceId { get; set; } = session.serviceId ?? 0;
         public string ServiceName { get; set; } = session.serviceName;
         public string PatientName { get; set; } = session.patientName;
         public string ContactInfo { get; set; } = session.contactInfo;

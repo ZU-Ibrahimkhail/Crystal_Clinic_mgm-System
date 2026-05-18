@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look;
+using Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic;
 using Crystal_Clinic_Mgm.Persistence.Contexts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +32,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         }
 
 
-        public async Task<MovementResult> RegisterMovementAsync(
-    MovementRequest request,
-    CancellationToken cancellationToken = default)
+        #region Register Movement
+        public async Task<MovementResult> RegisterMovementAsync(MovementRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -123,10 +123,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 };
             }
         }
+        #endregion
 
-        public async Task<ReservationResult> ReserveItemsAsync(
-    ReservationRequest request,
-    CancellationToken cancellationToken = default)
+        #region Reserve Item
+        public async Task<ReservationResult> ReserveItemsAsync(ReservationRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -232,10 +232,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 };
             }
         }
+        #endregion
 
-        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync(
-    int reservationId,
-    CancellationToken cancellationToken = default)
+        #region Commit Reservation
+        public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> CommitReservationAsync(int reservationId, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -297,6 +297,8 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail("Failed to commit reservation");
             }
         }
+        #endregion
+
 
         public async Task<Crystal_Clinic_Mgm.Domain.Entities.Result> ReleaseReservationAsync(int reservationId, CancellationToken cancellationToken = default)
         {
@@ -555,7 +557,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
         private async Task PublishMovementEvent(StockMovement movement, CancellationToken cancellationToken)
         {
-            // Publish domain events for financial integration
             var _event = new InventoryStockAdjustedEvent
             {
                 ItemId = movement.ItemId,
@@ -588,7 +589,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     });
                 }
             }
-
             return new AvailabilityCheckResult
             {
                 IsAvailable = !shortages.Any(),
@@ -1051,12 +1051,19 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     if (visit == null)
                         return Result.Fail("Visit not found");
 
-                    var session = await _context.ServiceSessions.FindAsync(
-                        new object[] { request.ServiceSessionId },
-                        cancellationToken);
+                    ServiceSessions? serviceSession = null;
 
-                    if (session == null || session.visitId != request.VisitId)
-                        return Result.Fail("Invalid service session");
+                    if (request.ServiceSessionId.HasValue)
+                    {
+                        serviceSession = await _context.ServiceSessions
+                            .FirstOrDefaultAsync(x =>
+                                x.Id == request.ServiceSessionId.Value &&
+                                x.visitId == request.VisitId,
+                                cancellationToken);
+
+                        if (serviceSession == null)
+                            return Result.Fail("Invalid service session");
+                    }
 
                     var exists = await _context.VisitKits.AnyAsync(vk =>
                             vk.VisitId == request.VisitId &&
@@ -1069,7 +1076,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                     var kit = await _context.InventoryKits
                         .Include(k => k.KitLines)
-                        .FirstOrDefaultAsync(k => k.Id == request.KitId && !k.IsDeleted);
+                        .FirstOrDefaultAsync(k => k.Id == request.KitId && !k.IsDeleted, cancellationToken);
 
                     if (kit == null)
                         return Result.Fail("Kit not found");
@@ -1077,15 +1084,17 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     if (!kit.KitLines.Any())
                         return Result.Fail("Kit has no items");
 
-                    var serviceSession = await _context.ServiceSessions
-                        .FirstOrDefaultAsync(x => x.Id == request.ServiceSessionId, cancellationToken);
-
                     var reservationRequest = new ReservationRequest
                     {
                         VisitId = request.VisitId,
-                        ServiceId = serviceSession.serviceId,
-                        IdempotencyToken = $"{request.VisitId}-{request.ServiceSessionId}-{request.KitId}",
+                        ServiceId = serviceSession?.serviceId,
+
+                        IdempotencyToken = request.ServiceSessionId.HasValue
+                            ? $"{request.VisitId}-{request.ServiceSessionId.Value}-{request.KitId}"
+                            : $"{request.VisitId}-NoSession-{request.KitId}",
+
                         RequestedBy = _loggedInUser.Id,
+
                         Items = kit.KitLines.Select(x => new ReservationItem
                         {
                             ItemId = x.ItemId,
@@ -1099,7 +1108,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     if (!reservationResult.Success)
                         return Result.Fail(reservationResult.ErrorMessage);
 
-                    // ⚠️ MUST be transaction-safe (no BeginTransaction inside)
                     await CommitReservationAsync(
                         reservationResult.ReservationId,
                         cancellationToken);

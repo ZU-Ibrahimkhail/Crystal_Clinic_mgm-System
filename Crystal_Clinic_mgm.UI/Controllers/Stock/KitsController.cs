@@ -59,7 +59,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             if (result.Succeeded)
                 return Ok(result);
             return BadRequest(result.Error);
-        }
+         }
 
         /// <summary>
         /// Update Inventory Kit

@@ -9,8 +9,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
         public int Id { get; set; }
         public int VisitId { get; set; }
         public Visit Visit { get; set; }
-        public int ServiceId { get; set; }
-        public Service Service { get; set; }
+        public int? ServiceId { get; set; }
+        public Service? Service { get; set; }
         public string IdempotencyToken { get; set; } = string.Empty;
         public DateTime ExpiresAt { get; set; }
         public Guid RequestedBy { get; set; }
