@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Accounting.Services;
+using Crystal_Clinic_Mgm.Application.Common.RBAC;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
 {
+    [RBAC]
     [Authorize]
     [Route("api/Finance/[controller]")]
     [ApiController]
