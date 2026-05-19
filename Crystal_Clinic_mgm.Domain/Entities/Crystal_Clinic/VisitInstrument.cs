@@ -15,7 +15,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public int? ItemId { get; set; }
         public Item? Item { get; set; }
         public bool IsFreeForPatient { get; set; }
-        public int InventoryReservationId { get; set; }
+        public int? InventoryReservationId { get; set; }
         public InventoryReservation? InventoryReservation { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }

@@ -16,7 +16,11 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
         public async Task<IActionResult> CreateVisitInstrument([FromBody] VisitInstrumentCommand command)
         {
             var result = await Mediator.Send(command);
-            return (IActionResult)result;
+
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
         }
 
         [HttpGet("list")]

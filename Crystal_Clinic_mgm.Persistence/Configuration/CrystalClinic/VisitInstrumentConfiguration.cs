@@ -52,6 +52,15 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasForeignKey(e => e.ItemId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            // Optional InventoryReservation
+            entity.Property(e => e.InventoryReservationId)
+                .HasColumnName("InventoryReservationId")
+                .HasColumnType("int")
+                .IsRequired(false);
+            entity.HasOne(e => e.InventoryReservation)
+                .WithMany()
+                .HasForeignKey(e => e.InventoryReservationId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(e => e.Price)
                 .HasColumnName("Price")

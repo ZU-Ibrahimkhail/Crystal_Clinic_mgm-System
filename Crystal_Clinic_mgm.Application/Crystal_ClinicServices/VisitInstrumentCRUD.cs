@@ -15,7 +15,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public int VisitId { get; set; }
         public List<InstrumentDto>? ServiceSessions { get; set; }
         public List<InstrumentDto>? Kits { get; set; }
-        public List<InstrumentDto>? Items { get; set; }
+        public List<InstrumentDto>? Medications { get; set; }
+        public List<InstrumentDto>? Reservations { get; set; }
     }
 
     public class InstrumentDto
@@ -44,7 +45,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                             ServiceSessionsId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
-                            IsFreeForPatient = record.IsFreeForPatient
+                            IsFreeForPatient = record.IsFreeForPatient,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
                         };
 
                         context.VisitInstrument.Add(visitInstrumets);
@@ -59,27 +62,52 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
-                            ServiceSessionsId = record.Id,
+                            KitId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
-                            IsFreeForPatient = record.IsFreeForPatient
+                            IsFreeForPatient = record.IsFreeForPatient,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+
                         };
 
                         context.VisitInstrument.Add(visitInstrumets);
                         await context.SaveChangesAsync(cancellationToken);
                     }
                 }
-                if (request.Items != null)
+                if (request.Medications != null)
                 {
-                    foreach (InstrumentDto record in request.Items)
+                    foreach (InstrumentDto record in request.Medications)
                     {
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
-                            ServiceSessionsId = record.Id,
+                            ItemId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
-                            IsFreeForPatient = record.IsFreeForPatient
+                            IsFreeForPatient = record.IsFreeForPatient,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        context.VisitInstrument.Add(visitInstrumets);
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                }
+
+                if (request.Reservations != null)
+                {
+                    foreach (InstrumentDto record in request.Reservations)
+                    {
+                        var visitInstrumets = new VisitInstrument
+                        {
+                            VisitId = request.VisitId,
+                            InventoryReservationId = record.Id,
+                            Price = record.Price,
+                            Count = record.Count,
+                            IsFreeForPatient = record.IsFreeForPatient,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
                         };
 
                         context.VisitInstrument.Add(visitInstrumets);
