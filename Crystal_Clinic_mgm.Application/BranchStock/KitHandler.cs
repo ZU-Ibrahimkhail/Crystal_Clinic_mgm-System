@@ -178,6 +178,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     IsFreeForPatient = kit.IsFreeForPatient,
                     IsActive = kit.IsActive,
                     BranchId = kit.BranchId,
+                    TotalAmount = kit.KitLines.Sum(kl => kl.Quantity * (kl.Item?.UnitCost ?? 0)),
                     Lines = kit.KitLines.Select(kl => new KitLines
                     {
                         KitId = kl.KitId,
@@ -228,6 +229,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     KitName = k.KitName,
                     Description = k.Description,
                     IsFreeForPatient = k.IsFreeForPatient,
+                    TotalAmount = k.KitLines.Sum(kl => kl.Quantity * (kl.Item != null ? kl.Item.UnitCost : 0)),
                     IsActive = k.IsActive,
                     BranchId = k.BranchId,
                     Lines = k.KitLines.Select(kl => new KitLines

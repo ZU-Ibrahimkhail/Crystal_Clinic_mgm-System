@@ -323,20 +323,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                         return Crystal_Clinic_Mgm.Domain.Entities.Result.Fail(
                             "Cannot release a committed reservation. Reserved items have already been deducted.");
 
-                    // 1️⃣ Restore stock quantities
-                    foreach (var reservedItem in reservation.ReservedItems)
-                    {
-                        var stock = await _context.Stocks
-                            .FirstOrDefaultAsync(s => s.StockId == reservedItem.StockId, cancellationToken);
-
-                        if (stock != null)
-                        {
-                            stock.QuantityRemaining += reservedItem.ReservedQuantity;
-                            _context.Stocks.Update(stock);
-                        }
-                    }
-
-                    // 2️⃣ Log BEFORE removing reserved items
+                    // 1️⃣ Log BEFORE removing reserved items
                     _logger.LogInformation(
                         "Releasing reservation {ReservationId} with {Count} items",
                         reservationId, reservation.ReservedItems.Count);
@@ -624,8 +611,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 };
 
                 _context.ReservedItems.Add(reservedItem);
-                batch.QuantityRemaining -= reserveFromBatch;
-                _context.Stocks.Update(batch);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 reservedItems.Add(reservedItem);
