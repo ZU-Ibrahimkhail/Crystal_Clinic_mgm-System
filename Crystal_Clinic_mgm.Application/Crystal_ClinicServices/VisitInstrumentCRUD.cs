@@ -13,6 +13,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     public class VisitInstrumentCommand : IRequest<Result>
     {
         public int VisitId { get; set; }
+        public decimal DoctorFee { get; set; }
         public List<InstrumentDto>? ServiceSessions { get; set; }
         public List<InstrumentDto>? Kits { get; set; }
         public List<InstrumentDto>? Medications { get; set; }
@@ -42,6 +43,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
+                            DoctorFee = request.DoctorFee,
                             ServiceSessionsId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
@@ -62,13 +64,13 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
+                            DoctorFee = request.DoctorFee,
                             KitId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
                             IsFreeForPatient = record.IsFreeForPatient,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.UtcNow
-
                         };
 
                         context.VisitInstrument.Add(visitInstrumets);
@@ -82,6 +84,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
+                            DoctorFee = request.DoctorFee,
                             ItemId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
@@ -102,6 +105,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         var visitInstrumets = new VisitInstrument
                         {
                             VisitId = request.VisitId,
+                            DoctorFee = request.DoctorFee,
                             InventoryReservationId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
@@ -125,12 +129,14 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         }
     }
     #endregion
+
     #region Get Instruments List
 
     public class VisitInstrumentListItemDto
     {
         public int Id { get; set; }
         public int VisitId { get; set; }
+        public decimal DoctorFee { get; set; }
         public int? ServiceSessionsId { get; set; }
         public string? ServiceSessionName { get; set; }
         public int? KitId { get; set; }
@@ -170,6 +176,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 {
                     Id = x.Id,
                     VisitId = x.VisitId,
+                    DoctorFee = x.DoctorFee,
                     ServiceSessionsId = x.ServiceSessionsId,
                     ServiceSessionName = x.ServiceSessions != null ? x.ServiceSessions.serviceName : null,
                     KitId = x.KitId,
@@ -194,6 +201,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
     {
         public int Id { get; set; }
         public int VisitId { get; set; }
+        public decimal DoctorFee { get; set; }
         public int? ServiceSessionsId { get; set; }
         public string? ServiceSessionName { get; set; }
         public int? SessionNumber { get; set; }
@@ -231,6 +239,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             {
                 Id = instrument.Id,
                 VisitId = instrument.VisitId,
+                DoctorFee = instrument.DoctorFee,
                 ServiceSessionsId = instrument.ServiceSessionsId,
                 ServiceSessionName = instrument.ServiceSessions?.serviceName,
                 SessionNumber = instrument.ServiceSessions?.sessionNumber,

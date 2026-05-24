@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260522065642_AddVisitInstrumentUniqueConstraints")]
+    partial class AddVisitInstrumentUniqueConstraints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5165,12 +5168,6 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("DateTime")
                         .HasColumnName("CreatedOn");
-
-                    b.Property<decimal>("DoctorFee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("DoctorFee");
 
                     b.Property<int?>("InventoryReservationId")
                         .HasColumnType("int")

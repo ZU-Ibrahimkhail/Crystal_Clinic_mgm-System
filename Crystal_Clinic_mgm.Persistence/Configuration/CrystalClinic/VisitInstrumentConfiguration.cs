@@ -68,6 +68,13 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasDefaultValue(0m)
                 .IsRequired();
 
+            entity.Property(e => e.DoctorFee)
+               .HasColumnName("DoctorFee")
+               .HasColumnType("decimal(18,2)")
+               .HasDefaultValue(0m)
+               .IsRequired();
+
+
             entity.Property(e => e.IsFreeForPatient)
                 .HasColumnName("IsFreeForPatient")
                 .HasColumnType("bit")
@@ -78,6 +85,26 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasColumnName("Count")
                 .HasColumnType("int")
                 .IsRequired();
+
+            entity.HasIndex(e => new { e.VisitId, e.KitId })
+                .IsUnique()
+                .HasFilter("[KitId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitId_KitId");
+
+            entity.HasIndex(e => new { e.VisitId, e.ServiceSessionsId })
+                .IsUnique()
+                .HasFilter("[ServiceSessionsId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitId_ServiceSessionsId");
+
+            entity.HasIndex(e => new { e.VisitId, e.ItemId })
+                .IsUnique()
+                .HasFilter("[ItemId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitId_ItemId");
+
+            entity.HasIndex(e => new { e.VisitId, e.InventoryReservationId })
+                .IsUnique()
+                .HasFilter("[InventoryReservationId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitId_InventoryReservationId");
 
             // Auditable fields (IsDeleted, CreatedBy, CreatedOn, etc.)
             EntityConfiguration<VisitInstrument>.AuditableEntityConfigurations(entity);

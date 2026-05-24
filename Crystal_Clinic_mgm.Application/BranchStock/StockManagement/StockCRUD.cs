@@ -80,7 +80,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
             var item = context.Items.FirstOrDefault(x => x.ItemId == stock.ItemId);
             if (item == null || item.IsDeleted) return 0;
 
-            if (stock.Quantity != request.Quantity)
+            if (stock.QuantityRemaining != request.Quantity)
             {
                 item.CurrentStock -= stock.Quantity;
                 item.UseableStock -= stock.Quantity;
@@ -89,7 +89,7 @@ namespace Crystal_Clinic_Mgm.Application.StockManagement
                 item.UseableStock += request.Quantity;
                 context.Items.Update(item);
             }
-            stock.Quantity = request.Quantity;
+            stock.QuantityRemaining = request.Quantity;
             stock.PurchasePrice = request.PurchasePrice;
             stock.SellPrice = request.SellPrice;
             stock.SupplierId = request.SupplierId;

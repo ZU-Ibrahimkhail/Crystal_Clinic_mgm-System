@@ -79,7 +79,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock._Stock
                     SupplierId = s.SupplierId,
                     SupplierName = s.Supplier!.Name,
                     BatchNumber = s.BatchNumber,
-                    Quantity = s.Quantity,
+                    Quantity = s.QuantityRemaining,
                     PurchasePrice = s.PurchasePrice,
                     SellPrice = s.SellPrice,
                     PurchaseDate = s.PurchaseDate,

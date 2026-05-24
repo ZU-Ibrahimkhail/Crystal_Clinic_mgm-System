@@ -8,6 +8,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public int Id { get; set; }
         public int VisitId { get; set; }
         public Visit Visit { get; set; } = null!;
+        public decimal DoctorFee { get; set; }
         public int? KitId { get; set; }
         public InventoryKit? InventoryKit { get; set; }
         public int? ServiceSessionsId { get; set; }
