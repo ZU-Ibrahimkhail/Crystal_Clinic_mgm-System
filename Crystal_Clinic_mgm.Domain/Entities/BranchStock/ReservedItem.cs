@@ -8,6 +8,7 @@
         public int StockId { get; set; }
         public decimal ReservedQuantity { get; set; }
         public decimal UnitCost { get; set; }
+        public bool IsCommited { get; set; }
 
         // Navigation properties
         public InventoryReservation? Reservation { get; set; }

@@ -710,7 +710,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         }
         #endregion
 
-        #region Pay Vendor Bill
+    #region Pay Vendor Bill
         public class PayVendorBillCommand : IRequest<Result>
         {
             public int VendorBillId { get; set; }
@@ -743,8 +743,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         if (request.PaymentAmount > ap.BalanceAmount)
                             return Result.Fail("Payment exceeds remaining balance.");
 
-                        if (request.PaymentMethodId <= 0)
-                            return Result.Fail("Invalid payment method.");
+                        //if (request.PaymentMethodId <= 0)
+                        //    return Result.Fail("Invalid payment method.");
 
                         var rate = ap.CurrencyRate == 0 ? 1 : (decimal)ap.CurrencyRate;
 
@@ -795,7 +795,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         int cashAccountId;
                         if (paymentMethod == PaymentMethod.Cash)
                         {
-                            if (companyProfile.CashAccountId > 0)
+                            if (companyProfile.CashAccountId == 0)
                                 return Result.Fail("Cash account not configured in company profile.");
                             cashAccountId = companyProfile.CashAccountId;
                         }
@@ -873,6 +873,6 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 return $"PMT-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
             }
         }
-        #endregion
     }
+    #endregion
 }

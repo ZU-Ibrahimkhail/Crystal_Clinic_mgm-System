@@ -37,6 +37,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
                 .HasPrecision(18, 4)
                 .IsRequired();
 
+            entity.Property(ri => ri.IsCommited)
+                .HasColumnName("IsCommited")
+                .HasColumnType("bit")
+                .IsRequired()
+                .HasDefaultValue(false);
+
             // Foreign Key relationships
             entity.HasOne(ri => ri.Reservation)
                 .WithMany(r => r.ReservedItems)

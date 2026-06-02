@@ -7,6 +7,7 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.BranchStock
         public int Id { get; set; }
         public int VisitId { get; set; }
         public int? ServiceSessionId { get; set; }
+        public bool IsConsumed { get; set; }
         public int KitId { get; set; }
         public InventoryKit InventoryKit { get; set; } = null!;
         public Visit Visit { get; set; } = null!;

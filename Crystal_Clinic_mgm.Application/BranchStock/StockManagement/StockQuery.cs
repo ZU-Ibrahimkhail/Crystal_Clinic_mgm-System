@@ -69,23 +69,32 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock._Stock
             }
 
             var stockItems = await query
-                .OrderBy(s => s.StockId)
-                .Take(request.PageSize)
-                .Select(s => new StockDto
+                .GroupBy(s => new
                 {
-                    StockId = s.StockId,
-                    ItemId = s.ItemId ?? 0,
-                    ItemName = s.Item!.Name,
-                    SupplierId = s.SupplierId,
-                    SupplierName = s.Supplier!.Name,
-                    BatchNumber = s.BatchNumber,
-                    Quantity = s.QuantityRemaining,
-                    PurchasePrice = s.PurchasePrice,
-                    SellPrice = s.SellPrice,
-                    PurchaseDate = s.PurchaseDate,
-                    ExpiryDate = s.ExpiryDate,
-                    BarCode = s.BarCode,
+                    s.ItemId,
+                    ItemName = s.Item!.Name
                 })
+                .Select(g => new StockDto
+                {
+                    StockId = g.Max(x => x.StockId), // optional
+                    ItemId = g.Key.ItemId ?? 0,
+                    ItemName = g.Key.ItemName,
+                    SupplierId = null, // multiple suppliers may exist
+                    SupplierName = null,
+                    Quantity = g.Sum(x => x.QuantityRemaining),
+                    PurchasePrice = g.OrderByDescending(x => x.StockId)
+                                     .Select(x => x.PurchasePrice)
+                                     .FirstOrDefault(),
+                    SellPrice = g.OrderByDescending(x => x.StockId)
+                                 .Select(x => x.SellPrice)
+                                 .FirstOrDefault(),
+                    PurchaseDate = g.Max(x => x.PurchaseDate),
+                    ExpiryDate = g.Max(x => x.ExpiryDate),
+                    BatchNumber = null,
+                    BarCode = null
+                })
+                .OrderBy(x => x.ItemId)
+                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
             return new GetStockResponse

@@ -1,5 +1,6 @@
 ﻿using Crystal_Clinic_Mgm.Domain.Entities.BranchStock;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
 {
@@ -22,6 +23,12 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.BranchStock
             entity.Property(vk => vk.KitId)
                 .HasColumnName("KitId")
                 .IsRequired();
+
+            entity.Property(vk => vk.IsConsumed)
+                .HasColumnName("IsConsumed")
+                .HasColumnType("bit")
+                .IsRequired()
+                .HasDefaultValue(false);
 
             entity.HasOne(vk => vk.InventoryKit)
                 .WithMany()

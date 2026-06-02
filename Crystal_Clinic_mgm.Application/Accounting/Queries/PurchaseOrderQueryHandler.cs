@@ -26,6 +26,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
             {
                 var query = context.PurchaseOrders
                     .Include(p => p.Lines)
+                    .Include(p => p.Vendor)
                     .Where(p => !p.IsDeleted);
 
                 if (request.VendorId.HasValue)

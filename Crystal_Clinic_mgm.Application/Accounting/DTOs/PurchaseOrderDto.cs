@@ -8,7 +8,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public int Id { get; set; }
         public string PONumber { get; set; } = string.Empty;
         public int VendorId { get; set; }
-        public string VendorName { get; set; } = string.Empty;
+        public string? VendorName { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? ExpectedDeliveryDate { get; set; }
         public decimal TotalAmount { get; set; }
