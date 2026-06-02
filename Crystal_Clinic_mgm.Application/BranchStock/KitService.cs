@@ -7,9 +7,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 {
     public class KitService(IMediator mediator) : IKitService
     {
-        public Task<KitConsumptionResult> ConsumeKitAsync(int kitId, int quantity, string referenceId, CancellationToken cancellationToken = default)
+        public Task<KitConsumptionResult> ConsumeKitAsync(int VisitKitId, int quantity, string referenceId, CancellationToken cancellationToken = default)
         {
-            var command = new ConsumeKitCommand { KitId = kitId, Quantity = quantity, ReferenceId = referenceId };
+            var command = new ConsumeKitCommand { VisitKitId = VisitKitId, Quantity = quantity, ReferenceId = referenceId };
             return mediator.Send(command, cancellationToken);
         }
 

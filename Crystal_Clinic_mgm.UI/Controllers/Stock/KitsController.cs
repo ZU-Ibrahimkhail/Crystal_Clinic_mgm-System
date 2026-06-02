@@ -43,10 +43,10 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         /// <summary>
         /// Consume an inventory kit
         /// </summary>
-        [HttpPost("{kitId}/consume")]
-        public async Task<IActionResult> ConsumeKit(int kitId, [FromBody] KitConsumptionRequest request)
+        [HttpPost("{VisitKitId}/consume")]
+        public async Task<IActionResult> ConsumeKit(int VisitKitId, [FromBody] KitConsumptionRequest request)
         {
-            var result = await ikitService.ConsumeKitAsync(kitId, request.Quantity, request.ReferenceId);
+            var result = await ikitService.ConsumeKitAsync(VisitKitId, request.Quantity, request.ReferenceId);
             if (result.Success)
                 return Ok(result);
             return BadRequest(result.ErrorMessage);

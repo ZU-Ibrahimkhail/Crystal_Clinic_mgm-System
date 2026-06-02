@@ -69,31 +69,25 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock._Stock
             }
 
             var stockItems = await query
-                .GroupBy(s => new
+                .Include(s => s.Item)
+                .Include(s => s.Supplier)
+                .OrderBy(s => s.ItemId)
+                .ThenByDescending(s => s.PurchaseDate)
+                .Select(s => new StockDto
                 {
-                    s.ItemId,
-                    ItemName = s.Item!.Name
+                    StockId = s.StockId,
+                    ItemId = s.Item.ItemId,
+                    ItemName = s.Item.Name,
+                    SupplierId = s.SupplierId, 
+                    SupplierName = s.Supplier.Name,
+                    Quantity = s.QuantityRemaining,
+                    PurchasePrice = s.PurchasePrice,
+                    SellPrice = s.SellPrice,
+                    PurchaseDate = s.PurchaseDate,
+                    ExpiryDate = s.ExpiryDate,
+                    BatchNumber = s.BatchNumber,
+                    BarCode = s.BarCode,
                 })
-                .Select(g => new StockDto
-                {
-                    StockId = g.Max(x => x.StockId), // optional
-                    ItemId = g.Key.ItemId ?? 0,
-                    ItemName = g.Key.ItemName,
-                    SupplierId = null, // multiple suppliers may exist
-                    SupplierName = null,
-                    Quantity = g.Sum(x => x.QuantityRemaining),
-                    PurchasePrice = g.OrderByDescending(x => x.StockId)
-                                     .Select(x => x.PurchasePrice)
-                                     .FirstOrDefault(),
-                    SellPrice = g.OrderByDescending(x => x.StockId)
-                                 .Select(x => x.SellPrice)
-                                 .FirstOrDefault(),
-                    PurchaseDate = g.Max(x => x.PurchaseDate),
-                    ExpiryDate = g.Max(x => x.ExpiryDate),
-                    BatchNumber = null,
-                    BarCode = null
-                })
-                .OrderBy(x => x.ItemId)
                 .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 

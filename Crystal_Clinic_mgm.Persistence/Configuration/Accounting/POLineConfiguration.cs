@@ -42,6 +42,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.Accounting
                 .HasColumnType("decimal(18, 2)")
                 .IsRequired();
 
+            entity.Property(c => c.BarCode)
+                .HasColumnName("BarCode")
+                .HasColumnType("nvarchar(200)")
+                .IsRequired();
+
+            entity.Property(c => c.BatchNumber)
+                .HasColumnName("BatchNumber")
+                .HasColumnType("nvarchar(200)")
+                .IsRequired();
+
             entity.Property(p => p.ReceivedQuantity)
                 .HasColumnName("ReceivedQuantity")
                 .HasColumnType("decimal(18, 2)")

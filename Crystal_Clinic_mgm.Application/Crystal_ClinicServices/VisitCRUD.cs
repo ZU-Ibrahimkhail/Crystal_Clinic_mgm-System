@@ -483,6 +483,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 KitName = vk.InventoryKit.KitName,
                 Description = vk.InventoryKit.Description,
                 IsFreeForPatient = vk.InventoryKit.IsFreeForPatient,
+                IsConsumed = vk.IsConsumed,
                 IsActive = vk.InventoryKit.IsActive,
                 IsInvoiceGenerated = instruments.Any(x => x.KitId == vk.Id),
                 TotalAmount = vk.InventoryKit.KitLines

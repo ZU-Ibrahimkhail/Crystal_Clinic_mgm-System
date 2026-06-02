@@ -48,6 +48,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public decimal LineTotal { get; set; }
         public DateTime? ItemExpiry { get; set; }
         public string? BarCode { get; set; } = string.Empty;
+        public string? BatchNumber { get; set; } = string.Empty;
         public decimal? ExpectedSalePrice { get; set; }
     }
 

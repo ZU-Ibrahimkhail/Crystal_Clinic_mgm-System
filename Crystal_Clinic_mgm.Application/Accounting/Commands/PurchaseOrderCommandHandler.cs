@@ -59,6 +59,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             LineTotal = lineDto.Quantity * lineDto.UnitPrice,
                             ItemExpiry = lineDto.ItemExpiry,
                             BarCode = lineDto.BarCode,
+                            BatchNumber = lineDto.BatchNumber,
                             ExpectedSalePrice = lineDto.ExpectedSalePrice,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.Now
@@ -239,6 +240,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             await context.SaveChangesAsync(cancellationToken);
                         }
 
+                        await context.SaveChangesAsync(cancellationToken);
                         await transaction.CommitAsync(cancellationToken);
                         return Result.Success("Purchase Order marked as received. Stock records and AP created. GL entry will be created when Vendor Bill is issued.");
                     }
