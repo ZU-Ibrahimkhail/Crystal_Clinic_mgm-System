@@ -23,6 +23,24 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         {
             try
             {
+                var barCodes = request.Dto.Lines
+                    .Where(l => !string.IsNullOrEmpty(l.BarCode))
+                    .Select(l => l.BarCode)
+                    .ToList();
+
+                if (barCodes.Any())
+                {
+                    var duplicateBarCode = await context.Stocks
+                        .Where(s => barCodes.Contains(s.BarCode))
+                        .Select(s => s.BarCode)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    if (!string.IsNullOrEmpty(duplicateBarCode))
+                    {
+                        return Result.Fail($"Barcode '{duplicateBarCode}' already exists. Barcode must be unique.");
+                    }
+                }
+
                 var vendor = await context.Supplier
                     .FirstOrDefaultAsync(v => v.Id == request.Dto.VendorId, cancellationToken);
 
@@ -93,7 +111,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         public UpdatePurchaseOrderDto Dto { get; set; } = null!;
     }
 
-    public class UpdatePurchaseOrderCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdatePurchaseOrderCommand, Result>
+    public class UpdatePurchaseOrderCommandHandler
+        (ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdatePurchaseOrderCommand, Result>
     {
         public async Task<Result> Handle(UpdatePurchaseOrderCommand request, CancellationToken cancellationToken)
         {

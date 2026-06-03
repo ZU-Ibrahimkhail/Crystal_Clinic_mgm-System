@@ -52,7 +52,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
             return BadRequest(result.ErrorMessage);
         }
 
-        [HttpPost("/visits/{visitId}/add-kit")]
+        [HttpPost("{visitId}/add-kit")]
         public async Task<IActionResult> AddKitToVisit(int visitId, [FromBody] AddKitToVisitRequest request)
         {
             var result = await inventoryService.AddKitToVisitAsync(request);

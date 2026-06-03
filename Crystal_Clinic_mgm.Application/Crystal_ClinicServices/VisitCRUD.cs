@@ -564,7 +564,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
         public string Dosage { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public decimal Price { get; set; }
-        public string BatchNumber { get; set; } = string.Empty;
+        public string BarCode { get; set; } = string.Empty;
     }
 
     public class AddVisitMedicationCommandValidator : AbstractValidator<AddVisitMedicationCommand>
@@ -603,7 +603,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("Price must be non-negative.");
 
-            RuleFor(x => x.BatchNumber)
+            RuleFor(x => x.BarCode)
                 .NotEmpty()
                 .WithMessage("BatchNumber is required.");
         }
@@ -632,9 +632,9 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     throw new InvalidOperationException($"Stock with ID {med.StockId} not found or insufficient quantity.");
                 }
 
-                if (stock.BatchNumber != med.BatchNumber)
+                if (stock.BatchNumber != med.BarCode)
                 {
-                    throw new InvalidOperationException($"Batch number does not match for stock ID {med.StockId}.");
+                    throw new InvalidOperationException($"Bar Code does not match for stock ID {med.StockId}.");
                 }
 
                 var medication = new VisitMedication
