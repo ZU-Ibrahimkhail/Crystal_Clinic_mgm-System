@@ -12,8 +12,8 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Accounting
         public decimal LineTotal { get; set; }
         public decimal ReceivedQuantity { get; set; } = 0;
         public DateTime? ItemExpiry { get; set; }
-        public string? BarCode { get; set; } = string.Empty;
-        public string? BatchNumber { get; set; } = string.Empty;
+        public string? BarCode { get; set; }
+        public string? BatchNumber { get; set; }
         public decimal? ExpectedSalePrice { get; set; }
     }
 }

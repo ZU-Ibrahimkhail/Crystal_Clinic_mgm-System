@@ -632,7 +632,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     throw new InvalidOperationException($"Stock with ID {med.StockId} not found or insufficient quantity.");
                 }
 
-                if (stock.BatchNumber != med.BarCode)
+                if (stock.BarCode != med.BarCode)
                 {
                     throw new InvalidOperationException($"Bar Code does not match for stock ID {med.StockId}.");
                 }
