@@ -199,6 +199,26 @@
             <param name="Id">ID is require </param>
             <returns></returns>      
         </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ClinicServicesDashboardController.GetServiceRevenueBarChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Bar chart: Service revenue per service type grouped by Day/Week/Month/Year.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ClinicServicesDashboardController.GetPatientVisitTrendLineChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Line chart: Patient visit trend (visits, revenue, unique patients) over time.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ClinicServicesDashboardController.GetVisitStatusPieChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Pie chart: Visit status distribution, revenue by status, payment completion, and session completion.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.ClinicServicesDashboardController.GetDoctorPerformanceSpiderChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Spider chart: Doctor performance metrics (visits, completed, pending, revenue, patients).
+            </summary>
+        </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic.DashboardController.GetDashboard(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Threading.CancellationToken)">
             <summary>
             Retrieves aggregated metrics for the clinic dashboard.
@@ -278,6 +298,26 @@
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.ExpenseController.GetPendingApprovals(System.Nullable{System.Int32},System.Int32,System.Int32)">
             <summary>
             Get pending expense approvals
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Finance.AccountingDashboardController.GetRevenueVsExpensesBarChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Bar chart: Revenue vs Expenses comparison grouped by Day/Week/Month/Year.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Finance.AccountingDashboardController.GetARvsAPLineChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Line chart: Accounts Receivable vs Accounts Payable balance trend over time.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Finance.AccountingDashboardController.GetExpensesByCategoryPieChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Pie chart: Expense distribution by chart of account category and AP type.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Finance.AccountingDashboardController.GetFinancialKPIsSpiderChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Spider chart: Multi-axis financial KPIs (Revenue, Expenses, AR, AP, collected, paid).
             </summary>
         </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.General.ChangeLanguageController.SetCulture(System.String)">
@@ -724,6 +764,26 @@
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.ServicesController.ListAll(Crystal_Clinic_Mgm.Application.Crystal_ClinicServices.ListAllServicesQuery)">
             <summary>
             List all services with optional search and pagination.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.StockDashboardController.GetStockMovementBarChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Bar chart: Stock movement (In vs Out) by quantity and value grouped by Day/Week/Month/Year.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.StockDashboardController.GetStockValueTrendLineChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Line chart: Stock purchase value and sell value trend over time.
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.StockDashboardController.GetStockByCategoryPieChart(System.Nullable{System.Int32},System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Pie chart: Stock distribution by item category (by quantity, by value, and by expiry status).
+            </summary>
+        </member>
+        <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.StockDashboardController.GetSupplierPerformanceSpiderChart(System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+            Spider chart: Supplier performance metrics (due amounts, paid, remaining, stock supplied).
             </summary>
         </member>
         <member name="M:Crystal_Clinic_Mgm.UI.Controllers.Stock.SupplierDueReportController.GetSupplierDuesReport(Crystal_Clinic_Mgm.Application.BranchStock.Suppliers.SupplierDuesReportQuery)">
