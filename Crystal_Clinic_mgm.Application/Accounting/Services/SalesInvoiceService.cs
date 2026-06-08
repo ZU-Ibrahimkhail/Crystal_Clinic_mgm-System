@@ -27,6 +27,30 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Services
             return await mediator.Send(command, cancellationToken);
         }
 
+        public async Task<Result> DeleteSalesInvoiceAsync(int salesInvoiceId, CancellationToken cancellationToken = default)
+        {
+            var command = new DeleteSalesInvoiceCommand { SalesInvoiceId = salesInvoiceId };
+            return await mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<Result> VoidSalesInvoiceAsync(int salesInvoiceId, string reason, CancellationToken cancellationToken = default)
+        {
+            var command = new VoidSalesInvoiceCommand { SalesInvoiceId = salesInvoiceId, Reason = reason };
+            return await mediator.Send(command, cancellationToken);
+        }
+
+        public async Task<Result> RefundSalesInvoiceAsync(int salesInvoiceId, decimal refundAmount, string reason, int paymentMethod, CancellationToken cancellationToken = default)
+        {
+            var command = new RefundSalesInvoiceCommand 
+            { 
+                SalesInvoiceId = salesInvoiceId, 
+                RefundAmount = refundAmount, 
+                Reason = reason,
+                PaymentMethod = paymentMethod
+            };
+            return await mediator.Send(command, cancellationToken);
+        }
+
         public async Task<Result> GetAllSalesInvoicesAsync(int? visitId = null, int? customerId = null, int? status = null, int? branchId = null, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var query = new GetAllSalesInvoicesQuery

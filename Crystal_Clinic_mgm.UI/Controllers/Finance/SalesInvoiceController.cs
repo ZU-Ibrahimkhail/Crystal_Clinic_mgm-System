@@ -75,5 +75,39 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             var result = await _salesInvoiceService.GetSalesReceiptsByInvoiceAsync(id);
             return result.IsSuccess ? Ok(result) : NotFound(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _salesInvoiceService.DeleteSalesInvoiceAsync(id);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("{id}/Void")]
+        public async Task<IActionResult> Void(int id, [FromBody] VoidSalesInvoiceRequestDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _salesInvoiceService.VoidSalesInvoiceAsync(id, dto.Reason);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("{id}/Refund")]
+        public async Task<IActionResult> Refund(int id, [FromBody] RefundSalesInvoiceRequestDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (dto.RefundAmount <= 0)
+                return BadRequest("Refund amount must be greater than zero.");
+
+            var result = await _salesInvoiceService.RefundSalesInvoiceAsync(
+                id, 
+                dto.RefundAmount, 
+                dto.Reason, 
+                dto.PaymentMethod);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
     }
 }

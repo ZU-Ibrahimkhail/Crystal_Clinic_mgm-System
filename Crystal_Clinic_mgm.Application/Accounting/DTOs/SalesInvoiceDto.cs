@@ -84,4 +84,16 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.DTOs
         public DateTime ReceiptDate { get; set; }
         public string? Reference { get; set; }
     }
+
+    public class VoidSalesInvoiceRequestDto
+    {
+        public string Reason { get; set; } = string.Empty;
+    }
+
+    public class RefundSalesInvoiceRequestDto
+    {
+        public decimal RefundAmount { get; set; }
+        public string Reason { get; set; } = string.Empty;
+        public int PaymentMethod { get; set; }
+    }
 }

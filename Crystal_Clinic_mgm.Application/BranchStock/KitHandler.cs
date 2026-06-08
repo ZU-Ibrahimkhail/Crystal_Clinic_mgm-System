@@ -1,5 +1,4 @@
-﻿using Crystal_Clinic_Mgm.Application.AssetMS.MainAssets.Commands;
-using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+﻿using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Application.Events;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
@@ -14,13 +13,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 {
    
     #region Create Kit
-    public class CreateKitCommand : IRequest<Domain.Entities.Result>
+    public class CreateKitCommand : IRequest<Result>
     {
         public CreateKitRequest Dto { get; set; } = null!;
     }
-    public class CreateKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateKitCommand, Domain.Entities.Result>
+    public class CreateKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<CreateKitCommand, Result>
     {
-        public async Task<Domain.Entities.Result> Handle(CreateKitCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(CreateKitCommand request, CancellationToken cancellationToken)
         {
             var strategy = context.Database.CreateExecutionStrategy();
 
@@ -61,13 +60,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     #endregion
 
     #region Update Kit
-    public class UpdateKitCommand : IRequest<Domain.Entities.Result>
+    public class UpdateKitCommand : IRequest<Result>
     {
         public UpdateKitRequest Dto { get; set; } = null!;
     }
-    public class UpdateKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateKitCommand, Domain.Entities.Result>
+    public class UpdateKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<UpdateKitCommand, Result>
     {
-        public async Task<Domain.Entities.Result> Handle(UpdateKitCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(UpdateKitCommand request, CancellationToken cancellationToken)
         {
             var strategy = context.Database.CreateExecutionStrategy();
             return await strategy.ExecuteAsync(async () =>
@@ -114,13 +113,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     #endregion
 
     #region Delete Kit By Id
-    public class DeleteKitCommand : IRequest<Domain.Entities.Result>
+    public class DeleteKitCommand : IRequest<Result>
     {
         public int Id { get; set; }
     }
-    public class DeleteKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteKitCommand, Domain.Entities.Result>
+    public class DeleteKitCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteKitCommand, Result>
     {
-        public async Task<Domain.Entities.Result> Handle(DeleteKitCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(DeleteKitCommand request, CancellationToken cancellationToken)
         {
             var strategy = context.Database.CreateExecutionStrategy();
             return await strategy.ExecuteAsync(async () =>
@@ -151,13 +150,13 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     #endregion
 
     #region Get Kit by Id
-    public class GetKitByIdQuery : IRequest<Domain.Entities.Result>
+    public class GetKitByIdQuery : IRequest<Result>
     {
         public int Id { get; set; }
     }
-    public class GetKitByIdQueryHandler(ERP_DbContext context) : IRequestHandler<GetKitByIdQuery, Domain.Entities.Result>
+    public class GetKitByIdQueryHandler(ERP_DbContext context) : IRequestHandler<GetKitByIdQuery, Result>
     {
-        public async Task<Domain.Entities.Result> Handle(GetKitByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(GetKitByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -179,7 +178,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     IsFreeForPatient = kit.IsFreeForPatient,
                     IsActive = kit.IsActive,
                     BranchId = kit.BranchId,
-                    TotalAmount = kit.KitLines.Sum(kl => kl.Quantity * (kl.Item?.UnitCost ?? 0)),
                     Lines = kit.KitLines.Select(kl => new KitLines
                     {
                         KitId = kl.KitId,
@@ -195,22 +193,20 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 return Domain.Entities.Result.Fail("Error retrieving kit: " + ex.Message);
             }
         }
-
-        
     }
     #endregion
 
     #region Get Kits List
-    public class GetKitListQuery : IRequest<Domain.Entities.Result>
+    public class GetKitListQuery : IRequest<Result>
     {
         public int? BranchId { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;
     }
 
-    public class GetKitListQueryHandler(ERP_DbContext context) : IRequestHandler<GetKitListQuery, Domain.Entities.Result>
+    public class GetKitListQueryHandler(ERP_DbContext context) : IRequestHandler<GetKitListQuery, Result>
     {
-        public async Task<Domain.Entities.Result> Handle(GetKitListQuery request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(GetKitListQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -232,7 +228,6 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     KitName = k.KitName,
                     Description = k.Description,
                     IsFreeForPatient = k.IsFreeForPatient,
-                    TotalAmount = k.KitLines.Sum(kl => kl.Quantity * (kl.Item != null ? kl.Item.UnitCost : 0)),
                     IsActive = k.IsActive,
                     BranchId = k.BranchId,
                     Lines = k.KitLines.Select(kl => new KitLines
@@ -243,11 +238,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     }).ToList()
                 })
                 .ToListAsync(cancellationToken);
-                return Domain.Entities.Result.Success(kits);
+                return Result.Success(kits);
             }
             catch (Exception ex)
             {
-                return Domain.Entities.Result.Fail($"Error retrieving Kits: {ex.Message}");
+                return Result.Fail($"Error retrieving Kits: {ex.Message}");
             }
         }
     }
@@ -257,10 +252,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     #region Consume Kit
     public class ConsumeKitCommand : IRequest<KitConsumptionResult>
     {
-        public int VisitKitId { get; set; }
+        public int KitId { get; set; }
         public int Quantity { get; set; } = 1;
         public string ReferenceId { get; set; } = string.Empty;
         public int BranchId { get; set; }
+        public int VisitKitId { get;  set; }
     }
 
     public class ConsumeKitCommandHandler(
@@ -270,19 +266,12 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         ILogger<IKitService> _logger,
         IInventoryService inventoryService) : IRequestHandler<ConsumeKitCommand, KitConsumptionResult>
     {
-        public async Task<KitConsumptionResult> Handle(
-            ConsumeKitCommand request,
-            CancellationToken cancellationToken)
+        public async Task<KitConsumptionResult> Handle(ConsumeKitCommand request, CancellationToken cancellationToken)
         {
-            var kit = await context.VisitKits
-                .Include(k => k.InventoryKit)
-                .ThenInclude(k => k.KitLines)
-                .ThenInclude(kl => kl.Item)
-                .FirstOrDefaultAsync(
-                    k => k.Id == request.VisitKitId &&
-                         k.InventoryKit.IsActive &&
-                         !k.IsDeleted,
-                    cancellationToken);
+            var kit = await context.InventoryKits
+               .Include(k => k.KitLines)
+               .ThenInclude(kl => kl.Item)
+               .FirstOrDefaultAsync(k => k.Id == request.KitId && k.IsActive && !k.IsDeleted, cancellationToken);
 
             if (kit == null)
             {
@@ -297,59 +286,31 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
             return await strategy.ExecuteAsync(async () =>
             {
+                var movements = new List<MovementResult>();
+                decimal totalCost = 0;
+
                 await using var transaction =
                     await context.Database.BeginTransactionAsync(cancellationToken);
 
                 try
                 {
-                    var visitKit = await context.VisitKits
-                        .FirstOrDefaultAsync(
-                            x => x.Id == request.VisitKitId,
-                            cancellationToken);
-
-                    if (visitKit == null)
+                    foreach (var kitLine in kit.KitLines)
                     {
-                        return new KitConsumptionResult
-                        {
-                            Success = false,
-                            ErrorMessage = "Visit kit not found"
-                        };
-                    }
-
-                    if (visitKit.IsConsumed)
-                    {
-                        return new KitConsumptionResult
-                        {
-                            Success = false,
-                            ErrorMessage = "Kit has already been consumed"
-                        };
-                    }
-
-                    visitKit.IsConsumed = true;
-
-                    var movements = new List<MovementResult>();
-                    decimal totalCost = 0;
-
-                    foreach (var kitLine in kit.InventoryKit.KitLines)
-                    {
-                        var requiredQuantity =
-                            kitLine.Quantity * request.Quantity;
+                        var requiredQuantity = kitLine.Quantity * request.Quantity;
 
                         var movementRequest = new MovementRequest
                         {
                             ItemId = kitLine.ItemId,
                             Quantity = requiredQuantity,
-                            BranchId = 1, // replace with actual branch if available
+                            BranchId = 1,
                             Type = MovementType.Out,
                             Reason = MovementReason.SaleDeduction,
                             ReferenceId = request.ReferenceId,
-                            Notes = $"Kit consumption: {kit.InventoryKit.KitName}"
+                            Notes = $"Kit consumption: {kit.KitName}"
                         };
 
-                        var result = await inventoryService
-                            .RegisterMovementAsync(
-                                movementRequest,
-                                cancellationToken);
+                        var result = await inventoryService.RegisterMovementAsync(movementRequest, cancellationToken);
+
 
                         if (!result.Success)
                         {
@@ -358,8 +319,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                             return new KitConsumptionResult
                             {
                                 Success = false,
-                                ErrorMessage =
-                                    $"Failed to consume {kitLine.Item?.Name}: {result.ErrorMessage}"
+                                ErrorMessage = $"Failed to consume {kitLine.Item?.Name}: {result.ErrorMessage}"
                             };
                         }
 
@@ -367,19 +327,16 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                         totalCost += result.TotalCost;
                     }
 
-                    await context.SaveChangesAsync(cancellationToken);
-
-                    await mediator.Publish(
-                        new InventoryKitConsumedEvent
-                        {
-                            KitId = request.VisitKitId,
-                            KitName = kit.InventoryKit.KitName,
-                            Quantity = request.Quantity,
-                            TotalCost = totalCost,
-                            ReferenceId = request.ReferenceId
-                        },
-                        cancellationToken);
-
+                    await mediator.Publish(new InventoryKitConsumedEvent
+                    {
+                        KitId = request.KitId,
+                        KitName = kit.KitName,
+                        Quantity = request.Quantity,
+                        TotalCost = totalCost,
+                        ReferenceId = request.ReferenceId
+                    }, cancellationToken);
+                    var visitKit = context.VisitKits.Where(x=>x.Id == request.VisitKitId).ForEachAsync(x=>x.IsConsumed = true);
+                    context.SaveChanges();
                     await transaction.CommitAsync(cancellationToken);
 
                     return new KitConsumptionResult
@@ -393,15 +350,12 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                 {
                     await transaction.RollbackAsync(cancellationToken);
 
-                    _logger.LogError(
-                        ex,
-                        "Error consuming kit {KitId}",
-                        request.VisitKitId);
+                    _logger.LogError(ex, "Error consuming kit {KitId}", request.KitId);
 
                     return new KitConsumptionResult
                     {
                         Success = false,
-                        ErrorMessage = ex.Message
+                        ErrorMessage = "Failed to consume kit"
                     };
                 }
             });
@@ -419,9 +373,9 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
         public bool IsFreeForPatient { get; set; }
         public bool IsActive { get; set; }
         public int BranchId { get; set; }
-        public bool IsConsumed { get; set; }
         public bool IsInvoiceGenerated { get; set; }
         public List<KitLines> Lines { get; set; } = new List<KitLines>();
+        public bool IsConsumed { get; set; }
     }
 
     public class CreateKitRequest

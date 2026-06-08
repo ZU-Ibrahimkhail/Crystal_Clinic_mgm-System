@@ -36,5 +36,12 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
             var result = await Mediator.Send(new GetVisitInstrumentDetailQuery { Id = id });
             return Ok(result);
         }
+
+        [HttpGet("unbilled/{visitId:int}")]
+        public async Task<IActionResult> GetUnbilledVisitItems(int visitId)
+        {
+            var result = await Mediator.Send(new GetUnbilledVisitItemsQuery { VisitId = visitId });
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
     }
 }

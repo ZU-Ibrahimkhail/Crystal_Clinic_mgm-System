@@ -323,16 +323,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         int cashAccountId;
                         if (paymentMethod == PaymentMethod.Cash)
                         {
-                            if (companyProfile.CashAccountId > 0)
-                                return Result.Fail("Cash account not configured in company profile.");
                             cashAccountId = companyProfile.CashAccountId;
                         }
                         else if (paymentMethod == PaymentMethod.BankTransfer || 
                                  paymentMethod == PaymentMethod.CreditCard || 
                                  paymentMethod == PaymentMethod.Check)
                         {
-                            if (companyProfile.BankAccountId > 0)
-                                return Result.Fail("Bank account not configured in company profile.");
                             cashAccountId = companyProfile.BankAccountId;
                         }
                         else
@@ -410,6 +406,375 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
         private string GenerateReceiptNumber()
         {
             return $"SR-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+        }
+    }
+    #endregion
+
+    #region Delete Sales Invoice
+    public class DeleteSalesInvoiceCommand : IRequest<Result>
+    {
+        public int SalesInvoiceId { get; set; }
+    }
+
+    public class DeleteSalesInvoiceCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<DeleteSalesInvoiceCommand, Result>
+    {
+        public async Task<Result> Handle(DeleteSalesInvoiceCommand request, CancellationToken cancellationToken)
+        {
+            var strategy = context.Database.CreateExecutionStrategy();
+            try
+            {
+                return await strategy.ExecuteAsync(async () =>
+                {
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        var invoice = await context.SalesInvoices
+                            .Include(i => i.Lines)
+                            .FirstOrDefaultAsync(i => i.Id == request.SalesInvoiceId && !i.IsDeleted, cancellationToken);
+
+                        if (invoice == null)
+                            return Result.Fail("Sales Invoice not found.");
+
+                        if (invoice.Status != SalesStatus.Draft)
+                            return Result.Fail($"Only draft invoices can be deleted. Current status: {invoice.Status}");
+
+                        invoice.IsDeleted = true;
+                        invoice.ModifiedBy = loggedInUser.Id;
+                        invoice.ModifiedOn = DateTime.UtcNow;
+                        context.SalesInvoices.Update(invoice);
+
+                        if (invoice.Lines.Any())
+                        {
+                            foreach (var line in invoice.Lines)
+                            {
+                                line.IsDeleted = true;
+                                line.ModifiedBy = loggedInUser.Id;
+                                line.ModifiedOn = DateTime.UtcNow;
+                                context.SalesInvoiceLines.Update(line);
+                            }
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var draftJournalEntries = await context.JournalEntries
+                            .Where(je => je.ReferenceNumber == invoice.InvoiceNumber && 
+                                        je.Status == JournalEntryStatus.Draft && 
+                                        !je.IsDeleted)
+                            .ToListAsync(cancellationToken);
+
+                        foreach (var je in draftJournalEntries)
+                        {
+                            je.IsDeleted = true;
+                            je.ModifiedBy = loggedInUser.Id;
+                            je.ModifiedOn = DateTime.UtcNow;
+                            context.JournalEntries.Update(je);
+
+                            var jeLines = await context.JournalEntryLines
+                                .Where(jel => jel.JournalEntryId == je.Id)
+                                .ToListAsync(cancellationToken);
+
+                            foreach (var jel in jeLines)
+                            {
+                                jel.IsDeleted = true;
+                                jel.ModifiedBy = loggedInUser.Id;
+                                jel.ModifiedOn = DateTime.UtcNow;
+                                context.JournalEntryLines.Update(jel);
+                            }
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success($"Sales Invoice {invoice.InvoiceNumber} deleted successfully.");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error deleting Sales Invoice: {ex.Message}");
+            }
+        }
+    }
+    #endregion
+
+    #region Void Sales Invoice
+    public class VoidSalesInvoiceCommand : IRequest<Result>
+    {
+        public int SalesInvoiceId { get; set; }
+        public string Reason { get; set; } = string.Empty;
+    }
+
+    public class VoidSalesInvoiceCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<VoidSalesInvoiceCommand, Result>
+    {
+        public async Task<Result> Handle(VoidSalesInvoiceCommand request, CancellationToken cancellationToken)
+        {
+            var strategy = context.Database.CreateExecutionStrategy();
+            try
+            {
+                return await strategy.ExecuteAsync(async () =>
+                {
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        var invoice = await context.SalesInvoices
+                            .Include(i => i.Lines)
+                            .Include(i => i.Receipts)
+                            .FirstOrDefaultAsync(i => i.Id == request.SalesInvoiceId && !i.IsDeleted, cancellationToken);
+
+                        if (invoice == null)
+                            return Result.Fail("Sales Invoice not found.");
+
+                        if (invoice.Status == SalesStatus.Draft)
+                            return Result.Fail("Draft invoices cannot be voided. Use delete instead.");
+
+                        if (invoice.Status == SalesStatus.Void)
+                            return Result.Fail("Invoice is already voided.");
+
+                        if (invoice.Status == SalesStatus.Paid && invoice.Receipts.Any())
+                            return Result.Fail("Paid invoices cannot be voided. Use refund instead.");
+
+                        var previousStatus = invoice.Status;
+                        invoice.Status = SalesStatus.Void;
+                        invoice.ModifiedBy = loggedInUser.Id;
+                        invoice.ModifiedOn = DateTime.UtcNow;
+                        context.SalesInvoices.Update(invoice);
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not configured.");
+
+                        var postedJournalEntries = await context.JournalEntries
+                            .Where(je => je.ReferenceNumber == invoice.InvoiceNumber &&
+                                        je.Status == JournalEntryStatus.Posted &&
+                                        !je.IsDeleted)
+                            .ToListAsync(cancellationToken);
+
+                        foreach (var postedJe in postedJournalEntries)
+                        {
+                            var reversalJe = new JournalEntry
+                            {
+                                EntryNumber = LedgerPostingService.GenerateJournalEntryNumber(),
+                                EntryDate = DateTime.UtcNow,
+                                Description = $"Reversal Entry - Void Invoice {invoice.InvoiceNumber}. Reason: {request.Reason}",
+                                Status = JournalEntryStatus.Posted,
+                                ReferenceNumber = invoice.InvoiceNumber,
+                                ReferenceType = "VoidReversal",
+                                BranchId = invoice.BranchId,
+                                ApprovedBy = loggedInUser.Id,
+                                ApprovedDate = DateTime.UtcNow,
+                                CreatedBy = loggedInUser.Id,
+                                CreatedOn = DateTime.UtcNow
+                            };
+
+                            var originalLines = await context.JournalEntryLines
+                                .Where(jel => jel.JournalEntryId == postedJe.Id)
+                                .ToListAsync(cancellationToken);
+
+                            foreach (var originalLine in originalLines)
+                            {
+                                reversalJe.JournalEntryLines.Add(new JournalEntryLine
+                                {
+                                    ChartOfAccountId = originalLine.ChartOfAccountId,
+                                    Description = $"Reversal - {originalLine.Description}",
+                                    DebitAmount = originalLine.CreditAmount,
+                                    CreditAmount = originalLine.DebitAmount,
+                                    CurrencyId = originalLine.CurrencyId,
+                                    ExchangeRate = originalLine.ExchangeRate,
+                                    AmountInBaseCurrency = originalLine.AmountInBaseCurrency,
+                                    CreatedBy = loggedInUser.Id,
+                                    CreatedOn = DateTime.UtcNow
+                                });
+                            }
+
+                            context.JournalEntries.Add(reversalJe);
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        foreach (var reversalJe in await context.JournalEntries
+                            .Where(je => je.ReferenceType == "VoidReversal" && je.ReferenceNumber == invoice.InvoiceNumber)
+                            .ToListAsync(cancellationToken))
+                        {
+                            await LedgerPostingService.PostToGeneralLedgerAsync(context, reversalJe, cancellationToken);
+                        }
+
+                        var arRecord = await context.AccountsReceivables
+                            .FirstOrDefaultAsync(a => a.Reference == invoice.InvoiceNumber && !a.IsDeleted, cancellationToken);
+
+                        if (arRecord != null)
+                        {
+                            arRecord.Status = ARStatus.Paid;
+                            arRecord.BalanceAmount = 0;
+                            arRecord.ModifiedBy = loggedInUser.Id;
+                            arRecord.ModifiedOn = DateTime.UtcNow;
+                            context.AccountsReceivables.Update(arRecord);
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success($"Sales Invoice {invoice.InvoiceNumber} voided successfully. Reason: {request.Reason}");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error voiding Sales Invoice: {ex.Message}");
+            }
+        }
+    }
+    #endregion
+
+    #region Refund Sales Invoice
+    public class RefundSalesInvoiceCommand : IRequest<Result>
+    {
+        public int SalesInvoiceId { get; set; }
+        public decimal RefundAmount { get; set; }
+        public string Reason { get; set; } = string.Empty;
+        public int PaymentMethod { get; set; }
+    }
+
+    public class RefundSalesInvoiceCommandHandler(ERP_DbContext context, ILoggedInUser loggedInUser) : IRequestHandler<RefundSalesInvoiceCommand, Result>
+    {
+        public async Task<Result> Handle(RefundSalesInvoiceCommand request, CancellationToken cancellationToken)
+        {
+            var strategy = context.Database.CreateExecutionStrategy();
+            try
+            {
+                return await strategy.ExecuteAsync(async () =>
+                {
+                    using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        var invoice = await context.SalesInvoices
+                            .Include(i => i.Receipts)
+                            .FirstOrDefaultAsync(i => i.Id == request.SalesInvoiceId && !i.IsDeleted, cancellationToken);
+
+                        if (invoice == null)
+                            return Result.Fail("Sales Invoice not found.");
+
+                        if (invoice.Status != SalesStatus.Paid && invoice.Status != SalesStatus.Partial)
+                            return Result.Fail($"Only paid or partially paid invoices can be refunded. Current status: {invoice.Status}");
+
+                        var totalReceivedAmount = invoice.Receipts.Sum(r => r.AmountReceived);
+                        if (request.RefundAmount > totalReceivedAmount)
+                            return Result.Fail($"Refund amount ({request.RefundAmount}) exceeds received amount ({totalReceivedAmount}).");
+
+                        if (request.RefundAmount <= 0)
+                            return Result.Fail("Refund amount must be greater than zero.");
+
+                        var companyProfile = await context.CompanyProfile.FirstOrDefaultAsync(cancellationToken);
+                        if (companyProfile == null)
+                            return Result.Fail("Company profile not configured.");
+
+                        invoice.ModifiedBy = loggedInUser.Id;
+                        invoice.ModifiedOn = DateTime.UtcNow;
+                        if (totalReceivedAmount - request.RefundAmount == 0)
+                            invoice.Status = SalesStatus.Refunded;
+                        else if (totalReceivedAmount - request.RefundAmount > 0)
+                            invoice.Status = SalesStatus.Partial;
+
+                        context.SalesInvoices.Update(invoice);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        int cashAccountId = request.PaymentMethod == (int)PaymentMethod.Cash 
+                            ? companyProfile.CashAccountId 
+                            : companyProfile.BankAccountId;
+
+                        var refundEntryNumber = LedgerPostingService.GenerateJournalEntryNumber();
+                        var je = new JournalEntry
+                        {
+                            EntryNumber = refundEntryNumber,
+                            EntryDate = DateTime.UtcNow,
+                            Description = $"Refund processed for Invoice: {invoice.InvoiceNumber}. Reason: {request.Reason}",
+                            Status = JournalEntryStatus.Posted,
+                            ReferenceNumber = invoice.InvoiceNumber,
+                            ReferenceType = "RefundEntry",
+                            BranchId = invoice.BranchId,
+                            ApprovedBy = loggedInUser.Id,
+                            ApprovedDate = DateTime.UtcNow,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = companyProfile.SalesRevenueAccountId,
+                            Description = $"DR Sales Revenue (Refund) - Invoice {invoice.InvoiceNumber}",
+                            DebitAmount = request.RefundAmount,
+                            CreditAmount = 0,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = request.RefundAmount,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        je.JournalEntryLines.Add(new JournalEntryLine
+                        {
+                            ChartOfAccountId = cashAccountId,
+                            Description = $"CR Cash/Bank (Refund) - Invoice {invoice.InvoiceNumber}",
+                            DebitAmount = 0,
+                            CreditAmount = request.RefundAmount,
+                            CurrencyId = companyProfile.BaseCurrencyId,
+                            ExchangeRate = 1,
+                            AmountInBaseCurrency = request.RefundAmount,
+                            CreatedBy = loggedInUser.Id,
+                            CreatedOn = DateTime.UtcNow
+                        });
+
+                        if (je.JournalEntryLines.Sum(x => x.DebitAmount) != je.JournalEntryLines.Sum(x => x.CreditAmount))
+                            throw new InvalidOperationException("Journal entry is not balanced.");
+
+                        context.JournalEntries.Add(je);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        var arRecord = await context.AccountsReceivables
+                            .FirstOrDefaultAsync(a => a.Reference == invoice.InvoiceNumber && !a.IsDeleted, cancellationToken);
+
+                        if (arRecord != null)
+                        {
+                            arRecord.PaidAmount -= request.RefundAmount;
+                            arRecord.BalanceAmount += request.RefundAmount;
+                            arRecord.Status = arRecord.BalanceAmount > 0 
+                                ? (arRecord.BalanceAmount == arRecord.InvoiceAmount ? ARStatus.Open : ARStatus.PartiallyPaid)
+                                : ARStatus.Paid;
+                            arRecord.ModifiedBy = loggedInUser.Id;
+                            arRecord.ModifiedOn = DateTime.UtcNow;
+                            context.AccountsReceivables.Update(arRecord);
+                        }
+
+                        await context.SaveChangesAsync(cancellationToken);
+
+                        await transaction.CommitAsync(cancellationToken);
+                        return Result.Success($"Refund of {request.RefundAmount} processed successfully for Invoice {invoice.InvoiceNumber}");
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail($"Error processing refund: {ex.Message}");
+            }
         }
     }
     #endregion
