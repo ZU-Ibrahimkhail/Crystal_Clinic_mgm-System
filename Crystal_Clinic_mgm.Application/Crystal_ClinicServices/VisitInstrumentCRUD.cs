@@ -17,7 +17,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public List<InstrumentDto>? ServiceSessions { get; set; }
         public List<InstrumentDto>? Kits { get; set; }
         public List<InstrumentDto>? Medications { get; set; }
-        public List<InstrumentDto>? Reservations { get; set; }
     }
 
     public class InstrumentDto
@@ -65,7 +64,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         {
                             VisitId = request.VisitId,
                             DoctorFee = request.DoctorFee,
-                            KitId = record.Id,
+                            VisitKitsId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
                             IsFreeForPatient = record.IsFreeForPatient,
@@ -85,7 +84,7 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         {
                             VisitId = request.VisitId,
                             DoctorFee = request.DoctorFee,
-                            ItemId = record.Id,
+                            VisitMedicationId = record.Id,
                             Price = record.Price,
                             Count = record.Count,
                             IsFreeForPatient = record.IsFreeForPatient,
@@ -97,28 +96,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                         await context.SaveChangesAsync(cancellationToken);
                     }
                 }
-
-                if (request.Reservations != null)
-                {
-                    foreach (InstrumentDto record in request.Reservations)
-                    {
-                        var visitInstrumets = new VisitInstrument
-                        {
-                            VisitId = request.VisitId,
-                            DoctorFee = request.DoctorFee,
-                            InventoryReservationId = record.Id,
-                            Price = record.Price,
-                            Count = record.Count,
-                            IsFreeForPatient = record.IsFreeForPatient,
-                            CreatedBy = loggedInUser.Id,
-                            CreatedOn = DateTime.UtcNow
-                        };
-
-                        context.VisitInstrument.Add(visitInstrumets);
-                        await context.SaveChangesAsync(cancellationToken);
-                    }
-                }
-
                 return Result.Success($"Visit Instrument are successfully created for the {request.VisitId}");
             }
             catch (Exception ex)
@@ -162,8 +139,9 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
             var query = context.VisitInstrument
                 .Where(x => x.VisitId == request.VisitId)
                 .Include(x => x.ServiceSessions)
-                .Include(x => x.InventoryKit)
-                .Include(x => x.Item)
+                .Include(x => x.VisitKits)
+                .ThenInclude(x => x.InventoryKit)
+                .Include(x => x.VisitMedication)
                 .AsQueryable();
 
             int totalCount = await query.CountAsync(cancellationToken);
@@ -179,10 +157,10 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                     DoctorFee = x.DoctorFee,
                     ServiceSessionsId = x.ServiceSessionsId,
                     ServiceSessionName = x.ServiceSessions != null ? x.ServiceSessions.serviceName : null,
-                    KitId = x.KitId,
-                    KitName = x.InventoryKit != null ? x.InventoryKit.KitName : null,
-                    ItemId = x.ItemId,
-                    ItemName = x.Item != null ? x.Item.Name : null,
+                    KitId = x.VisitKitsId,
+                    KitName = x.VisitKits.InventoryKit != null ? x.VisitKits.InventoryKit.KitName : null,
+                    ItemId = x.VisitMedicationId,
+                    ItemName = x.VisitMedication.name != null ? x.VisitMedication.name : null,
                     Price = x.Price,
                     Count = x.Count,
                     IsFreeForPatient = x.IsFreeForPatient
@@ -211,7 +189,6 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         public string? KitDescription { get; set; }
         public int? ItemId { get; set; }
         public string? ItemName { get; set; }
-        public string? ItemDescription { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }
         public bool IsFreeForPatient { get; set; }
@@ -228,8 +205,8 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
         {
             var instrument = await context.VisitInstrument
                 .Include(x => x.ServiceSessions)
-                .Include(x => x.InventoryKit)
-                .Include(x => x.Item)
+                .Include(x => x.VisitKits)
+                .Include(x => x.VisitMedication)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (instrument == null)
@@ -244,12 +221,11 @@ namespace Crystal_Clinic_Mgm.Application.Crystal_ClinicServices
                 ServiceSessionName = instrument.ServiceSessions?.serviceName,
                 SessionNumber = instrument.ServiceSessions?.sessionNumber,
                 IsSessionImplemented = instrument.ServiceSessions?.IsImplemented,
-                KitId = instrument.KitId,
-                KitName = instrument.InventoryKit?.KitName,
-                KitDescription = instrument.InventoryKit?.Description,
-                ItemId = instrument.ItemId,
-                ItemName = instrument.Item?.Name,
-                ItemDescription = instrument.Item?.Description,
+                KitId = instrument.VisitKitsId,
+                KitName = instrument.VisitKits.InventoryKit?.KitName,
+                KitDescription = instrument.VisitKits.InventoryKit?.Description,
+                ItemId = instrument.VisitMedicationId,
+                ItemName = instrument.VisitMedication?.name,
                 Price = instrument.Price,
                 Count = instrument.Count,
                 IsFreeForPatient = instrument.IsFreeForPatient

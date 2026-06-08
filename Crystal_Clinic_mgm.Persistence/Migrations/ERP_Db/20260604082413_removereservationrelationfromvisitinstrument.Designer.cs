@@ -4,6 +4,7 @@ using Crystal_Clinic_Mgm.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 {
     [DbContext(typeof(ERP_DbContext))]
-    partial class ERP_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260604082413_removereservationrelationfromvisitinstrument")]
+    partial class removereservationrelationfromvisitinstrument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5201,6 +5204,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasDefaultValue(false)
                         .HasColumnName("IsFreeForPatient");
 
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("ItemId");
+
+                    b.Property<int?>("KitId")
+                        .HasColumnType("int")
+                        .HasColumnName("KitId");
+
                     b.Property<Guid?>("ModifiedBy")
                         .HasMaxLength(50)
                         .HasColumnType("UNIQUEIDENTIFIER")
@@ -5229,36 +5240,28 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .HasColumnType("int")
                         .HasColumnName("VisitId");
 
-                    b.Property<int?>("VisitKitsId")
-                        .HasColumnType("int")
-                        .HasColumnName("VisitKitsId");
-
-                    b.Property<int?>("VisitMedicationId")
-                        .HasColumnType("int")
-                        .HasColumnName("VisitMedicationId");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("KitId");
 
                     b.HasIndex("ServiceSessionsId");
 
-                    b.HasIndex("VisitKitsId");
+                    b.HasIndex("VisitId", "ItemId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_VisitInstrument_VisitId_ItemId")
+                        .HasFilter("[ItemId] IS NOT NULL");
 
-                    b.HasIndex("VisitMedicationId");
+                    b.HasIndex("VisitId", "KitId")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_VisitInstrument_VisitId_KitId")
+                        .HasFilter("[KitId] IS NOT NULL");
 
                     b.HasIndex("VisitId", "ServiceSessionsId")
                         .IsUnique()
                         .HasDatabaseName("UQ_VisitInstrument_VisitId_ServiceSessionsId")
                         .HasFilter("[ServiceSessionsId] IS NOT NULL");
-
-                    b.HasIndex("VisitId", "VisitKitsId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_VisitInstrument_VisitKitsId_KitId")
-                        .HasFilter("[VisitKitsId] IS NOT NULL");
-
-                    b.HasIndex("VisitId", "VisitMedicationId")
-                        .IsUnique()
-                        .HasDatabaseName("UQ_VisitInstrument_VisitId_VisitMedicationId")
-                        .HasFilter("[VisitMedicationId] IS NOT NULL");
 
                     b.ToTable("VisitInstrument", "CrystalClinic");
                 });
@@ -9299,6 +9302,16 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitInstrument", b =>
                 {
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.Look.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.InventoryKit", "InventoryKit")
+                        .WithMany()
+                        .HasForeignKey("KitId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.ServiceSessions", "ServiceSessions")
                         .WithMany()
                         .HasForeignKey("ServiceSessionsId")
@@ -9310,23 +9323,13 @@ namespace Crystal_Clinic_Mgm.Persistence.Migrations.ERP_Db
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.BranchStock.VisitKits", "VisitKits")
-                        .WithMany()
-                        .HasForeignKey("VisitKitsId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                    b.Navigation("InventoryKit");
 
-                    b.HasOne("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitMedication", "VisitMedication")
-                        .WithMany()
-                        .HasForeignKey("VisitMedicationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                    b.Navigation("Item");
 
                     b.Navigation("ServiceSessions");
 
                     b.Navigation("Visit");
-
-                    b.Navigation("VisitKits");
-
-                    b.Navigation("VisitMedication");
                 });
 
             modelBuilder.Entity("Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic.VisitMedication", b =>

@@ -23,13 +23,14 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Optional InventoryKit
-            entity.Property(e => e.KitId)
-                .HasColumnName("KitId")
+            entity.Property(e => e.VisitKitsId)
+                .HasColumnName("VisitKitsId")
                 .HasColumnType("int")
                 .IsRequired(false);
-            entity.HasOne(e => e.InventoryKit)
+
+            entity.HasOne(e => e.VisitKits)
                 .WithMany()
-                .HasForeignKey(e => e.KitId)
+                .HasForeignKey(e => e.VisitKitsId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             // Optional ServiceSessions
@@ -42,24 +43,15 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasForeignKey(e => e.ServiceSessionsId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Optional Item
-            entity.Property(e => e.ItemId)
-                .HasColumnName("ItemId")
+            // Optional Medication
+            entity.Property(e => e.VisitMedicationId)
+                .HasColumnName("VisitMedicationId")
                 .HasColumnType("int")
                 .IsRequired(false);
-            entity.HasOne(e => e.Item)
-                .WithMany()
-                .HasForeignKey(e => e.ItemId)
-                .OnDelete(DeleteBehavior.SetNull);
 
-            // Optional InventoryReservation
-            entity.Property(e => e.InventoryReservationId)
-                .HasColumnName("InventoryReservationId")
-                .HasColumnType("int")
-                .IsRequired(false);
-            entity.HasOne(e => e.InventoryReservation)
+            entity.HasOne(e => e.VisitMedication)
                 .WithMany()
-                .HasForeignKey(e => e.InventoryReservationId)
+                .HasForeignKey(e => e.VisitMedicationId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             entity.Property(e => e.Price)
@@ -86,27 +78,21 @@ namespace Crystal_Clinic_Mgm.Persistence.Configuration.CrystalClinic
                 .HasColumnType("int")
                 .IsRequired();
 
-            entity.HasIndex(e => new { e.VisitId, e.KitId })
+            entity.HasIndex(e => new { e.VisitId, e.VisitKitsId })
                 .IsUnique()
-                .HasFilter("[KitId] IS NOT NULL")
-                .HasDatabaseName("UQ_VisitInstrument_VisitId_KitId");
+                .HasFilter("[VisitKitsId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitKitsId_KitId");
 
             entity.HasIndex(e => new { e.VisitId, e.ServiceSessionsId })
                 .IsUnique()
                 .HasFilter("[ServiceSessionsId] IS NOT NULL")
                 .HasDatabaseName("UQ_VisitInstrument_VisitId_ServiceSessionsId");
 
-            entity.HasIndex(e => new { e.VisitId, e.ItemId })
+            entity.HasIndex(e => new { e.VisitId, e.VisitMedicationId })
                 .IsUnique()
-                .HasFilter("[ItemId] IS NOT NULL")
-                .HasDatabaseName("UQ_VisitInstrument_VisitId_ItemId");
+                .HasFilter("[VisitMedicationId] IS NOT NULL")
+                .HasDatabaseName("UQ_VisitInstrument_VisitId_VisitMedicationId");
 
-            entity.HasIndex(e => new { e.VisitId, e.InventoryReservationId })
-                .IsUnique()
-                .HasFilter("[InventoryReservationId] IS NOT NULL")
-                .HasDatabaseName("UQ_VisitInstrument_VisitId_InventoryReservationId");
-
-            // Auditable fields (IsDeleted, CreatedBy, CreatedOn, etc.)
             EntityConfiguration<VisitInstrument>.AuditableEntityConfigurations(entity);
         }
     }

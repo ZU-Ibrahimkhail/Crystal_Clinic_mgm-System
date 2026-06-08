@@ -309,7 +309,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     Name = m.stock.Item.Name,
                     Dosage = m.dosage,
                     Quantity = m.quantity,
-                    IsIsInvoiceGenerated = instruments.Any(x => x.VisitId == visit.visitId),
+                    IsIsInvoiceGenerated = instruments.Any(x => x.VisitMedicationId == m.medicationId),
                     Price = m.price,
                     BatchNumber = m.stock.BatchNumber
                 }).ToList(),
@@ -319,7 +319,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                     ServiceName = s.service?.Name ?? "",
                     TotalSessions = s.totalSessions,
                     CompletedSessions = s.completedSessions,
-                    IsInvoiceGenerated = instruments.Any(x => x.VisitId == visit.visitId),
+                    IsInvoiceGenerated = instruments.Any(x => x.ServiceSessionsId == s.serviceId),
                     AddedSessions = s.sessions.Count,
                     PricePerSession = s.pricePerSession,
                     TotalPrice = s.totalPrice,
@@ -485,7 +485,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 IsFreeForPatient = vk.InventoryKit.IsFreeForPatient,
                 IsConsumed = vk.IsConsumed,
                 IsActive = vk.InventoryKit.IsActive,
-                IsInvoiceGenerated = instruments.Any(x => x.KitId == vk.Id),
+                IsInvoiceGenerated = instruments.Any(x => x.VisitKitsId == vk.Id),
                 TotalAmount = vk.InventoryKit.KitLines
                     .Sum(kl => kl.Quantity * kl.Item.UnitCost),
                 BranchId = vk.InventoryKit.BranchId,
@@ -535,7 +535,7 @@ namespace Crystal_Clinic_Mgm.Application.CrystalClinic.Visits
                 ReservedItems = r.ReservedItems.Select(x => new ReservedItemDetail
                 {
                     ItemId = x.ItemId,
-                    IsInvoiceGenerated = visitInstruments.Any(y => y.ItemId == x.ItemId),
+                    IsInvoiceGenerated = visitInstruments.Any(y => y.VisitMedicationId == x.ItemId),
                     ItemName = x.Item != null ? x.Item.Name : "Item not found",
                     UnitCost = x.UnitCost,
                     ReservedQuantity = x.ReservedQuantity,

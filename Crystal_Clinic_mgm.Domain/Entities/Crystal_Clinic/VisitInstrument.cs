@@ -9,15 +9,13 @@ namespace Crystal_Clinic_Mgm.Domain.Entities.Crystal_Clinic
         public int VisitId { get; set; }
         public Visit Visit { get; set; } = null!;
         public decimal DoctorFee { get; set; }
-        public int? KitId { get; set; }
-        public InventoryKit? InventoryKit { get; set; }
+        public int? VisitKitsId { get; set; }
+        public VisitKits? VisitKits { get; set; }
         public int? ServiceSessionsId { get; set; }
         public ServiceSessions? ServiceSessions { get; set; }
-        public int? ItemId { get; set; }
-        public Item? Item { get; set; }
+        public int? VisitMedicationId { get; set; }
+        public VisitMedication? VisitMedication { get; set; }
         public bool IsFreeForPatient { get; set; }
-        public int? InventoryReservationId { get; set; }
-        public InventoryReservation? InventoryReservation { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }
     }
