@@ -83,6 +83,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpPost("GetList")]
+        [DisableRBAC]
         public async Task<ResponseDataTable<GetCurrencyTypeDetailModel>> GetList(GetCurrencyTypeListQuery query)
         {
             query.Language = Request.Cookies[Constants.CultureCookies.CookiesName] ?? string.Empty;

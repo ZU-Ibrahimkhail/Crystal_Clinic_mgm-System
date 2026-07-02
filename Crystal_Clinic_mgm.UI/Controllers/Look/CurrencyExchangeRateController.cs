@@ -49,6 +49,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Look
 
 
         [HttpGet("{date:datetime}")]
+        [DisableRBAC]
         public async Task<IActionResult> GetAll(DateTime date)
         {
             try

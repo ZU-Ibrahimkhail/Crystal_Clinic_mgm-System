@@ -14,6 +14,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         // GET: api/Stock/ItemCategory/items
         // Accepts query params mapped to GetItemsQuery (SearchText, BranchId, PageSize, LastItemId, CategoryId)
         [HttpGet("items")]
+        [DisableRBAC]
         public async Task<IActionResult> GetItems([FromQuery] GetItemsQuery query)
         {
             var result = await Mediator.Send(query);

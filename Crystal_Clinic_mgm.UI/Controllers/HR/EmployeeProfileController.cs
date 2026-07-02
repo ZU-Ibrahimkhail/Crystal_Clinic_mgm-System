@@ -92,6 +92,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.HR
         /// <param name="query"></param>
         /// <returns></returns>
         [HttpPost("GetList")]
+        [DisableRBAC]
         public async Task<ResponseDataTable<GetEmployeeProfileListModel>> GetAll(GetEmployeeProfileListQuery query)
         {
             query.Language = Request.Cookies[Constants.CultureCookies.CookiesName] ?? string.Empty;

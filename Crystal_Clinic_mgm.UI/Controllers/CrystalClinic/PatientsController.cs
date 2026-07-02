@@ -29,6 +29,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.CrystalClinic
         }
 
         [HttpGet]
+        [DisableRBAC]
         public async Task<IActionResult> GetAllPatients([FromQuery] GetAllPatientsQuery query)
         {
             var patients = await Mediator.Send(query);

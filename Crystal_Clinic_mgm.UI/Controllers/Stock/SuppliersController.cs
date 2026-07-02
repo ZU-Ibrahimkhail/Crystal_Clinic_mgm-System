@@ -28,6 +28,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Stock
         }
 
         [HttpGet]
+        [DisableRBAC]
         public async Task<IActionResult> GetAllSuppliers([FromQuery] GetAllSuppliersQuery query)
         {
             var suppliers = await Mediator.Send(query);
