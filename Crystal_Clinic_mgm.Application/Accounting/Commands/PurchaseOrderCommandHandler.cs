@@ -449,6 +449,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ReferenceNumber = bill.BillNumber,
                             ReferenceType = "VendorBill",
                             BranchId = bill.BranchId,
+                            ReceiptId = bill.Id,
                             ApprovedBy = loggedInUser.Id,
                             ApprovedDate = DateTime.UtcNow,
                             CreatedBy = loggedInUser.Id,
@@ -463,9 +464,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                 ChartOfAccountId = companyProfile.PurchaseExpenseAccountId,
                                 Description = $"DR Purchase/Inventory - Vendor Bill {bill.BillNumber}",
                                 DebitAmount = inventoryTotal,
+                                Status = JournalEntryStatus.Posted,
                                 CreditAmount = 0,
                                 CurrencyId = companyProfile.BaseCurrencyId,
                                 ExchangeRate = 1,
+                                ReceiptId = bill.Id,
                                 AmountInBaseCurrency = inventoryTotal,
                                 CreatedBy = loggedInUser.Id,
                                 CreatedOn = DateTime.UtcNow
@@ -476,9 +479,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                 ChartOfAccountId = companyProfile.AccountsPayableAccountId,
                                 Description = $"CR Accounts Payable - Inventory - Vendor Bill {bill.BillNumber}",
                                 DebitAmount = 0,
+                                Status = JournalEntryStatus.Posted,
                                 CreditAmount = inventoryTotal,
                                 CurrencyId = companyProfile.BaseCurrencyId,
                                 ExchangeRate = 1,
+                                ReceiptId = bill.Id,
                                 AmountInBaseCurrency = inventoryTotal,
                                 CreatedBy = loggedInUser.Id,
                                 CreatedOn = DateTime.UtcNow
@@ -496,6 +501,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                 CreditAmount = 0,
                                 CurrencyId = companyProfile.BaseCurrencyId,
                                 ExchangeRate = 1,
+                                Status = JournalEntryStatus.Posted,
+                                ReceiptId = bill.Id,
                                 AmountInBaseCurrency = fixedAssetTotal,
                                 CreatedBy = loggedInUser.Id,
                                 CreatedOn = DateTime.UtcNow
@@ -509,6 +516,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                 CreditAmount = fixedAssetTotal,
                                 CurrencyId = companyProfile.BaseCurrencyId,
                                 ExchangeRate = 1,
+                                Status = JournalEntryStatus.Posted,
+                                ReceiptId = bill.Id,
                                 AmountInBaseCurrency = fixedAssetTotal,
                                 CreatedBy = loggedInUser.Id,
                                 CreatedOn = DateTime.UtcNow
@@ -659,11 +668,15 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                     DebitAmount = line.CreditAmount,   // swapped
                                     CreditAmount = line.DebitAmount,   // swapped
                                     CurrencyId = line.CurrencyId,
+                                    Status = JournalEntryStatus.Posted,
                                     CreatedBy = loggedInUser.Id,
                                     CreatedOn = DateTime.UtcNow
                                 });
                             }
                             context.JournalEntries.Add(reversalJe);
+                            await LedgerPostingService.PostToGeneralLedgerAsync(context, reversalJe, cancellationToken);
+
+
                         }
 
 
@@ -713,6 +726,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         context.JournalEntries.Add(newJe);
 
                         await context.SaveChangesAsync(cancellationToken);
+                        await LedgerPostingService.PostToGeneralLedgerAsync(context, newJe, cancellationToken);
+
                         await transaction.CommitAsync(cancellationToken);
                         return Result.Success("Vendor Bill updated successfully.");
                     }
@@ -764,8 +779,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         if (request.PaymentAmount > ap.BalanceAmount)
                             return Result.Fail("Payment exceeds remaining balance.");
 
-                        //if (request.PaymentMethodId <= 0)
-                        //    return Result.Fail("Invalid payment method.");
+                        if (request.PaymentMethodId < 0)
+                            return Result.Fail("Invalid payment method.");
 
                         var rate = ap.CurrencyRate == 0 ? 1 : (decimal)ap.CurrencyRate;
 
@@ -824,7 +839,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                  paymentMethod == PaymentMethod.CreditCard || 
                                  paymentMethod == PaymentMethod.Check)
                         {
-                            if (companyProfile.BankAccountId > 0)
+                            if (companyProfile.BankAccountId == 0)
                                 return Result.Fail("Bank account not configured in company profile.");
                             cashAccountId = companyProfile.BankAccountId;
                         }
@@ -856,7 +871,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = request.PaymentAmount,
                             CreditAmount = 0,
                             CurrencyId = ap.CurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = rate,
+                            PaymentId = payment.Id,
                             AmountInBaseCurrency = request.PaymentAmount * rate,
                             CreatedBy = loggedInUser.Id,
                             CreatedOn = DateTime.UtcNow
@@ -867,8 +884,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             ChartOfAccountId = cashAccountId,
                             Description = $"Credit for payment {payment.PaymentNumber}",
                             DebitAmount = 0,
+                            PaymentId = payment.Id,
                             CreditAmount = request.PaymentAmount,
                             CurrencyId = ap.CurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = rate,
                             AmountInBaseCurrency = request.PaymentAmount * rate,
                             CreatedBy = loggedInUser.Id,

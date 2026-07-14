@@ -53,7 +53,7 @@ namespace Crystal_Clinic_Mgm.UI.Controllers.Finance
             [FromQuery] int? chartOfAccountId,
             [FromQuery] DateTime? asOf = null)
         {
-            var effectiveDate = asOf ?? DateTime.UtcNow;
+            var effectiveDate = asOf ?? DateTime.Now;
 
             var query = new GetAccountBalanceQuery
             {

@@ -10,7 +10,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
     #region Get Balance Sheet
     public class GetBalanceSheetQuery : IRequest<Result>
     {
-        public DateTime AsOfDate { get; set; } = DateTime.UtcNow;
+        public DateTime AsOfDate { get; set; } = DateTime.Now;
         public int? BranchId { get; set; }
     }
 

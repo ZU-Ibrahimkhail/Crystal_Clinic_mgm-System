@@ -1,4 +1,5 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
+using Crystal_Clinic_Mgm.Application.Accounting.Services;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
@@ -67,6 +68,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 {
                     ChartOfAccountId = companyProfile.FixedAssetAccountId.Value,
                     Description = $"Acquisition of {request.Dto.Name}",
+                    Status = JournalEntryStatus.Posted,
                     DebitAmount = request.Dto.PurchaseValue,
                     CreditAmount = 0,
                     AmountInBaseCurrency = request.Dto.PurchaseValue,
@@ -78,6 +80,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 {
                     ChartOfAccountId = companyProfile.BankAccountId,
                     Description = $"Payment for {request.Dto.Name}",
+                    Status = JournalEntryStatus.Posted,
                     DebitAmount = 0,
                     CreditAmount = request.Dto.PurchaseValue,
                     AmountInBaseCurrency = request.Dto.PurchaseValue,
@@ -87,6 +90,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
+                await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
 
                 return Result.Success(asset.Id, "Fixed Asset created successfully.");
             }
@@ -200,6 +204,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ChartOfAccountId = companyProfile.DepreciationExpenseAccountId.Value,
                     Description = $"Monthly depreciation for {asset.Name}",
                     DebitAmount = request.DepreciationAmount,
+                    Status = JournalEntryStatus.Posted,
                     CreditAmount = 0,
                     AmountInBaseCurrency = request.DepreciationAmount,
                     CreatedBy = loggedInUser.Id,
@@ -212,6 +217,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     Description = $"Accumulated depreciation for {asset.Name}",
                     DebitAmount = 0,
                     CreditAmount = request.DepreciationAmount,
+                    Status = JournalEntryStatus.Posted,
                     AmountInBaseCurrency = request.DepreciationAmount,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
@@ -219,6 +225,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
+                await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
 
                 return Result.Success("Depreciation recorded successfully.");
             }

@@ -115,14 +115,14 @@ try
     var umscontext = services.GetRequiredService<UMS_DbContext>();
     var pmiscontext = services.GetRequiredService<ERP_DbContext>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    //if (context.Database.IsSqlServer())
-    //{
-    //    context.Database.Migrate();
-    //}
-    //if (umscontext.Database.IsSqlServer())
-    //{
-    //    umscontext.Database.Migrate();
-    //}
+    if (context.Database.IsSqlServer())
+    {
+        context.Database.Migrate();
+    }
+    if (umscontext.Database.IsSqlServer())
+    {
+        umscontext.Database.Migrate();
+    }
     //////---Seeding Data-------------------------------
     await Crystal_Clinic_Initializer.InitilizeCrystal_Clinic(context);
     await UMSintializer.InitializeUMS(userManager);

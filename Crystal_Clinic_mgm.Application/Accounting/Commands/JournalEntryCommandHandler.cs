@@ -60,6 +60,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         DebitAmount = lineDto.DebitAmount,
                         CreditAmount = lineDto.CreditAmount,
                         CurrencyId = lineDto.CurrencyId,
+                        Status = JournalEntryStatus.Draft,
                         ExchangeRate = lineDto.ExchangeRate,
                         AmountInBaseCurrency = (lineDto.DebitAmount > 0 ? lineDto.DebitAmount : lineDto.CreditAmount) * lineDto.ExchangeRate,
                         CreatedBy = loggedInUser.Id,
@@ -136,6 +137,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         };
 
                         context.GeneralLedgers.Add(ledgerEntry);
+                        line.Status = JournalEntryStatus.Posted;
+                        context.Update(line);
                     }
 
                     context.JournalEntries.Update(journalEntry);
@@ -193,7 +196,12 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         entry.ModifiedBy = loggedInUser.Id;
                         entry.ModifiedOn = DateTime.UtcNow;
                     }
-
+                    var lines = context.JournalEntryLines.Where(x => x.JournalEntryId == request.JournalEntryId && !x.IsDeleted);
+                    foreach (var line in lines)
+                    {
+                        line.Status = JournalEntryStatus.Voided;
+                    }
+                    context.JournalEntryLines.UpdateRange(lines);
                     context.JournalEntries.Update(journalEntry);
                     context.GeneralLedgers.UpdateRange(ledgerEntries);
                     await context.SaveChangesAsync(cancellationToken);

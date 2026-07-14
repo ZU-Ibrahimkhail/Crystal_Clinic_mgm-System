@@ -163,7 +163,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         ChartOfAccountId = companyProfile.CashAccountId,
                         Description = $"Cash received from {shareholder.Name}",
                         DebitAmount = request.Dto.Amount,
+                        Status = JournalEntryStatus.Posted,
                         CreditAmount = 0,
+                        EquityTransactionId = transaction.Id,
                         AmountInBaseCurrency = request.Dto.Amount,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
@@ -175,7 +177,9 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         Description = $"Capital contribution from {shareholder.Name}",
                         DebitAmount = 0,
                         CreditAmount = request.Dto.Amount,
+                        Status = JournalEntryStatus.Posted,
                         AmountInBaseCurrency = request.Dto.Amount,
+                        EquityTransactionId = transaction.Id,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     });
@@ -189,6 +193,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         DebitAmount = request.Dto.Amount,
                         CreditAmount = 0,
                         AmountInBaseCurrency = request.Dto.Amount,
+                        Status = JournalEntryStatus.Posted,
+                        EquityTransactionId = transaction.Id,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     });
@@ -199,6 +205,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         Description = $"Cash paid to {shareholder.Name}",
                         DebitAmount = 0,
                         CreditAmount = request.Dto.Amount,
+                        Status = JournalEntryStatus.Posted,
+                        EquityTransactionId = transaction.Id,
                         AmountInBaseCurrency = request.Dto.Amount,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
@@ -207,7 +215,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                 context.JournalEntries.Add(je);
                 await context.SaveChangesAsync(cancellationToken);
-
+                await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
                 return Result.Success(transaction.Id, "Equity transaction recorded successfully.");
             }
             catch (Exception ex)
@@ -215,6 +223,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                 return Result.Fail($"Error recording Equity transaction: {ex.Message}");
             }
         }
+
     }
     #endregion
 }

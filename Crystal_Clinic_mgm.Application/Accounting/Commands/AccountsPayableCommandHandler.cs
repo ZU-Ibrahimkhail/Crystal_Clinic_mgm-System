@@ -102,6 +102,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CurrencyId = request.Dto.CurrencyId,
                     ExchangeRate = exchangeRate,
                     AmountInBaseCurrency = amountInBase,
+                    Status = JournalEntryStatus.Posted,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
                 };
@@ -114,6 +115,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     CreditAmount = request.Dto.InvoiceAmount,
                     CurrencyId = request.Dto.CurrencyId,
                     ExchangeRate = exchangeRate,
+                    Status = JournalEntryStatus.Posted,
                     AmountInBaseCurrency = amountInBase,
                     CreatedBy = loggedInUser.Id,
                     CreatedOn = DateTime.UtcNow
@@ -265,13 +267,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     if (payable == null)
                         return Result.Fail("Accounts Payable not found.");
 
-                    if (request.Dto.AmountPaid <= 0)
+                    if (request.Dto.AmountPaid < 0)
                         return Result.Fail("Invalid payment amount.");
 
                     if (request.Dto.AmountPaid > payable.BalanceAmount)
                         return Result.Fail("Payment amount exceeds outstanding balance.");
 
-                    if (request.Dto.PaymentMethodId <= 0)
+                    if (request.Dto.PaymentMethodId < 0)
                         return Result.Fail("Invalid payment method.");
 
                     decimal exchangeRate;
@@ -328,7 +330,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     int cashAccountId;
                     if (paymentMethod == PaymentMethod.Cash)
                     {
-                        if (companyProfile.CashAccountId > 0)
+                        if (companyProfile.CashAccountId == 0)
                             return Result.Fail("Cash account not configured in company profile.");
                         cashAccountId = companyProfile.CashAccountId;
                     }
@@ -336,7 +338,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                              paymentMethod == PaymentMethod.CreditCard ||
                              paymentMethod == PaymentMethod.Check)
                     {
-                        if (companyProfile.BankAccountId > 0)
+                        if (companyProfile.BankAccountId == 0)
                             return Result.Fail("Bank account not configured in company profile.");
                         cashAccountId = companyProfile.BankAccountId;
                     }
@@ -370,6 +372,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         CurrencyId = currencyId,
                         ExchangeRate = exchangeRate,
                         AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
+                        Status = JournalEntryStatus.Posted,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     });
@@ -383,6 +386,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         CurrencyId = currencyId,
                         ExchangeRate = exchangeRate,
                         AmountInBaseCurrency = request.Dto.AmountPaid * exchangeRate,
+                        Status = JournalEntryStatus.Posted,
                         CreatedBy = loggedInUser.Id,
                         CreatedOn = DateTime.UtcNow
                     });

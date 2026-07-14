@@ -199,6 +199,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = invoice.NetAmount,
                             CreditAmount = 0,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = invoice.NetAmount,
                             CreatedBy = loggedInUser.Id,
@@ -212,6 +213,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = 0,
                             CreditAmount = invoice.NetAmount,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = invoice.NetAmount,
                             CreatedBy = loggedInUser.Id,
@@ -359,6 +361,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = request.Dto.AmountReceived,
                             CreditAmount = 0,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            SalesReceiptId = receipt.Id,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = request.Dto.AmountReceived,
                             CreatedBy = loggedInUser.Id,
@@ -372,6 +376,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = 0,
                             CreditAmount = request.Dto.AmountReceived,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            SalesReceiptId = receipt.Id,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = request.Dto.AmountReceived,
                             CreatedBy = loggedInUser.Id,
@@ -476,6 +482,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             foreach (var jel in jeLines)
                             {
                                 jel.IsDeleted = true;
+                                jel.Status = JournalEntryStatus.Unposted;
                                 jel.ModifiedBy = loggedInUser.Id;
                                 jel.ModifiedOn = DateTime.UtcNow;
                                 context.JournalEntryLines.Update(jel);
@@ -585,6 +592,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                                     Description = $"Reversal - {originalLine.Description}",
                                     DebitAmount = originalLine.CreditAmount,
                                     CreditAmount = originalLine.DebitAmount,
+                                    Status = JournalEntryStatus.Posted,
                                     CurrencyId = originalLine.CurrencyId,
                                     ExchangeRate = originalLine.ExchangeRate,
                                     AmountInBaseCurrency = originalLine.AmountInBaseCurrency,
@@ -716,6 +724,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = request.RefundAmount,
                             CreditAmount = 0,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = request.RefundAmount,
                             CreatedBy = loggedInUser.Id,
@@ -729,6 +738,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                             DebitAmount = 0,
                             CreditAmount = request.RefundAmount,
                             CurrencyId = companyProfile.BaseCurrencyId,
+                            Status = JournalEntryStatus.Posted,
                             ExchangeRate = 1,
                             AmountInBaseCurrency = request.RefundAmount,
                             CreatedBy = loggedInUser.Id,

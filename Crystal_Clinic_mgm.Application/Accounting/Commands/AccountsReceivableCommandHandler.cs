@@ -283,6 +283,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             {
                 ChartOfAccountId = arAccountId, // AR account
                 Description = receipt.Reference,
+                Status = JournalEntryStatus.Posted,
                 DebitAmount = 0,
                 CreditAmount = receipt.AmountInBaseCurrency,
                 CurrencyId = receipt.CurrencyId,
@@ -296,6 +297,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
             {
                 ChartOfAccountId = cashAccountId, // Cash/Bank account
                 Description = receipt.Reference,
+                Status = JournalEntryStatus.Posted,
                 DebitAmount = receipt.AmountInBaseCurrency,
                 CreditAmount = 0,
                 CurrencyId = receipt.CurrencyId,
@@ -332,6 +334,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     ChartOfAccountId = arAccountId, // AR account
                     Description = refund.Reference,
                     DebitAmount = refund.AmountInBaseCurrency,
+                    Status = JournalEntryStatus.Posted,
                     CreditAmount = 0,
                     CurrencyId = refund.CurrencyId,
                     ExchangeRate = refund.ExchangeRate,
@@ -346,6 +349,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     Description = refund.Reference,
                     DebitAmount = 0,
                     CreditAmount = refund.AmountInBaseCurrency,
+                    Status = JournalEntryStatus.Posted,
                     CurrencyId = refund.CurrencyId,
                     ExchangeRate = refund.ExchangeRate,
                     AmountInBaseCurrency = refund.AmountInBaseCurrency,
