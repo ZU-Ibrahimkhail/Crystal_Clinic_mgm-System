@@ -895,8 +895,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         });
 
                         context.JournalEntries.Add(je);
-
                         await context.SaveChangesAsync(cancellationToken);
+                        await LedgerPostingService.PostToGeneralLedgerAsync(context, je, cancellationToken);
                         await transaction.CommitAsync(cancellationToken);
 
                         return Result.Success("Vendor Bill marked as paid.");

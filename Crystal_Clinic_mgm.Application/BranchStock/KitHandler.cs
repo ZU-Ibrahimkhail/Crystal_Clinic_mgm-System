@@ -268,10 +268,11 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
     {
         public async Task<KitConsumptionResult> Handle(ConsumeKitCommand request, CancellationToken cancellationToken)
         {
-            var kit = await context.InventoryKits
-               .Include(k => k.KitLines)
+            var kit = await context.VisitKits
+               .Include(k => k.InventoryKit)
+               .ThenInclude(kl => kl.KitLines)
                .ThenInclude(kl => kl.Item)
-               .FirstOrDefaultAsync(k => k.Id == request.KitId && k.IsActive && !k.IsDeleted, cancellationToken);
+               .FirstOrDefaultAsync(k => k.Id == request.VisitKitId && k.InventoryKit.IsActive && !k.InventoryKit.IsDeleted, cancellationToken);
 
             if (kit == null)
             {
@@ -294,7 +295,7 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
 
                 try
                 {
-                    foreach (var kitLine in kit.KitLines)
+                    foreach (var kitLine in kit.InventoryKit.KitLines)
                     {
                         var requiredQuantity = kitLine.Quantity * request.Quantity;
 
@@ -306,11 +307,10 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                             Type = MovementType.Out,
                             Reason = MovementReason.SaleDeduction,
                             ReferenceId = request.ReferenceId,
-                            Notes = $"Kit consumption: {kit.KitName}"
+                            Notes = $"Kit consumption: {kit.InventoryKit.KitName}"
                         };
 
                         var result = await inventoryService.RegisterMovementAsync(movementRequest, cancellationToken);
-
 
                         if (!result.Success)
                         {
@@ -330,13 +330,18 @@ namespace Crystal_Clinic_Mgm.Application.BranchStock
                     await mediator.Publish(new InventoryKitConsumedEvent
                     {
                         KitId = request.KitId,
-                        KitName = kit.KitName,
+                        KitName = kit.InventoryKit.KitName,
                         Quantity = request.Quantity,
                         TotalCost = totalCost,
                         ReferenceId = request.ReferenceId
                     }, cancellationToken);
-                    var visitKit = context.VisitKits.Where(x=>x.Id == request.VisitKitId).ForEachAsync(x=>x.IsConsumed = true);
-                    context.SaveChanges();
+
+                    // FIX: Use ExecuteUpdateAsync instead of ForEachAsync + SaveChanges.
+                    // This performs a direct SQL UPDATE without loading the entity or keeping a reader open.
+                    await context.VisitKits
+                        .Where(x => x.Id == request.VisitKitId)
+                        .ExecuteUpdateAsync(setters => setters.SetProperty(k => k.IsConsumed, true), cancellationToken);
+
                     await transaction.CommitAsync(cancellationToken);
 
                     return new KitConsumptionResult
