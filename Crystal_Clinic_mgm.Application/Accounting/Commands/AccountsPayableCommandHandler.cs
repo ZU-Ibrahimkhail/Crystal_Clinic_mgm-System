@@ -1,5 +1,6 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
@@ -277,8 +278,8 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                         return Result.Fail("Invalid payment method.");
 
                     decimal exchangeRate;
-                    int currencyId = request.Dto.CurrencyId ?? payable.CurrencyId ?? 1;
-                    const int BaseCurrencyId = 1;
+                    int currencyId = request.Dto.CurrencyId ?? payable.CurrencyId ?? Constants.CurrencyTypes.AFN;
+                    const int BaseCurrencyId = Constants.CurrencyTypes.AFN;
 
                     if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
                     {
@@ -288,6 +289,13 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     {
                         exchangeRate = await context.GetExchangeRate(currencyId, BaseCurrencyId, cancellationToken);
                     }
+
+                    // Convert amount to base currency
+                    var amountInBaseCurrency = request.Dto.AmountPaid * exchangeRate;
+
+                    // Calculate overpayment
+                    var overpaymentAmount = Math.Max(0, amountInBaseCurrency - payable.BalanceAmount);
+                    var appliedAmount = amountInBaseCurrency - overpaymentAmount;
 
                     var paymentNumber = GeneratePaymentNumber();
                     var payment = new Payment
@@ -306,8 +314,10 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
 
                     context.Payments.Add(payment);
 
-                    payable.PaidAmount += request.Dto.AmountPaid;
-                    payable.BalanceAmount -= request.Dto.AmountPaid;
+                    // Update AR balance
+                    payable.PaidAmount += appliedAmount;
+                    payable.BalanceAmount -= appliedAmount;
+
 
                     if (payable.BalanceAmount == 0)
                     {

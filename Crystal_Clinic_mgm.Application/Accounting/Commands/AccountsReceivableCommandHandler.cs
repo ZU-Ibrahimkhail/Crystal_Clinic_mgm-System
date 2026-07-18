@@ -1,5 +1,6 @@
 using Crystal_Clinic_Mgm.Application.Accounting.DTOs;
 using Crystal_Clinic_Mgm.Application.Common.Services.IRepositories;
+using Crystal_Clinic_Mgm.Common.Constants;
 using Crystal_Clinic_Mgm.Domain;
 using Crystal_Clinic_Mgm.Domain.Entities;
 using Crystal_Clinic_Mgm.Domain.Entities.Accounting;
@@ -144,7 +145,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Commands
                     // Get exchange rate
                     decimal exchangeRate;
                     int currencyId = request.Dto.CurrencyId ?? receivable.CurrencyId ?? 1;
-                    const int BaseCurrencyId = 1;
+                    const int BaseCurrencyId = Constants.CurrencyTypes.AFN;
 
                     if (request.Dto.ExchangeRate.HasValue && request.Dto.ExchangeRate.Value > 0)
                     {
