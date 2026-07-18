@@ -24,7 +24,7 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                     .Where(g => g.TransactionDate <= request.AsOfDate && !g.ChartOfAccount.IsDeleted);
 
                 if (request.BranchId.HasValue)
-                    query = query.Where(g => g.BranchId == request.BranchId);
+                    query = query.Where(g => g.BranchId == null || g.BranchId == request.BranchId);
 
                 var ledgerEntries = await query.ToListAsync(cancellationToken);
                 var accounts = await context.ChartOfAccounts
@@ -148,11 +148,11 @@ namespace Crystal_Clinic_Mgm.Application.Accounting.Queries
                 .Where(a => a.AccountCategory == category)
                 .Select(a => a.Id)
                 .ToList();
-
+            
             return ledgerEntries
-                .Where(g => categoryAccounts.Contains(g.ChartOfAccountId) && g.TransactionDate <= asOfDate)
-                .GroupBy(g => g.ChartOfAccountId)
-                .Sum(g => g.Last().Balance);
+                    .Where(g => categoryAccounts.Contains(g.ChartOfAccountId) && g.TransactionDate <= asOfDate)
+                    .GroupBy(g => g.ChartOfAccountId)
+                    .Sum(g => g.Last().Balance);
         }
     }
     #endregion
